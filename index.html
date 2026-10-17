@@ -373,7 +373,7 @@ drawWheel=function(canvas,angle=0,ballAngle=rouletteBallAngle,ballRadius=.86,lan
  const ball=ctx.createRadialGradient(-2.5,by-3,1,0,by,7.5);ball.addColorStop(0,'#fff');ball.addColorStop(.38,'#fff7dc');ball.addColorStop(.75,'#d5d1bd');ball.addColorStop(1,'#65645e');
  ctx.beginPath();ctx.arc(0,by,6.2,0,Math.PI*2);ctx.fillStyle=ball;ctx.shadowColor='#fff4c7';ctx.shadowBlur=13;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=.7;ctx.stroke();ctx.restore();
  if(landed>=0){
-  const idx=europeanOrder.indexOf(landed),a=angle+(idx+.5)*seg-Math.PI/2;
+  const idx=europeanOrder.indexOf(landed),a=(idx+.5)*seg-Math.PI/2;
   ctx.save();ctx.rotate(a);ctx.strokeStyle='#fff3b0';ctx.lineWidth=3;ctx.shadowColor='#ffe16b';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(0,0,outer*.80,-seg*.43,seg*.43);ctx.stroke();ctx.restore()
  }
  ctx.restore();
@@ -383,21 +383,25 @@ spinWheel=function(){
  if(rouletteStake>state.balance){message('Saldo insuficiente para esta ficha.');return}
  charge(rouletteStake);wheelBusy=true;$('#rouletteSpin').disabled=true;
  const requested=Math.floor(Math.random()*37),idx=europeanOrder.indexOf(requested),start=wheelAngle,ballStart=rouletteBallAngle,seg=2*Math.PI/37,tau=Math.PI*2;
- const target=-(idx+.5)*seg,extra=tau*(8+Math.random()*2.5);
- const end=start+extra+(((target-(start+extra))%tau)+tau)%tau;
- const ballEnd=ballStart-tau*(10+Math.random()*2);
- const t0=performance.now(),duration=3400;
+ const target=-(idx+.5)*seg;
+ // Seis a sete voltas completas, com desaceleração suave até a casa escolhida.
+ const delta=((target-start)%tau+tau)%tau+tau*(6+Math.random()*1.25);
+ const end=start+delta;
+ const ballEnd=ballStart-tau*(7+Math.random()*2);
+ const t0=performance.now(),duration=5200;
  function frame(now){
-  const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,2.2);
-  wheelAngle=start+(end-start)*ease;
-  const ballEase=1-Math.pow(1-t,1.6);
+  const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,3);
+  wheelAngle=start+delta*ease;
+  const ballEase=1-Math.pow(1-t,2.25);
   rouletteBallAngle=ballStart+(ballEnd-ballStart)*ballEase;
-  const drop=Math.max(0,Math.min(1,(t-.66)/.34)),radius=.92-.16*(drop*drop*(3-2*drop));
+  const drop=Math.max(0,Math.min(1,(t-.72)/.28)),radius=.92-.16*(drop*drop*(3-2*drop));
   drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,radius,-1);
   if(t<1)requestAnimationFrame(frame);else{
-   // O número sorteado é o mesmo que foi alinhado no centro do ponteiro.
    wheelAngle=end;
-   const n=requested;
+   // O resultado vem da casa central que terminou sob o ponteiro.
+   const pointerPosition=(((-end)%tau)+tau)%tau;
+   const landedIndex=Math.min(36,Math.floor(pointerPosition/seg));
+   const n=europeanOrder[landedIndex];
    rouletteBallAngle=0;
    drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,.76,n);
    wheelBusy=false;$('#rouletteSpin').disabled=false;
