@@ -171,7 +171,7 @@ function beginPinLaunch(e){if(e&&e.preventDefault)e.preventDefault();if(!pinGame
 function releasePinLaunch(e){if(e&&e.preventDefault)e.preventDefault();if(!pinChargeStart)return;const power=Math.max(.25,Math.min(1,(performance.now()-pinChargeStart)/900));pinChargeStart=0;clearInterval(pinChargeTimer);pinChargeTimer=0;launchPinball(power);const label=$('#pinPower');if(label)label.textContent='POTÊNCIA 0%'}
 function cancelPinLaunch(){pinChargeStart=0;clearInterval(pinChargeTimer);pinChargeTimer=0}
 
-function launchPinball(power){if(!pinGame||!pinGame.live||!pinGame.waiting)return;power=typeof power==='number'?power:0.7;pinGame.waiting=false;pinGame.x=320;pinGame.y=420;pinGame.vx=-(.7+power*.9+Math.random()*.25);pinGame.vy=-(4.8+power*3.0);pinSound('launch');message('LANÇAMENTO '+Math.round(power*100)+'% · Segure os flippers para rebater a bola!')}
+function launchPinball(power){if(!pinGame||!pinGame.live||!pinGame.waiting)return;power=typeof power==='number'?power:0.7;power=Math.max(.2,Math.min(1,power));pinGame.waiting=false;pinGame.x=320;pinGame.y=420;pinGame.vx=-(.35+power*.9+Math.random()*.2);pinGame.vy=-(13+power*10);pinSound('launch');message('TACADA! '+Math.round(power*100)+'% DE POTÊNCIA · SEGURE OS FLIPPERS!')}
 function startPinball(){
  if(state.balance<10){message('Saldo insuficiente.');return}
  charge(10);stopArcade();let cv=$('#arcade'),ctx=cv.getContext('2d');
