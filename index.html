@@ -329,9 +329,12 @@ function housePoolShot(){
  for(const b of active){for(const pocket of pockets){const d=Math.hypot(b.x-pocket[0],b.y-pocket[1]);if(d<best){best=d;target=b;goal=pocket}}}
  if(!target||!goal){poolGame.phase='player';message('Sua vez. Mire e arraste para tacar.');return}
  let tx=goal[0]-target.x,ty=goal[1]-target.y,tl=Math.hypot(tx,ty)||1;tx/=tl;ty/=tl;
- // Escolhe a bola mais alinhada com a branca para tentar uma tacada de verdade, sem garantir encaçape.
- let dx=target.x-cue.x,dy=target.y-cue.y,len=Math.hypot(dx,dy)||1;
- cue.vx=dx/len*6.2;cue.vy=dy/len*6.2;
+ // A casa tenta acertar a bola de corte: mira no ponto de contato oposto à caçapa.
+ const ghostX=target.x-tx*(R*2.02),ghostY=target.y-ty*(R*2.02);
+ let dx=ghostX-cue.x,dy=ghostY-cue.y,len=Math.hypot(dx,dy)||1;
+ // Pequena imprecisão para manter a disputa desafiadora, sem fazer a casa acertar sempre.
+ const error=(Math.random()-.5)*0.16,angle=Math.atan2(dy,dx)+error,speed=6.4+Math.random()*1.8;
+ cue.vx=Math.cos(angle)*speed;cue.vy=Math.sin(angle)*speed;
  poolGame.shots++;poolGame.turn=1;$('#poolShots').textContent=poolGame.shots;
  message('VEZ DA CASA: a casa tenta encaçapar uma bola…');pinSound('launch');
 }
@@ -361,7 +364,7 @@ function startPool(){
   for(let i=0;i<bs.length;i++){const b=bs[i];if(b.pocket)continue;b.x+=b.vx;b.y+=b.vy;b.vx*=.991;b.vy*=.991;if(Math.hypot(b.vx,b.vy)<.055)b.vx=b.vy=0;if(b.vx||b.vy)moving=true;
    // Caçapas verificadas antes das bordas: a bola consegue realmente cair nos seis bolsos.
    if(pockets.some(([px,py])=>Math.hypot(b.x-px,b.y-py)<pocketR+8)){
-    if(b.cue){b.pocket=true;poolGame.scratch=true;$('#poolResetCue').disabled=false;message('FALTA: a branca caiu. Reposicione para continuar.')}
+    if(b.cue){b.pocket=true;poolGame.scratch=true;poolGame.foul=true;if(poolGame.phase==='player'){poolGame.houseScore++;$('#poolHouseScore').textContent=poolGame.houseScore;message('FALTA DO JOGADOR! A branca caiu: ponto para a casa.')}else{poolGame.playerScore++;$('#poolPlayerScore').textContent=poolGame.playerScore;message('FALTA DA CASA! A branca caiu: ponto para você.')} }
     else{b.pocket=true;poolGame.score++;if(poolGame.phase==='player'){poolGame.playerScore++;$('#poolPlayerScore').textContent=poolGame.playerScore}else{poolGame.houseScore++;$('#poolHouseScore').textContent=poolGame.houseScore}pinSound('bonus')}
     continue;
    }
@@ -372,8 +375,9 @@ function startPool(){
   if(!moving&&poolGame.turn>0){
    poolGame.turn=0;
    if(poolGame.scratch){
-    if(poolGame.phase==='house'){const cue=poolGame.balls[0];cue.x=220;cue.y=220;cue.vx=cue.vy=0;cue.pocket=false;poolGame.scratch=false;$('#poolResetCue').disabled=true;poolGame.phase='player';message('A casa cometeu falta. Sua vez!')}
-    else message('Reposicione a branca para continuar sua vez.');
+    const cue=poolGame.balls[0];cue.x=220;cue.y=220;cue.vx=cue.vy=0;cue.pocket=false;poolGame.scratch=false;poolGame.foul=false;$('#poolResetCue').disabled=true;
+    if(poolGame.phase==='house'){poolGame.phase='player';message('FALTA DA CASA: ponto para você. Sua vez de jogar!')}
+    else{poolGame.phase='house';message('FALTA SUA: ponto para a casa. A casa vai jogar…');houseTimer=setTimeout(()=>{if(poolGame&&!poolGame.done){housePoolShot();drawTable()}},700)}
    }else if(poolGame.balls.slice(1).every(b=>b.pocket)){finishPoolGame()}
    else if(poolGame.phase==='player'){
     poolGame.phase='house';message('Bolas paradas. A casa vai jogar…');houseTimer=setTimeout(()=>{if(poolGame&&!poolGame.done){housePoolShot();drawTable()}},700);
