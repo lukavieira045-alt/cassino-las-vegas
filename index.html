@@ -577,7 +577,7 @@ function finishTargetRound(){
   const mult=g.score>=400?5:g.score>=300?2:g.score>=200?1:g.score>=100?0.5:0;
   const payout=Math.round(g.stake*mult*100)/100;if(payout)award(payout);
   $('#targetMessage').textContent='FIM DA RODADA · '+g.score+' pontos. '+(mult?'Retorno total R$ '+payout.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' ('+mult+'× aposta).':'Sem retorno desta vez. Tente novamente.');
-  if(arcadeCleanup){arcadeCleanup();arcadeCleanup=null}
+  // Keep aim controls attached so the player can immediately start another round.
 }
 /* European roulette: authentic wheel-number order, polished pockets and a moving ball. */
 const europeanOrder=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
