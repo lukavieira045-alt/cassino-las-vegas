@@ -60,6 +60,47 @@ header{position:sticky;top:0;z-index:10;background:#0b090df2;backdrop-filter:blu
 @media(max-width:480px){.target-panel{padding:7px}.target-hud{font-size:9px}.target-hud strong{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.hero:before,.slotcab:before,.slotcell.winner{animation:none}.gameicon{transition:none}}
 
+
+/* REAL EUROPEAN WHEEL • CASINO FLOOR UPGRADE */
+body{background:#050509}
+.hero{min-height:590px;background-image:linear-gradient(90deg,#050509f5 0%,#08060bd9 37%,#08060b66 72%,#050509a8 100%),url('https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?auto=format&fit=crop&w=2200&q=90');background-position:center 54%;background-size:cover}
+.hero:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 15%,#ff2d9d0b 40%,transparent 55%,#00d9ff12 80%);animation:floorSweep 8s ease-in-out infinite alternate}
+@keyframes floorSweep{from{transform:translateX(-3%);opacity:.35}to{transform:translateX(3%);opacity:.9}}
+.hero h1{text-shadow:0 3px 0 #000,0 0 24px #ff2d9d35,0 0 40px #00d9ff20}
+.marquee{position:relative;overflow:hidden;background:linear-gradient(90deg,#120913,#17101c,#08131c,#120913);box-shadow:0 0 24px #000 inset}
+.marquee span{color:#ffe9a3;text-shadow:0 0 8px #ff2d9d99,0 0 18px #00d9ff45}
+.sectionTitle{border-bottom-color:#c8a45b75}
+.gamecard{background:linear-gradient(145deg,#1b131d,#080a10 75%);border:1px solid #b9944c8c;box-shadow:0 8px 25px #0008,inset 0 1px #ffffff0c}
+.gameimage{height:180px;background:#0b0b13}
+.gameimage img{filter:brightness(.74) saturate(1.12) contrast(1.08)}
+.gameimage:after{background:linear-gradient(0deg,#09070bf5,transparent 82%),linear-gradient(135deg,#ff2d9d18,transparent 45%,#00d9ff1c)}
+.cardinfo .type{color:#8deeff;text-shadow:0 0 9px #00d9ff40}
+.cardinfo h3{color:#fff1cb;text-shadow:0 2px 12px #000}
+.playline{color:#ffe4a0}
+.gamecard:hover{box-shadow:0 0 0 1px #ffe5a2,0 0 22px #ff2d9d24,0 0 32px #00d9ff18,0 15px 36px #000b}
+.modal{background:radial-gradient(ellipse at 50% 0%,#21102ad9,#030306f5 70%);backdrop-filter:blur(14px)}
+.dialog{width:min(100%,850px);border:1px solid #d9b765;background:linear-gradient(145deg,#1b1420,#0b0a11 60%,#080b12);box-shadow:0 0 0 1px #ff2d9d20,0 0 40px #ff2d9d19,0 0 60px #00d9ff12,0 24px 100px #000}
+.dialoghead{position:sticky;top:-1px;z-index:5;background:linear-gradient(90deg,#17101c,#0b1118);padding:12px 0}
+.slotcab{max-width:660px;border:7px ridge #c8a45b;border-radius:15px;background:radial-gradient(ellipse at 50% 0%,#a33243 0,#471524 30%,#160b17 76%);box-shadow:inset 0 0 0 2px #fff2c044,inset 0 0 50px #000c,0 0 0 2px #100b12,0 0 24px #ff2d9d30,0 0 45px #00d9ff12,0 18px 35px #000b}
+.slotbrand{font-size:clamp(18px,3vw,28px);padding:12px 4px;color:#fff0ae;text-shadow:0 0 6px #fff1a5,0 0 16px #ffae38,0 0 27px #ff2d9d}
+.slotjackpot{border:1px solid #f2d68b;background:linear-gradient(180deg,#08060deF,#17101b);box-shadow:0 0 0 3px #4e2b27,0 0 18px #ffc85b20,inset 0 0 18px #000}
+.slotjackpot b{letter-spacing:3px;text-shadow:0 0 5px #fff0a4,0 0 20px #ffb82e,0 0 35px #ff2d9d}
+.slotreels{padding:8px;background:linear-gradient(90deg,#5b391b,#f9e0a0 12%,#9b7334 24%,#f5d78e 50%,#8c5f29 76%,#f9e0a0 90%,#4a2d19);border:4px solid #4c291a;box-shadow:inset 0 0 0 2px #fff6d7,inset 0 0 16px #000,0 0 18px #ffc85b26}
+.slotcell{border-radius:3px;background:linear-gradient(90deg,#c7b98f,#fffbe9 18%,#fffef3 50%,#d7c6a1);border:1px solid #8e6a36;box-shadow:inset 0 0 0 2px #fff9e6,inset 0 -10px 18px #78603d18}
+.slotcell span{filter:drop-shadow(0 2px 2px #4c392c);font-size:clamp(24px,6vw,52px)}
+.slotcontrol .darkbtn{min-width:44px;min-height:42px;font-size:18px}
+.slotspin{min-height:48px;border-radius:4px;box-shadow:0 0 0 2px #805a25,0 0 18px #ffc85b38,0 0 26px #ff2d9d20;letter-spacing:2px}
+.slotspin:not(:disabled){animation:spinButtonGlow 2s ease-in-out infinite alternate}
+@keyframes spinButtonGlow{to{box-shadow:0 0 0 2px #805a25,0 0 24px #ffc85b68,0 0 35px #ff2d9d35}}
+.wheelwrap{width:min(100%,410px);padding:10px;border-radius:50%;background:radial-gradient(circle,#ffe7a0 0,#9e7534 68%,#24180d 74%,#d6b05f 80%,#191014 84%);box-shadow:0 0 0 2px #e4c575,0 0 0 7px #241720,0 0 0 9px #a57c3d,0 0 32px #ffcf6c30,0 16px 28px #000b}
+.wheelwrap canvas{border-radius:50%;background:#101014;filter:drop-shadow(0 2px 2px #000)}
+.pointer{top:-9px;left:calc(50% - 13px);font-size:28px;color:#fff0b4;text-shadow:0 0 6px #ffe6a0,0 0 16px #ff2d9d,0 2px 5px #000}
+.casinoBet{border-radius:8px;background:linear-gradient(145deg,#101a17,#0a0d11);box-shadow:0 0 0 1px #c8a45b25,inset 0 0 22px #000}
+.numberbtn{border-radius:3px;box-shadow:inset 0 1px #ffffff1a,0 2px 3px #000}
+.felt{background:radial-gradient(ellipse at 50% 35%,#247252,#0c3928 60%,#061e16);border:8px ridge #a77a3b;box-shadow:inset 0 0 0 2px #f4d78a44,inset 0 0 45px #0009,0 0 24px #00d9ff16}
+.playingcard{border-radius:7px}
+@media(max-width:480px){.hero{min-height:490px}.gameimage{height:130px}.slotcab{padding:10px;border-width:5px}.slotreels{gap:3px;padding:5px}.slotcell{border-width:1px}.wheelwrap{padding:7px}}
+
 </style></head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="crest"><span>♛</span></div><div class="brandtext"><strong>Las Vegas</strong><small>GRAND CASINO</small></div></a><div class="navright"><div class="balance">FICHAS DEMO<br><b id="balance">1.000</b></div><button class="darkbtn" onclick="openAccount()">Conta</button><button class="goldbtn" onclick="document.querySelector('#salon').scrollIntoView({behavior:'smooth'})">Entrar no salão</button></div></nav></header>
@@ -200,5 +241,60 @@ function targetUI(){
   arcadeTimer=requestAnimationFrame(frame);
 }
 function fireTarget(){let g=targetGame;if(!g||!g.active||g.shots<=0)return;pinSound('hit');const d=Math.hypot(g.aimX-g.x,g.aimY-g.y);let pts=d<=12?100:d<=26?60:d<=43?25:0;g.score+=pts;g.shots--;$('#targetShots').textContent=g.shots;$('#targetScore').textContent=g.score;$('#targetMessage').textContent=pts?'ACERTOU! +'+pts+' pontos.':'Errou! Ajuste a mira para o próximo tiro.';if(g.shots===0){g.active=false;if(arcadeTimer)cancelAnimationFrame(arcadeTimer);arcadeTimer=null;const ratio=g.score/500;let mult=g.score>=400?5:g.score>=275?2:g.score>=150?1:0;let payout=g.stake*mult;if(payout)award(payout);$('#targetFire').disabled=true;$('#targetFire').textContent='RODADA ENCERRADA';$('#targetMessage').textContent='Pontuação final: '+g.score+'/500. '+(payout?'Retorno total: '+payout+' fichas ('+mult+'×).':'Sem prêmio nesta rodada. Tente novamente.');if(arcadeCleanup){arcadeCleanup();arcadeCleanup=null}}}
+
+
+/* European roulette: authentic wheel-number order, polished pockets and a moving ball. */
+const europeanOrder=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+let rouletteBallAngle=0;
+drawWheel=function(canvas,angle=0,ballAngle=rouletteBallAngle){
+ const ctx=canvas.getContext('2d'),n=37,r=canvas.width/2,outer=r-7,seg=2*Math.PI/n;
+ ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();ctx.translate(r,r);
+ const metal=ctx.createRadialGradient(0,0,outer*.68,0,0,outer+9);metal.addColorStop(0,'#f5dfa0');metal.addColorStop(.25,'#8a612b');metal.addColorStop(.48,'#f8dfa0');metal.addColorStop(.72,'#62401f');metal.addColorStop(1,'#e8c66e');
+ ctx.beginPath();ctx.arc(0,0,outer+5,0,Math.PI*2);ctx.fillStyle=metal;ctx.fill();
+ ctx.rotate(angle);
+ for(let i=0;i<n;i++){
+  const num=europeanOrder[i],a=i*seg-Math.PI/2,b=(i+1)*seg-Math.PI/2;
+  ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,outer,a,b);ctx.closePath();
+  const g=ctx.createLinearGradient(Math.cos(a)*outer,Math.sin(a)*outer,Math.cos(b)*outer,Math.sin(b)*outer);
+  if(num===0){g.addColorStop(0,'#21835a');g.addColorStop(1,'#064a31')}
+  else if(reds.has(num)){g.addColorStop(0,'#e04b56');g.addColorStop(1,'#7c101e')}
+  else{g.addColorStop(0,'#37363a');g.addColorStop(1,'#09090c')}
+  ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='#e8c978';ctx.lineWidth=1;ctx.stroke();
+  ctx.save();ctx.rotate((i+.5)*seg-Math.PI/2);ctx.translate(outer*.81,0);ctx.rotate(Math.PI/2);
+  ctx.fillStyle='#fff4d3';ctx.font='bold '+Math.max(8,Math.floor(r*.075))+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(num,0,0);ctx.restore();
+ }
+ ctx.rotate(-angle);
+ ctx.beginPath();ctx.arc(0,0,outer*.29,0,Math.PI*2);ctx.fillStyle=metal;ctx.fill();
+ ctx.beginPath();ctx.arc(0,0,outer*.245,0,Math.PI*2);ctx.fillStyle='#1b3429';ctx.fill();ctx.strokeStyle='#ffe4a0';ctx.lineWidth=2;ctx.stroke();
+ ctx.beginPath();ctx.arc(0,0,outer*.19,0,Math.PI*2);ctx.fillStyle='#0b0c10';ctx.fill();
+ ctx.fillStyle='#ffe5a0';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold '+Math.max(10,Math.floor(r*.095))+'px Georgia';ctx.fillText('VEGAS',0,-2);
+ ctx.font='bold '+Math.max(5,Math.floor(r*.032))+'px Arial';ctx.fillStyle='#e8d49b';ctx.fillText('EUROPEAN • 0–36',0,outer*.105);
+ ctx.rotate(ballAngle);ctx.beginPath();ctx.arc(0,-outer*.91,Math.max(3,r*.027),0,Math.PI*2);ctx.fillStyle='#fffdf0';ctx.shadowColor='#fff';ctx.shadowBlur=9;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#b8a578';ctx.lineWidth=1;ctx.stroke();
+ ctx.restore();
+};
+spinWheel=function(){
+ if(wheelBusy)return;
+ if(rouletteStake>state.balance){message('Saldo insuficiente para esta ficha.');return}
+ charge(rouletteStake);wheelBusy=true;$('#rouletteSpin').disabled=true;
+ const n=Math.floor(Math.random()*37),idx=europeanOrder.indexOf(n),start=wheelAngle,ballStart=rouletteBallAngle,seg=2*Math.PI/37;
+ const target=-((idx+.5)*seg),extra=Math.PI*2*(7+Math.random()*3);
+ const end=start+extra+(((target-(start+extra))%(Math.PI*2)+(Math.PI*2))%(Math.PI*2));
+ const ballEnd=ballStart-Math.PI*2*(9+Math.random()*2)-Math.PI*2*(idx/37);
+ const t0=performance.now(),duration=6200;
+ function frame(now){
+  const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,5);
+  wheelAngle=start+(end-start)*ease;
+  rouletteBallAngle=ballStart+(ballEnd-ballStart)*(1-Math.pow(1-t,2.1));
+  drawWheel($('#wheel'),wheelAngle,rouletteBallAngle);
+  if(t<1)requestAnimationFrame(frame);else{
+   wheelAngle=end;rouletteBallAngle=ballEnd;drawWheel($('#wheel'),wheelAngle,rouletteBallAngle);
+   wheelBusy=false;$('#rouletteSpin').disabled=false;
+   const mult=rouletteWins(n);if(mult)award(rouletteStake*mult);
+   const color=n===0?'VERDE':reds.has(n)?'VERMELHO':'PRETO';
+   message('A bola caiu no '+n+' · '+color+'. '+(mult?'ACERTOU! Retorno total: '+(rouletteStake*mult).toLocaleString('pt-BR')+' fichas.':'Aposta perdida.'));
+  }
+ }
+ requestAnimationFrame(frame);
+};
 
 </script></body></html>
