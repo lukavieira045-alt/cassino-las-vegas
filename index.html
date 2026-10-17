@@ -216,6 +216,33 @@ function startPinball(){
   ctx.restore();
   // Lamps on the top apron, housed in metal sockets
   for(let i=0;i<17;i++){const x=29+i*18.8,c=i%3===0?'#f9d989':i%2?'#ec4c9b':'#35d9ed';ctx.beginPath();ctx.arc(x,25,4.1,0,Math.PI*2);ctx.fillStyle='#05070b';ctx.fill();ctx.strokeStyle='#737986';ctx.lineWidth=1;ctx.stroke();ctx.beginPath();ctx.arc(x,25,2.5,0,Math.PI*2);ctx.fillStyle=(Math.floor(pinGame.lights*4+i)%4===0)?'#fff':'#'+(c==='#f9d989'?'f9d989':c==='#ec4c9b'?'ec4c9b':'35d9ed');ctx.shadowBlur=8;ctx.shadowColor=c;ctx.fill();ctx.shadowBlur=0}
+  // Letreiro principal de cassino: placa esmaltada, moldura cromada e neon animado
+  ctx.save();
+  const sign=ctx.createLinearGradient(0,36,0,68);sign.addColorStop(0,'#3b2630');sign.addColorStop(.45,'#100e19');sign.addColorStop(1,'#24121e');
+  ctx.shadowColor='#ff2f9d';ctx.shadowBlur=18;ctx.fillStyle=sign;ctx.beginPath();ctx.roundRect(79,37,202,30,7);ctx.fill();
+  ctx.shadowBlur=0;ctx.lineWidth=2;ctx.strokeStyle='#d7b66e';ctx.stroke();
+  ctx.lineWidth=1;ctx.strokeStyle='rgba(255,255,255,.65)';ctx.beginPath();ctx.roundRect(84,41,192,22,4);ctx.stroke();
+  const neonPulse=.65+.35*Math.sin(pinGame.lights*3.4);
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 15px Arial Black,Arial';
+  ctx.shadowColor='#ff2c9d';ctx.shadowBlur=15*neonPulse;ctx.fillStyle='#fff4cf';ctx.fillText('★ VEGAS PINBALL ★',180,51);
+  ctx.shadowColor='#38eaff';ctx.shadowBlur=10;ctx.fillStyle='#43edff';ctx.font='bold 6px Arial';ctx.fillText('ULTIMATE ARCADE EXPERIENCE',180,61);
+  for(let i=0;i<10;i++){const x=89+i*20.2;const pulse=(Math.floor(pinGame.lights*5+i)%3===0);ctx.beginPath();ctx.arc(x,39,1.6,0,Math.PI*2);ctx.fillStyle=pulse?'#fff7ce':i%2?'#ff49b7':'#35e9ff';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=pulse?10:4;ctx.fill()}
+  ctx.restore();
+  // Moving laser sweeps and side-tube neon: glows follow the cabinet without hiding the ball
+  ctx.save();ctx.globalCompositeOperation='screen';
+  for(let side=0;side<2;side++){
+    const x=side?333:27;const hue=side?'rgba(44,235,255,':'rgba(255,47,169,';
+    const sweepY=78+((pinGame.lights*36+(side?95:0))%360);
+    const tube=ctx.createLinearGradient(x-4,0,x+4,0);tube.addColorStop(0,'rgba(255,255,255,0)');tube.addColorStop(.5,hue+'.58)');tube.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=tube;ctx.fillRect(x-4,32,8,435);
+    const beam=ctx.createLinearGradient(x, sweepY-42, x, sweepY+42);beam.addColorStop(0,hue+'0)');beam.addColorStop(.5,hue+'.42)');beam.addColorStop(1,hue+'0)');
+    ctx.fillStyle=beam;ctx.fillRect(x-8,sweepY-42,16,84);
+  }
+  ctx.restore();
+  // Under-glass light pool around the spiral: rotating chase lights emphasize the bonus route
+  ctx.save();ctx.globalCompositeOperation='screen';
+  for(let i=0;i<12;i++){const a=pinGame.lights*.8+i*Math.PI*2/12;const x=278+Math.cos(a)*34,y=220+Math.sin(a)*31;const c=i%3===0?'#ffe18a':i%3===1?'#35eaff':'#ff45b7';ctx.globalAlpha=.35+.45*(.5+.5*Math.sin(pinGame.lights*4+i));ctx.shadowColor=c;ctx.shadowBlur=12;ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill()}
+  ctx.restore();
   // Raised metal wireforms: dark shadow underneath, steel rails and gold edge highlights
   function wireRamp(path,color){ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.shadowColor='#000';ctx.shadowBlur=8;ctx.lineWidth=12;ctx.strokeStyle='rgba(0,0,0,.78)';ctx.stroke(path);ctx.shadowBlur=0;ctx.lineWidth=7;ctx.strokeStyle='#687587';ctx.stroke(path);ctx.lineWidth=3.5;ctx.strokeStyle='#e6edf4';ctx.stroke(path);ctx.lineWidth=1.2;ctx.strokeStyle=color;ctx.stroke(path);ctx.restore()}
   const leftRamp=new Path2D();leftRamp.moveTo(43,103);leftRamp.bezierCurveTo(28,147,38,185,77,218);leftRamp.bezierCurveTo(98,235,109,250,108,273);
