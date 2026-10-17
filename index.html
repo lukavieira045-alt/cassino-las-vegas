@@ -374,7 +374,7 @@ drawWheel=function(canvas,angle=0,ballAngle=rouletteBallAngle,ballRadius=.86,lan
  ctx.beginPath();ctx.arc(0,by,6.2,0,Math.PI*2);ctx.fillStyle=ball;ctx.shadowColor='#fff4c7';ctx.shadowBlur=13;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=.7;ctx.stroke();ctx.restore();
  if(landed>=0){
   const idx=europeanOrder.indexOf(landed),a=(idx+.5)*seg-Math.PI/2;
-  ctx.save();ctx.rotate(a);ctx.strokeStyle='#fff3b0';ctx.lineWidth=3;ctx.shadowColor='#ffe16b';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(0,0,outer*.80,-seg*.43,seg*.43);ctx.stroke();ctx.restore()
+  ctx.save();ctx.rotate(angle+a);ctx.strokeStyle='#fff3b0';ctx.lineWidth=3;ctx.shadowColor='#ffe16b';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(0,0,outer*.80,-seg*.43,seg*.43);ctx.stroke();ctx.restore()
  }
  ctx.restore();
 };
@@ -396,12 +396,12 @@ spinWheel=function(){
   const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,3);
   wheelAngle=start+(end-start)*ease;
   rouletteBallAngle=ballStart+ballDelta*ease;
-  const drop=Math.max(0,Math.min(1,(t-.72)/.28)),radius=.92-.16*(drop*drop*(3-2*drop));
+  const drop=Math.max(0,Math.min(1,(t-.72)/.28)),radius=.92-.10*(drop*drop*(3-2*drop));
   drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,radius,-1);
   if(t<1){requestAnimationFrame(frame);return}
   wheelAngle=end;
   rouletteBallAngle=ballEnd;
-  drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,.76,requested);
+  drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,.82,requested);
   wheelBusy=false;$('#rouletteSpin').disabled=false;
   const mult=rouletteWins(requested);if(mult)award(rouletteStake*mult);
   const color=requested===0?'VERDE':reds.has(requested)?'VERMELHO':'PRETO';
