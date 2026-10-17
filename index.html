@@ -382,12 +382,14 @@ spinWheel=function(){
  if(wheelBusy)return;
  if(rouletteStake>state.balance){message('Saldo insuficiente para esta ficha.');return}
  charge(rouletteStake);wheelBusy=true;$('#rouletteSpin').disabled=true;
- const requested=Math.floor(Math.random()*37),idx=europeanOrder.indexOf(requested),start=wheelAngle,ballStart=rouletteBallAngle,seg=2*Math.PI/37,tau=Math.PI*2;
+ const requested=Math.floor(Math.random()*37);
+ const idx=europeanOrder.indexOf(requested),seg=2*Math.PI/37,tau=Math.PI*2;
+ const start=wheelAngle,ballStart=rouletteBallAngle;
+ // Alinha o centro da casa sorteada exatamente sob o ponteiro superior.
  const target=-(idx+.5)*seg;
- // Seis a sete voltas completas, com desaceleração suave até a casa escolhida.
- const delta=((target-start)%tau+tau)%tau+tau*(6+Math.random()*1.25);
+ const delta=((target-start)%tau+tau)%tau+tau*(5+Math.random()*1.5);
  const end=start+delta;
- const ballEnd=ballStart-tau*(7+Math.random()*2);
+ const ballEnd=ballStart-tau*(6+Math.random()*2);
  const t0=performance.now(),duration=6500;
  function frame(now){
   const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,3);
@@ -396,25 +398,15 @@ spinWheel=function(){
   rouletteBallAngle=ballStart+(ballEnd-ballStart)*ballEase;
   const drop=Math.max(0,Math.min(1,(t-.72)/.28)),radius=.92-.16*(drop*drop*(3-2*drop));
   drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,radius,-1);
-  if(t<1)requestAnimationFrame(frame);else{
-   wheelAngle=end;
-   // O resultado vem da casa central que terminou sob o ponteiro.
-   const pointerPosition=(((-end)%tau)+tau)%tau;
-   const landedIndex=Math.min(36,Math.floor(pointerPosition/seg));
-   // O número sorteado é a fonte do resultado; a posição final da roda é alinhada a ele.
-   const n=requested;
-   // Verificação de alinhamento: se houver diferença numérica de ponto flutuante,
-   // mantém a casa sorteada no ponteiro em vez de trocar o prêmio por outra casa.
-   const expectedIndex=europeanOrder.indexOf(n);
-   const alignedEnd=-(expectedIndex+.5)*seg + tau*Math.ceil((end + (expectedIndex+.5)*seg)/tau);
-   wheelAngle=alignedEnd;
-   rouletteBallAngle=0;
-   drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,.76,n);
-   wheelBusy=false;$('#rouletteSpin').disabled=false;
-   const mult=rouletteWins(n);if(mult)award(rouletteStake*mult);
-   const color=n===0?'VERDE':reds.has(n)?'VERMELHO':'PRETO';
-   message('A bola caiu no '+n+' · '+color+'. '+(mult?'ACERTOU! Retorno total: '+(rouletteStake*mult).toLocaleString('pt-BR')+' fichas.':'Aposta perdida.'));
-  }
+  if(t<1){requestAnimationFrame(frame);return}
+  // Fixa a roda no centro da casa sorteada; a bola termina dentro dessa mesma casa.
+  wheelAngle=end;
+  rouletteBallAngle=0;
+  drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,.76,requested);
+  wheelBusy=false;$('#rouletteSpin').disabled=false;
+  const mult=rouletteWins(requested);if(mult)award(rouletteStake*mult);
+  const color=requested===0?'VERDE':reds.has(requested)?'VERMELHO':'PRETO';
+  message('A bola caiu no '+requested+' · '+color+'. '+(mult?'ACERTOU! Retorno total: '+(rouletteStake*mult).toLocaleString('pt-BR')+' fichas.':'Aposta perdida.'));
  }
  requestAnimationFrame(frame);
 };
