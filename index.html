@@ -502,28 +502,83 @@ function startPool(){
 }
 function wheelUI(){show('Lucky Wheel','<div class="wheelwrap"><div class="pointer">▼</div><canvas id="wheel" width="340" height="340"></canvas></div><div class="choiceRow"><button class="goldbtn" onclick="spinPrizeWheel()">Girar a roda · 10 fichas</button></div><div class="message" id="message">Prêmios demonstrativos: 0, 5, 10, 20, 30 ou 50 fichas.</div>');drawPrizeWheel($('#wheel'),0)}function drawPrizeWheel(cv,angle){let ctx=cv.getContext('2d'),items=[0,5,10,20,30,50],r=cv.width/2;ctx.clearRect(0,0,cv.width,cv.height);ctx.save();ctx.translate(r,r);ctx.rotate(angle);items.forEach((n,i)=>{let a=i*2*Math.PI/items.length-Math.PI/2,b=(i+1)*2*Math.PI/items.length-Math.PI/2;ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,r-7,a,b);ctx.closePath();ctx.fillStyle=['#74182a','#164d38','#211a24','#9e772c','#591c2c','#24553f'][i];ctx.fill();ctx.strokeStyle='#e3c574';ctx.stroke();ctx.save();ctx.rotate((a+b)/2);ctx.translate(r*.63,0);ctx.rotate(Math.PI/2);ctx.fillStyle='#fff1c9';ctx.font='bold 18px Georgia';ctx.textAlign='center';ctx.fillText(n,0,6);ctx.restore()});ctx.restore()}let prizeBusy=false;function spinPrizeWheel(){if(prizeBusy)return;if(state.balance<10){message('Saldo insuficiente.');return}charge(10);prizeBusy=true;let cv=$('#wheel'),start=0,extra=Math.PI*2*(4+Math.random()*4)+Math.random()*Math.PI*2,t0=performance.now();function f(now){let t=Math.min(1,(now-t0)/3200);drawPrizeWheel(cv,extra*(1-Math.pow(1-t,4)));if(t<1)requestAnimationFrame(f);else{prizeBusy=false;let prizes=[0,5,10,20,30,50],p=prizes[Math.floor(Math.random()*prizes.length)];if(p)award(p);message(p?'Roda premiada! +'+p+' fichas.':'A roda parou no zero. Tente de novo.')}}requestAnimationFrame(f)}
 
-/* Neon Target: five-shot moving-target arcade game using demo chips only. */
-let targetGame=null;
+/* NEON TARGET PRO: moving arcade range, selectable stakes and score-based returns (demo credits only). */
+let targetGame=null,targetStake=1;
 function targetUI(){
   stopArcade();
-  show('Neon Target · Arcade de Precisão','<div class="target-panel"><div class="target-hud"><span>FICHAS EM JOGO <strong id="targetStake">—</strong></span><span>TIROS <strong id="targetShots">5</strong></span><span>PONTOS <strong id="targetScore">0</strong></span></div><canvas id="arcade" class="arcadeCanvas" width="620" height="330" aria-label="Alvo móvel: toque para mirar"></canvas><div class="target-actions"><button class="goldbtn" id="targetFire" onclick="fireTarget()">DISPARAR · 5 TIROS</button><button class="choice" onclick="targetUI()">NOVA RODADA</button></div><p class="target-note" id="targetMessage">Escolha sua aposta, mova a mira e acerte o centro do alvo. O alvo se move continuamente.</p></div>'+betHTML()+'<p class="help">Pontuação por tiro: centro dourado 100, anel ciano 60, anel externo 25. Ao fim de cinco tiros, a pontuação define o retorno. Fichas demonstrativas, sem dinheiro real.</p>');
-  const b=bet(); if(!b){message('Defina uma aposta válida de 5 a 200 fichas.');return}
-  charge(b);targetGame={stake:b,shots:5,score:0,x:310,y:160,tx:310,ty:160,phase:0,aimX:310,aimY:160,active:true};$('#targetStake').textContent=b;$('#bet').disabled=true;$('#targetFire').textContent='DISPARAR · 5 TIROS';
+  targetGame=null;
+  const stakeButtons=[0.5,1,2,5,10,20].map(v=>'<button class="target-stake '+(v===targetStake?'selected':'')+'" data-stake="'+v+'" onclick="selectTargetStake('+v+')">'+(v===0.5?'R$ 0,50':'R$ '+v.toLocaleString('pt-BR'))+'</button>').join('');
+  show('NEON TARGET PRO · SHOOTING RANGE',
+  '<div class="target-pro"><div class="target-brand"><span>★ VEGAS ARCADE ★</span><h2>NEON TARGET <small>PRO RANGE</small></h2><p>PRECISÃO • TEMPO • PRÊMIO</p></div>'+
+  '<div class="target-hud"><span>APOSTA <strong id="targetStakeLabel">R$ '+targetStake.toLocaleString('pt-BR',{minimumFractionDigits:targetStake%1?2:0})+'</strong></span><span>TIROS <strong id="targetShots">5</strong></span><span>PONTOS <strong id="targetScore">0</strong></span><span>COMBO <strong id="targetCombo">×1</strong></span></div>'+
+  '<div class="target-stakes">'+stakeButtons+'</div>'+
+  '<canvas id="arcade" class="arcadeCanvas target-range" width="720" height="390" aria-label="Campo de tiro. Toque no alvo para disparar."></canvas>'+
+  '<div class="target-actions"><button class="goldbtn" id="targetStart" onclick="startTargetRound()">INICIAR RODADA</button><button class="choice" id="targetFire" onclick="fireTarget()" disabled>DISPARAR</button></div>'+
+  '<div class="target-message" id="targetMessage">Escolha o valor da aposta e inicie. Toque no alvo em movimento para atirar.</div>'+
+  '<div class="target-paytable"><span>ANEL EXTERNO <b>25 pts</b></span><span>ANEL INTERNO <b>60 pts</b></span><span>CENTRO <b>100 pts</b></span></div></div>'+
+  '<p class="help">Jogo demonstrativo: as apostas e os prêmios são créditos virtuais do navegador, sem dinheiro real e sem saque. O retorno depende da pontuação final; a mira não garante acerto.</p>');
   const cv=$('#arcade'),ctx=cv.getContext('2d');
-  const move=e=>{const r=cv.getBoundingClientRect();targetGame.aimX=(e.clientX-r.left)*cv.width/r.width;targetGame.aimY=(e.clientY-r.top)*cv.height/r.height};
-  cv.addEventListener('pointermove',move);cv.addEventListener('pointerdown',e=>{move(e);cv.setPointerCapture?.(e.pointerId)});arcadeCleanup=()=>{targetGame.active=false;cv.removeEventListener('pointermove',move)};
-  function frame(now){if(!targetGame||!targetGame.active||!$('#arcade'))return;let g=targetGame;g.phase+=.035;g.x=310+Math.sin(g.phase)*145;g.y=160+Math.sin(g.phase*.73)*55;ctx.clearRect(0,0,620,330);
-    const bg=ctx.createLinearGradient(0,0,620,330);bg.addColorStop(0,'#07131c');bg.addColorStop(1,'#1c0b24');ctx.fillStyle=bg;ctx.fillRect(0,0,620,330);
-    for(let i=0;i<30;i++){ctx.fillStyle=i%2?'#00d9ff22':'#ff2d9d22';ctx.fillRect((i*97)%620,(i*53)%330,2,2)}
-    ctx.strokeStyle='#8deeff33';ctx.lineWidth=1;for(let x=20;x<620;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,330);ctx.stroke()}for(let y=10;y<330;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(620,y);ctx.stroke()}
-    [[62,'#f8f0dc'],[43,'#d92560'],[26,'#00d9ff'],[12,'#f4cf78']].forEach(([r,c])=>{ctx.beginPath();ctx.arc(g.x,g.y,r,0,Math.PI*2);ctx.fillStyle=c;ctx.shadowBlur=12;ctx.shadowColor=c;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke()});
-    ctx.strokeStyle='#ffe8a8';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(g.aimX-15,g.aimY);ctx.lineTo(g.aimX+15,g.aimY);ctx.moveTo(g.aimX,g.aimY-15);ctx.lineTo(g.aimX,g.aimY+15);ctx.arc(g.aimX,g.aimY,7,0,Math.PI*2);ctx.stroke();
-    ctx.fillStyle='#ffe8a8';ctx.font='bold 12px Arial';ctx.fillText('NEON TARGET • LAS VEGAS ARCADE',16,22);ctx.fillStyle='#8deeff';ctx.fillText('MIRA: TOQUE OU ARRASTE',16,314);arcadeTimer=requestAnimationFrame(frame)}
-  arcadeTimer=requestAnimationFrame(frame);
+  const move=e=>{if(!targetGame||!targetGame.active)return;const r=cv.getBoundingClientRect();targetGame.aimX=(e.clientX-r.left)*cv.width/r.width;targetGame.aimY=(e.clientY-r.top)*cv.height/r.height};
+  cv.addEventListener('pointermove',move);
+  cv.addEventListener('pointerdown',e=>{move(e);if(targetGame&&targetGame.active)fireTarget()});
+  if(arcadeCleanup)arcadeCleanup();
+  arcadeCleanup=()=>{if(targetGame)targetGame.active=false;cv.removeEventListener('pointermove',move)};
+  const draw=(now)=>{
+    if(!$('#arcade')||!document.querySelector('#modal.open'))return;
+    const g=targetGame;ctx.clearRect(0,0,720,390);
+    const bg=ctx.createLinearGradient(0,0,720,390);bg.addColorStop(0,'#030912');bg.addColorStop(.5,'#102332');bg.addColorStop(1,'#190b20');ctx.fillStyle=bg;ctx.fillRect(0,0,720,390);
+    // Distant casino range, lit panels and perspective floor.
+    for(let i=0;i<10;i++){const x=i*78;ctx.fillStyle=i%2?'#00d9ff':'#ff2d9d';ctx.globalAlpha=.12+.08*Math.sin(now/250+i);ctx.fillRect(x,35,42,4);ctx.globalAlpha=1}
+    ctx.strokeStyle='#42dfff25';ctx.lineWidth=1;for(let y=220;y<390;y+=22){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(720,y);ctx.stroke()}for(let x=-390;x<1100;x+=65){ctx.beginPath();ctx.moveTo(360,205);ctx.lineTo(x,390);ctx.stroke()}
+    // Back wall and illuminated range lanes.
+    ctx.fillStyle='#050a12';ctx.fillRect(0,60,720,150);for(let i=0;i<6;i++){ctx.strokeStyle=i%2?'#00d9ff66':'#ff2d9d66';ctx.lineWidth=2;ctx.strokeRect(22+i*113,75,95,116)}
+    if(g&&g.active){
+      const t=now/1000;g.x=360+Math.sin(t*g.speed+g.phase)*g.range;g.y=142+Math.sin(t*1.35+g.phase)*38;
+      // Target shadow, rotating ring, metallic face and concentric scoring rings.
+      ctx.save();ctx.translate(g.x,g.y);ctx.rotate(Math.sin(t*1.7)*.08);
+      ctx.beginPath();ctx.ellipse(5,9,58,58,0,0,Math.PI*2);ctx.fillStyle='#000a';ctx.fill();
+      [[54,'#b8c4d0'],[46,'#c5284e'],[35,'#f1e8d8'],[25,'#cf294c'],[15,'#f8d98b'],[6,'#fff9e8']].forEach(([r,c],i)=>{ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fillStyle=c;ctx.shadowColor=i%2?'#ff2d68':'#00d9ff';ctx.shadowBlur=i===5?20:7;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff9';ctx.lineWidth=1.4;ctx.stroke()});
+      ctx.beginPath();ctx.arc(0,0,57,0,Math.PI*2);ctx.strokeStyle='#00e5ff';ctx.lineWidth=2;ctx.shadowColor='#00d9ff';ctx.shadowBlur=18;ctx.stroke();ctx.restore();ctx.shadowBlur=0;
+      // A small hit marker fades naturally between shots.
+      if(g.hitFlash>0){ctx.globalAlpha=Math.min(1,g.hitFlash/18);ctx.strokeStyle='#ffe88c';ctx.lineWidth=4;ctx.beginPath();ctx.arc(g.hitX,g.hitY,25+(18-g.hitFlash)*2,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;g.hitFlash--}
+    } else {
+      ctx.fillStyle='#c4dce8';ctx.font='bold 18px Arial';ctx.textAlign='center';ctx.fillText('RANGE STANDBY',360,145);
+      ctx.fillStyle='#718b9b';ctx.font='12px Arial';ctx.fillText('INICIE A RODADA PARA LIBERAR OS ALVOS',360,171);
+    }
+    if(g){ctx.strokeStyle='#ffe7a1';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(g.aimX-13,g.aimY);ctx.lineTo(g.aimX+13,g.aimY);ctx.moveTo(g.aimX,g.aimY-13);ctx.lineTo(g.aimX,g.aimY+13);ctx.arc(g.aimX,g.aimY,5,0,Math.PI*2);ctx.stroke()}
+    ctx.textAlign='left';ctx.fillStyle='#ffe7a1';ctx.font='bold 12px Arial';ctx.fillText('VEGAS SHOOTING CLUB',18,25);ctx.fillStyle='#79eaff';ctx.font='10px Arial';ctx.fillText('TOQUE NO ALVO • 5 DISPAROS POR RODADA',18,374);
+    if($('#arcade'))arcadeTimer=requestAnimationFrame(draw);
+  };
+  arcadeTimer=requestAnimationFrame(draw);
 }
-function fireTarget(){let g=targetGame;if(!g||!g.active||g.shots<=0)return;pinSound('hit');const d=Math.hypot(g.aimX-g.x,g.aimY-g.y);let pts=d<=12?100:d<=26?60:d<=43?25:0;g.score+=pts;g.shots--;$('#targetShots').textContent=g.shots;$('#targetScore').textContent=g.score;$('#targetMessage').textContent=pts?'ACERTOU! +'+pts+' pontos.':'Errou! Ajuste a mira para o próximo tiro.';if(g.shots===0){g.active=false;if(arcadeTimer)cancelAnimationFrame(arcadeTimer);arcadeTimer=null;const ratio=g.score/500;let mult=g.score>=400?5:g.score>=275?2:g.score>=150?1:0;let payout=g.stake*mult;if(payout)award(payout);$('#targetFire').disabled=true;$('#targetFire').textContent='RODADA ENCERRADA';$('#targetMessage').textContent='Pontuação final: '+g.score+'/500. '+(payout?'Retorno total: '+payout+' fichas ('+mult+'×).':'Sem prêmio nesta rodada. Tente novamente.');if(arcadeCleanup){arcadeCleanup();arcadeCleanup=null}}}
-
-
+function selectTargetStake(v){if(targetGame&&targetGame.active)return;targetStake=v;document.querySelectorAll('.target-stake').forEach(b=>b.classList.toggle('selected',Number(b.dataset.stake)===v));const e=$('#targetStakeLabel');if(e)e.textContent=v===0.5?'R$ 0,50':'R$ '+v.toLocaleString('pt-BR')}
+function startTargetRound(){
+  if(targetGame&&targetGame.active)return;
+  if(targetStake>state.balance){$('#targetMessage').textContent='Saldo demonstrativo insuficiente para essa aposta. Escolha um valor menor.';return}
+  charge(targetStake);
+  targetGame={stake:targetStake,shots:5,score:0,combo:1,maxCombo:1,active:true,x:360,y:142,aimX:360,aimY:300,phase:Math.random()*6,speed:1.05+Math.random()*.75,range:100+Math.random()*100,hitFlash:0,hitX:360,hitY:142,lastHit:0};
+  $('#targetShots').textContent='5';$('#targetScore').textContent='0';$('#targetCombo').textContent='×1';$('#targetStart').disabled=true;$('#targetFire').disabled=false;
+  $('#targetMessage').textContent='Rodada iniciada! Acerte o centro para pontuar mais. Cada tiro consome uma tentativa.';
+  document.querySelectorAll('.target-stake').forEach(b=>b.disabled=true);
+}
+function fireTarget(){
+  const g=targetGame;if(!g||!g.active||g.shots<=0)return;
+  const d=Math.hypot(g.aimX-g.x,g.aimY-g.y);
+  const pts=d<=9?100:d<=22?60:d<=42?25:0;
+  g.shots--;g.hitX=g.x;g.hitY=g.y;g.hitFlash=pts?18:7;
+  if(pts){g.combo=Math.min(5,g.combo+ (d<=9?1:0));g.maxCombo=Math.max(g.maxCombo,g.combo);g.score+=pts*(d<=9?g.combo:1);pinSound('hit');$('#targetMessage').textContent=d<=9?'TIRO PERFEITO! Centro atingido. Combo ×'+g.combo+'.':'ACERTO! +'+pts+' pontos.';}
+  else{g.combo=1;$('#targetMessage').textContent='ERROU! O alvo está em movimento — ajuste o tempo e a mira.'}
+  $('#targetShots').textContent=g.shots;$('#targetScore').textContent=g.score;$('#targetCombo').textContent='×'+g.combo;
+  if(g.shots===0)finishTargetRound();
+}
+function finishTargetRound(){
+  const g=targetGame;if(!g)return;g.active=false;$('#targetFire').disabled=true;$('#targetStart').disabled=false;$('#targetStart').textContent='JOGAR NOVAMENTE';document.querySelectorAll('.target-stake').forEach(b=>b.disabled=false);
+  // Transparent score tiers: 0–99 = no return; 100–199 = 0.5×; 200–299 = 1×; 300–399 = 2×; 400+ = 5×.
+  const mult=g.score>=400?5:g.score>=300?2:g.score>=200?1:g.score>=100?0.5:0;
+  const payout=Math.round(g.stake*mult*100)/100;if(payout)award(payout);
+  $('#targetMessage').textContent='FIM DA RODADA · '+g.score+' pontos. '+(mult?'Retorno total R$ '+payout.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' ('+mult+'× aposta).':'Sem retorno desta vez. Tente novamente.');
+  if(arcadeCleanup){arcadeCleanup();arcadeCleanup=null}
+}
 /* European roulette: authentic wheel-number order, polished pockets and a moving ball. */
 const europeanOrder=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 let rouletteBallAngle=0;
@@ -611,3 +666,25 @@ spinWheel=function(){
 </script>
 
 </body></html>
+<style>
+.target-pro{max-width:760px;margin:0 auto;padding:14px;border:1px solid #d4b263;border-radius:8px;background:radial-gradient(ellipse at top,#20233c 0,#080b14 58%,#030509 100%);box-shadow:0 0 18px #00d9ff22,0 0 34px #ff2d9d18,inset 0 0 25px #000}
+.target-brand{text-align:center;padding:8px 4px 14px;border-bottom:1px solid #cba75b44}
+.target-brand>span{font:700 10px Arial;letter-spacing:4px;color:#f7d78b;text-shadow:0 0 10px #ffc857}
+.target-brand h2{font:900 clamp(23px,5vw,36px) Arial;margin:7px 0;color:#f8f3e7;letter-spacing:2px;text-shadow:0 0 8px #ff2d9d,0 0 18px #00d9ff}
+.target-brand h2 small{display:block;font-size:11px;letter-spacing:6px;color:#80efff;margin-top:5px}
+.target-brand p{font:10px Arial;letter-spacing:3px;color:#b3a5bd;margin:7px 0 0}
+.target-pro .target-hud{margin:12px 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.target-pro .target-hud span{padding:9px 5px;text-align:center;background:linear-gradient(145deg,#171c2a,#090d15);border:1px solid #e3c77855;border-radius:5px;font:700 9px Arial;color:#c7bdad;letter-spacing:1px}
+.target-pro .target-hud strong{display:block;font-size:17px;margin-top:5px;color:#8deeff;text-shadow:0 0 9px #00d9ff55}
+.target-stakes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:12px 0}
+.target-stake{padding:10px 2px;background:linear-gradient(#1b2230,#080c14);border:1px solid #8a7a55;border-radius:5px;color:#f8e7b7;font-weight:800;font-size:12px}
+.target-stake.selected{background:linear-gradient(#f9dc8a,#a97a2d);color:#160e05;border-color:#fff1b0;box-shadow:0 0 13px #ffd05a99}
+.target-stake:disabled{opacity:.65}
+.target-range{display:block;width:100%;height:auto;aspect-ratio:720/390;border:1px solid #bfa45e;border-radius:4px;background:#030912;touch-action:pan-y;box-shadow:0 0 12px #00d9ff20,0 0 22px #ff2d9d17}
+.target-pro .target-actions{margin:12px 0;display:flex;gap:8px}
+.target-pro .target-actions button{flex:1;min-height:44px}
+.target-message{min-height:42px;padding:10px;text-align:center;background:#050911;border:1px solid #ffffff12;color:#ffe6a0;font:700 12px/1.5 Arial}
+.target-paytable{display:flex;justify-content:space-around;gap:6px;flex-wrap:wrap;margin-top:10px;color:#9fb5c6;font:10px Arial;text-align:center}
+.target-paytable b{display:block;color:#8deeff;font-size:13px;margin-top:5px}
+@media(max-width:480px){.target-pro{padding:8px}.target-pro .target-hud{grid-template-columns:repeat(2,minmax(0,1fr))}.target-stakes{grid-template-columns:repeat(3,minmax(0,1fr))}.target-stake{padding:11px 2px}.target-brand h2{letter-spacing:1px}.target-brand>span{letter-spacing:2px}.target-paytable{font-size:9px}}
+</style>
