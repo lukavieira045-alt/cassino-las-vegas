@@ -373,7 +373,7 @@ drawWheel=function(canvas,angle=0,ballAngle=rouletteBallAngle,ballRadius=.86,lan
  const ball=ctx.createRadialGradient(-2.5,by-3,1,0,by,7.5);ball.addColorStop(0,'#fff');ball.addColorStop(.38,'#fff7dc');ball.addColorStop(.75,'#d5d1bd');ball.addColorStop(1,'#65645e');
  ctx.beginPath();ctx.arc(0,by,6.2,0,Math.PI*2);ctx.fillStyle=ball;ctx.shadowColor='#fff4c7';ctx.shadowBlur=13;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=.7;ctx.stroke();ctx.restore();
  if(landed>=0){
-  const idx=europeanOrder.indexOf(landed),a=angle+(idx+.5)*seg-Math.PI/2;
+  const idx=europeanOrder.indexOf(landed),a=(idx+.5)*seg-Math.PI/2;
   ctx.save();ctx.rotate(a);ctx.strokeStyle='#fff3b0';ctx.lineWidth=3;ctx.shadowColor='#ffe16b';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(0,0,outer*.80,-seg*.43,seg*.43);ctx.stroke();ctx.restore()
  }
  ctx.restore();
@@ -385,23 +385,21 @@ spinWheel=function(){
  const requested=Math.floor(Math.random()*37);
  const idx=europeanOrder.indexOf(requested),seg=2*Math.PI/37,tau=Math.PI*2;
  const start=wheelAngle,ballStart=rouletteBallAngle;
- // Alinha o centro da casa sorteada exatamente sob o ponteiro superior.
- const target=-(idx+.5)*seg;
- const delta=((target-start)%tau+tau)%tau+tau*(5+Math.random()*1.5);
- const end=start+delta;
- const ballEnd=ballStart-tau*(6+Math.random()*2);
+ // A roda para em uma orientação aleatória; a casa sorteada não é puxada para um ponteiro.
+ const end=start+tau*(5+Math.random()*1.5)+Math.random()*tau;
+ const ballTarget=end+(idx+.5)*seg-Math.PI/2;
+ let ballDelta=((ballTarget-ballStart+Math.PI)%tau+tau)%tau-Math.PI;
+ ballDelta-=tau*(5+Math.random()*2);
  const t0=performance.now(),duration=6500;
  function frame(now){
   const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,3);
-  wheelAngle=start+delta*ease;
-  const ballEase=1-Math.pow(1-t,2.25);
-  rouletteBallAngle=ballStart+(ballEnd-ballStart)*ballEase;
+  wheelAngle=start+(end-start)*ease;
+  rouletteBallAngle=ballStart+ballDelta*ease;
   const drop=Math.max(0,Math.min(1,(t-.72)/.28)),radius=.92-.16*(drop*drop*(3-2*drop));
   drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,radius,-1);
   if(t<1){requestAnimationFrame(frame);return}
-  // Fixa a casa sorteada no topo e deixa a bola nessa casa; não salta para o zero.
-  wheelAngle=target+tau*Math.ceil((end-target)/tau);
-  rouletteBallAngle=0;
+  wheelAngle=end;
+  rouletteBallAngle=ballTarget;
   drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,.76,requested);
   wheelBusy=false;$('#rouletteSpin').disabled=false;
   const mult=rouletteWins(requested);if(mult)award(rouletteStake*mult);
