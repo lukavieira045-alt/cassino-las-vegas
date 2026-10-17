@@ -387,7 +387,7 @@ spinWheel=function(){
  const start=wheelAngle,ballStart=rouletteBallAngle;
  // A roda para em uma orientação aleatória; a casa sorteada não é puxada para um ponteiro.
  const end=start+tau*(5+Math.random()*1.5)+Math.random()*tau;
- const ballTarget=end+(idx+.5)*seg-Math.PI/2;
+ const ballTarget=end+(idx+.5)*seg;
  let ballDelta=((ballTarget-ballStart+Math.PI)%tau+tau)%tau-Math.PI;
  ballDelta-=tau*(5+Math.random()*2);
  const t0=performance.now(),duration=6500;
