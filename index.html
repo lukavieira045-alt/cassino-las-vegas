@@ -388,8 +388,9 @@ spinWheel=function(){
  // A roda para em uma orientação aleatória; a casa sorteada não é puxada para um ponteiro.
  const end=start+tau*(5+Math.random()*1.5)+Math.random()*tau;
  const ballTarget=end+(idx+.5)*seg;
- let ballDelta=((ballTarget-ballStart+Math.PI)%tau+tau)%tau-Math.PI;
- ballDelta-=tau*(5+Math.random()*2);
+ // A trajetória termina no ângulo final equivalente, sem salto de ângulo no último frame.
+ const ballEnd=ballTarget-tau*(5+Math.floor(Math.random()*3));
+ const ballDelta=ballEnd-ballStart;
  const t0=performance.now(),duration=6500;
  function frame(now){
   const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,3);
@@ -399,7 +400,7 @@ spinWheel=function(){
   drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,radius,-1);
   if(t<1){requestAnimationFrame(frame);return}
   wheelAngle=end;
-  rouletteBallAngle=ballTarget;
+  rouletteBallAngle=ballEnd;
   drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,.76,requested);
   wheelBusy=false;$('#rouletteSpin').disabled=false;
   const mult=rouletteWins(requested);if(mult)award(rouletteStake*mult);
