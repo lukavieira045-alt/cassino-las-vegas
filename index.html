@@ -388,15 +388,18 @@ spinWheel=function(){
  // A roda para em uma orientação aleatória; a casa sorteada não é puxada para um ponteiro.
  const end=start+tau*(5+Math.random()*1.5)+Math.random()*tau;
  const ballTarget=end+(idx+.5)*seg;
- // A trajetória termina no ângulo final equivalente, sem salto de ângulo no último frame.
- const ballEnd=ballTarget-tau*(5+Math.floor(Math.random()*3));
+ // A roda avança e a bola gira no sentido oposto, com voltas consistentes a cada rodada.
+ // O ângulo final continua alinhado ao bolso sorteado, mas fica pelo menos 7 voltas atrás do início.
+ const minimumBallEnd=ballStart-tau*(7+Math.random()*2);
+ const ballEnd=ballTarget-tau*Math.ceil((ballTarget-minimumBallEnd)/tau);
  const ballDelta=ballEnd-ballStart;
  const t0=performance.now(),duration=6500;
  function frame(now){
   const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,3);
   wheelAngle=start+(end-start)*ease;
   rouletteBallAngle=ballStart+ballDelta*ease;
-  const drop=Math.max(0,Math.min(1,(t-.72)/.28)),radius=.92-.10*(drop*drop*(3-2*drop));
+  const outward=Math.min(1,t/.14),drop=Math.max(0,Math.min(1,(t-.72)/.28));
+ const easedDrop=drop*drop*(3-2*drop),radius=.82+.10*outward*(1-easedDrop);
   drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,radius,-1);
   if(t<1){requestAnimationFrame(frame);return}
   wheelAngle=end;
