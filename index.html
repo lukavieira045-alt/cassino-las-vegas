@@ -330,7 +330,7 @@ function housePoolShot(){
  if(!target||!goal){poolGame.phase='player';message('Sua vez. Mire e arraste para tacar.');return}
  let tx=goal[0]-target.x,ty=goal[1]-target.y,tl=Math.hypot(tx,ty)||1;tx/=tl;ty/=tl;
  // A casa tenta acertar a bola de corte: mira no ponto de contato oposto à caçapa.
- const ghostX=target.x-tx*(R*2.02),ghostY=target.y-ty*(R*2.02);
+ const ballRadius=10;const ghostX=target.x-tx*(ballRadius*2.02),ghostY=target.y-ty*(ballRadius*2.02);
  let dx=ghostX-cue.x,dy=ghostY-cue.y,len=Math.hypot(dx,dy)||1;
  // Pequena imprecisão para manter a disputa desafiadora, sem fazer a casa acertar sempre.
  const error=(Math.random()-.5)*0.16,angle=Math.atan2(dy,dx)+error,speed=6.4+Math.random()*1.8;
