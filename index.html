@@ -212,7 +212,29 @@ body{background:#050509}
 .die-five i:nth-child(1){left:13px;top:13px}.die-five i:nth-child(2){right:13px;top:13px}.die-five i:nth-child(3){left:31px;top:31px}.die-five i:nth-child(4){left:13px;bottom:13px}.die-five i:nth-child(5){right:13px;bottom:13px}
 .die-two i:nth-child(1){left:13px;top:13px}.die-two i:nth-child(2){right:13px;bottom:13px}
 .real-dice-fallback small{position:absolute;bottom:13px;left:0;right:0;color:#f8e5ad;font:700 9px Arial;letter-spacing:2px;text-align:center;text-shadow:0 0 8px #000}
-</style></head>
+</style><style>
+.target-pro{max-width:760px;margin:0 auto;padding:14px;border:1px solid #d4b263;border-radius:8px;background:radial-gradient(ellipse at top,#20233c 0,#080b14 58%,#030509 100%);box-shadow:0 0 18px #00d9ff22,0 0 34px #ff2d9d18,inset 0 0 25px #000}
+.target-brand{text-align:center;padding:8px 4px 14px;border-bottom:1px solid #cba75b44}
+.target-brand>span{font:700 10px Arial;letter-spacing:4px;color:#f7d78b;text-shadow:0 0 10px #ffc857}
+.target-brand h2{font:900 clamp(23px,5vw,36px) Arial;margin:7px 0;color:#f8f3e7;letter-spacing:2px;text-shadow:0 0 8px #ff2d9d,0 0 18px #00d9ff}
+.target-brand h2 small{display:block;font-size:11px;letter-spacing:6px;color:#80efff;margin-top:5px}
+.target-brand p{font:10px Arial;letter-spacing:3px;color:#b3a5bd;margin:7px 0 0}
+.target-pro .target-hud{margin:12px 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.target-pro .target-hud span{padding:9px 5px;text-align:center;background:linear-gradient(145deg,#171c2a,#090d15);border:1px solid #e3c77855;border-radius:5px;font:700 9px Arial;color:#c7bdad;letter-spacing:1px}
+.target-pro .target-hud strong{display:block;font-size:17px;margin-top:5px;color:#8deeff;text-shadow:0 0 9px #00d9ff55}
+.target-stakes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:12px 0}
+.target-stake{padding:10px 2px;background:linear-gradient(#1b2230,#080c14);border:1px solid #8a7a55;border-radius:5px;color:#f8e7b7;font-weight:800;font-size:12px}
+.target-stake.selected{background:linear-gradient(#f9dc8a,#a97a2d);color:#160e05;border-color:#fff1b0;box-shadow:0 0 13px #ffd05a99}
+.target-stake:disabled{opacity:.65}
+.target-range{display:block;width:100%;height:auto;aspect-ratio:720/390;border:1px solid #bfa45e;border-radius:4px;background:#030912;touch-action:pan-y;box-shadow:0 0 12px #00d9ff20,0 0 22px #ff2d9d17}
+.target-pro .target-actions{margin:12px 0;display:flex;gap:8px}
+.target-pro .target-actions button{flex:1;min-height:44px}
+.target-message{min-height:42px;padding:10px;text-align:center;background:#050911;border:1px solid #ffffff12;color:#ffe6a0;font:700 12px/1.5 Arial}
+.target-paytable{display:flex;justify-content:space-around;gap:6px;flex-wrap:wrap;margin-top:10px;color:#9fb5c6;font:10px Arial;text-align:center}
+.target-paytable b{display:block;color:#8deeff;font-size:13px;margin-top:5px}
+@media(max-width:480px){.target-pro{padding:8px}.target-pro .target-hud{grid-template-columns:repeat(2,minmax(0,1fr))}.target-stakes{grid-template-columns:repeat(3,minmax(0,1fr))}.target-stake{padding:11px 2px}.target-brand h2{letter-spacing:1px}.target-brand>span{letter-spacing:2px}.target-paytable{font-size:9px}}
+</style>
+</head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="crest"><span>♛</span></div><div class="brandtext"><strong>Las Vegas</strong><small>GRAND CASINO</small></div></a><div class="navright"><div class="balance">FICHAS DEMO<br><b id="balance">1.000</b></div><button class="darkbtn" onclick="openAccount()">Conta</button><button class="goldbtn" onclick="document.querySelector('#salon').scrollIntoView({behavior:'smooth'})">Entrar no salão</button></div></nav></header>
 <section class="hero"><div class="heroInner"><div class="overline">✦ O glamour da Strip, no seu navegador ✦</div><h1>A noite é sua.<br><span>Jogue com estilo.</span></h1><p>Um salão de jogos inspirado nos grandes cassinos de Las Vegas: luzes, mesas clássicas e jogos interativos em uma experiência adaptada ao celular e ao computador.</p><div class="heroActions"><button class="goldbtn" onclick="document.querySelector('#salon').scrollIntoView({behavior:'smooth'})">Explorar o cassino　↘</button><button class="darkbtn" onclick="openAccount()">Criar perfil demo</button></div></div></section>
@@ -503,7 +525,7 @@ function startPool(){
 function wheelUI(){show('Lucky Wheel','<div class="wheelwrap"><div class="pointer">▼</div><canvas id="wheel" width="340" height="340"></canvas></div><div class="choiceRow"><button class="goldbtn" onclick="spinPrizeWheel()">Girar a roda · 10 fichas</button></div><div class="message" id="message">Prêmios demonstrativos: 0, 5, 10, 20, 30 ou 50 fichas.</div>');drawPrizeWheel($('#wheel'),0)}function drawPrizeWheel(cv,angle){let ctx=cv.getContext('2d'),items=[0,5,10,20,30,50],r=cv.width/2;ctx.clearRect(0,0,cv.width,cv.height);ctx.save();ctx.translate(r,r);ctx.rotate(angle);items.forEach((n,i)=>{let a=i*2*Math.PI/items.length-Math.PI/2,b=(i+1)*2*Math.PI/items.length-Math.PI/2;ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,r-7,a,b);ctx.closePath();ctx.fillStyle=['#74182a','#164d38','#211a24','#9e772c','#591c2c','#24553f'][i];ctx.fill();ctx.strokeStyle='#e3c574';ctx.stroke();ctx.save();ctx.rotate((a+b)/2);ctx.translate(r*.63,0);ctx.rotate(Math.PI/2);ctx.fillStyle='#fff1c9';ctx.font='bold 18px Georgia';ctx.textAlign='center';ctx.fillText(n,0,6);ctx.restore()});ctx.restore()}let prizeBusy=false;function spinPrizeWheel(){if(prizeBusy)return;if(state.balance<10){message('Saldo insuficiente.');return}charge(10);prizeBusy=true;let cv=$('#wheel'),start=0,extra=Math.PI*2*(4+Math.random()*4)+Math.random()*Math.PI*2,t0=performance.now();function f(now){let t=Math.min(1,(now-t0)/3200);drawPrizeWheel(cv,extra*(1-Math.pow(1-t,4)));if(t<1)requestAnimationFrame(f);else{prizeBusy=false;let prizes=[0,5,10,20,30,50],p=prizes[Math.floor(Math.random()*prizes.length)];if(p)award(p);message(p?'Roda premiada! +'+p+' fichas.':'A roda parou no zero. Tente de novo.')}}requestAnimationFrame(f)}
 
 /* NEON TARGET PRO: moving arcade range, selectable stakes and score-based returns (demo credits only). */
-let targetGame=null,targetStake=1;
+let targetGame=null,targetStake=1,arcadeCleanup=null,arcadeTimer=null;
 function targetUI(){
   stopArcade();
   targetGame=null;
@@ -666,25 +688,4 @@ spinWheel=function(){
 </script>
 
 </body></html>
-<style>
-.target-pro{max-width:760px;margin:0 auto;padding:14px;border:1px solid #d4b263;border-radius:8px;background:radial-gradient(ellipse at top,#20233c 0,#080b14 58%,#030509 100%);box-shadow:0 0 18px #00d9ff22,0 0 34px #ff2d9d18,inset 0 0 25px #000}
-.target-brand{text-align:center;padding:8px 4px 14px;border-bottom:1px solid #cba75b44}
-.target-brand>span{font:700 10px Arial;letter-spacing:4px;color:#f7d78b;text-shadow:0 0 10px #ffc857}
-.target-brand h2{font:900 clamp(23px,5vw,36px) Arial;margin:7px 0;color:#f8f3e7;letter-spacing:2px;text-shadow:0 0 8px #ff2d9d,0 0 18px #00d9ff}
-.target-brand h2 small{display:block;font-size:11px;letter-spacing:6px;color:#80efff;margin-top:5px}
-.target-brand p{font:10px Arial;letter-spacing:3px;color:#b3a5bd;margin:7px 0 0}
-.target-pro .target-hud{margin:12px 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
-.target-pro .target-hud span{padding:9px 5px;text-align:center;background:linear-gradient(145deg,#171c2a,#090d15);border:1px solid #e3c77855;border-radius:5px;font:700 9px Arial;color:#c7bdad;letter-spacing:1px}
-.target-pro .target-hud strong{display:block;font-size:17px;margin-top:5px;color:#8deeff;text-shadow:0 0 9px #00d9ff55}
-.target-stakes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:12px 0}
-.target-stake{padding:10px 2px;background:linear-gradient(#1b2230,#080c14);border:1px solid #8a7a55;border-radius:5px;color:#f8e7b7;font-weight:800;font-size:12px}
-.target-stake.selected{background:linear-gradient(#f9dc8a,#a97a2d);color:#160e05;border-color:#fff1b0;box-shadow:0 0 13px #ffd05a99}
-.target-stake:disabled{opacity:.65}
-.target-range{display:block;width:100%;height:auto;aspect-ratio:720/390;border:1px solid #bfa45e;border-radius:4px;background:#030912;touch-action:pan-y;box-shadow:0 0 12px #00d9ff20,0 0 22px #ff2d9d17}
-.target-pro .target-actions{margin:12px 0;display:flex;gap:8px}
-.target-pro .target-actions button{flex:1;min-height:44px}
-.target-message{min-height:42px;padding:10px;text-align:center;background:#050911;border:1px solid #ffffff12;color:#ffe6a0;font:700 12px/1.5 Arial}
-.target-paytable{display:flex;justify-content:space-around;gap:6px;flex-wrap:wrap;margin-top:10px;color:#9fb5c6;font:10px Arial;text-align:center}
-.target-paytable b{display:block;color:#8deeff;font-size:13px;margin-top:5px}
-@media(max-width:480px){.target-pro{padding:8px}.target-pro .target-hud{grid-template-columns:repeat(2,minmax(0,1fr))}.target-stakes{grid-template-columns:repeat(3,minmax(0,1fr))}.target-stake{padding:11px 2px}.target-brand h2{letter-spacing:1px}.target-brand>span{letter-spacing:2px}.target-paytable{font-size:9px}}
-</style>
+
