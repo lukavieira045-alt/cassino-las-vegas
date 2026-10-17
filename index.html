@@ -332,30 +332,47 @@ function fireTarget(){let g=targetGame;if(!g||!g.active||g.shots<=0)return;pinSo
 /* European roulette: authentic wheel-number order, polished pockets and a moving ball. */
 const europeanOrder=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 let rouletteBallAngle=0;
-drawWheel=function(canvas,angle=0,ballAngle=rouletteBallAngle){
- const ctx=canvas.getContext('2d'),n=37,r=canvas.width/2,outer=r-7,seg=2*Math.PI/n;
+drawWheel=function(canvas,angle=0,ballAngle=rouletteBallAngle,ballRadius=.86,landed=-1){
+ const ctx=canvas.getContext('2d'),n=37,r=canvas.width/2,outer=r-8,seg=2*Math.PI/n;
  ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();ctx.translate(r,r);
- const metal=ctx.createRadialGradient(0,0,outer*.68,0,0,outer+9);metal.addColorStop(0,'#f5dfa0');metal.addColorStop(.25,'#8a612b');metal.addColorStop(.48,'#f8dfa0');metal.addColorStop(.72,'#62401f');metal.addColorStop(1,'#e8c66e');
- ctx.beginPath();ctx.arc(0,0,outer+5,0,Math.PI*2);ctx.fillStyle=metal;ctx.fill();
+ // Base de madeira escura e anéis concêntricos de latão polido.
+ const wood=ctx.createRadialGradient(0,0,outer*.45,0,0,outer+8);wood.addColorStop(0,'#20130f');wood.addColorStop(.72,'#56351c');wood.addColorStop(.88,'#b7843c');wood.addColorStop(.95,'#f4d88c');wood.addColorStop(1,'#382116');
+ ctx.beginPath();ctx.arc(0,0,outer+7,0,Math.PI*2);ctx.fillStyle=wood;ctx.fill();
+ ctx.beginPath();ctx.arc(0,0,outer+1,0,Math.PI*2);ctx.fillStyle='#d7b66c';ctx.fill();
+ ctx.beginPath();ctx.arc(0,0,outer-4,0,Math.PI*2);ctx.fillStyle='#121013';ctx.fill();
+ // Trilha externa onde a bola percorre antes de cair para os bolsos.
+ let track=ctx.createRadialGradient(0,0,outer*.78,0,0,outer*.96);track.addColorStop(0,'#25272a');track.addColorStop(.45,'#a8b2bb');track.addColorStop(.7,'#30363b');track.addColorStop(1,'#e7d6a0');
+ ctx.beginPath();ctx.arc(0,0,outer*.965,0,Math.PI*2);ctx.arc(0,0,outer*.855,0,Math.PI*2,true);ctx.fillStyle=track;ctx.fill();
+ ctx.strokeStyle='#fff0bb';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(0,0,outer*.96,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(0,0,outer*.855,0,Math.PI*2);ctx.stroke();
+ // Rotor de 37 casas europeias, numeradas na sequência correta.
  ctx.rotate(angle);
  for(let i=0;i<n;i++){
   const num=europeanOrder[i],a=i*seg-Math.PI/2,b=(i+1)*seg-Math.PI/2;
-  ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,outer,a,b);ctx.closePath();
+  ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,outer*.855,a,b);ctx.closePath();
   const g=ctx.createLinearGradient(Math.cos(a)*outer,Math.sin(a)*outer,Math.cos(b)*outer,Math.sin(b)*outer);
-  if(num===0){g.addColorStop(0,'#21835a');g.addColorStop(1,'#064a31')}
-  else if(reds.has(num)){g.addColorStop(0,'#e04b56');g.addColorStop(1,'#7c101e')}
-  else{g.addColorStop(0,'#37363a');g.addColorStop(1,'#09090c')}
-  ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='#e8c978';ctx.lineWidth=1;ctx.stroke();
-  ctx.save();ctx.rotate((i+.5)*seg-Math.PI/2);ctx.translate(outer*.81,0);ctx.rotate(Math.PI/2);
-  ctx.fillStyle='#fff4d3';ctx.font='bold '+Math.max(8,Math.floor(r*.075))+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(num,0,0);ctx.restore();
+  if(num===0){g.addColorStop(0,'#36a878');g.addColorStop(1,'#06442c')}
+  else if(reds.has(num)){g.addColorStop(0,'#e54853');g.addColorStop(1,'#6f101c')}
+  else{g.addColorStop(0,'#45474a');g.addColorStop(1,'#090a0c')}
+  ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='#d8b86b';ctx.lineWidth=.8;ctx.stroke();
+  ctx.save();ctx.rotate((i+.5)*seg-Math.PI/2);ctx.translate(outer*.745,0);ctx.rotate(Math.PI/2);
+  ctx.fillStyle='#fff4d5';ctx.font='bold '+Math.max(8,Math.floor(r*.071))+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='#000';ctx.shadowBlur=2;ctx.fillText(num,0,0);ctx.restore();
  }
+ // Anel interior de latão e frets/defletores da roda.
  ctx.rotate(-angle);
- ctx.beginPath();ctx.arc(0,0,outer*.29,0,Math.PI*2);ctx.fillStyle=metal;ctx.fill();
- ctx.beginPath();ctx.arc(0,0,outer*.245,0,Math.PI*2);ctx.fillStyle='#1b3429';ctx.fill();ctx.strokeStyle='#ffe4a0';ctx.lineWidth=2;ctx.stroke();
- ctx.beginPath();ctx.arc(0,0,outer*.19,0,Math.PI*2);ctx.fillStyle='#0b0c10';ctx.fill();
- ctx.fillStyle='#ffe5a0';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold '+Math.max(10,Math.floor(r*.095))+'px Georgia';ctx.fillText('VEGAS',0,-2);
- ctx.font='bold '+Math.max(5,Math.floor(r*.032))+'px Arial';ctx.fillStyle='#e8d49b';ctx.fillText('EUROPEAN • 0–36',0,outer*.105);
- ctx.rotate(ballAngle);ctx.beginPath();ctx.arc(0,-outer*.91,Math.max(3,r*.027),0,Math.PI*2);ctx.fillStyle='#fffdf0';ctx.shadowColor='#fff';ctx.shadowBlur=9;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#b8a578';ctx.lineWidth=1;ctx.stroke();
+ ctx.beginPath();ctx.arc(0,0,outer*.635,0,Math.PI*2);ctx.fillStyle='#c6a05b';ctx.fill();
+ ctx.beginPath();ctx.arc(0,0,outer*.595,0,Math.PI*2);ctx.fillStyle='#171a1b';ctx.fill();
+ for(let i=0;i<8;i++){const a=i*Math.PI/4+angle*.14,x=Math.cos(a)*outer*.66,y=Math.sin(a)*outer*.66;ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.fillStyle='#f3d58b';ctx.shadowColor='#fff0bd';ctx.shadowBlur=5;ctx.beginPath();ctx.moveTo(-4,-7);ctx.lineTo(4,-7);ctx.lineTo(6,0);ctx.lineTo(0,7);ctx.lineTo(-6,0);ctx.closePath();ctx.fill();ctx.restore()}
+ const hub=ctx.createRadialGradient(-12,-15,2,0,0,outer*.58);hub.addColorStop(0,'#fff0b4');hub.addColorStop(.22,'#b88a3e');hub.addColorStop(.48,'#422b19');hub.addColorStop(.72,'#151b18');hub.addColorStop(1,'#050708');
+ ctx.beginPath();ctx.arc(0,0,outer*.56,0,Math.PI*2);ctx.fillStyle=hub;ctx.fill();ctx.strokeStyle='#f5d98d';ctx.lineWidth=2;ctx.stroke();
+ ctx.beginPath();ctx.arc(0,0,outer*.48,0,Math.PI*2);ctx.strokeStyle='#9b783c';ctx.lineWidth=1;ctx.stroke();
+ ctx.fillStyle='#ffe7a0';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold '+Math.floor(r*.105)+'px Georgia';ctx.shadowColor='#ffc64e';ctx.shadowBlur=9;ctx.fillText('VEGAS',0,-3);ctx.shadowBlur=0;ctx.fillStyle='#e2c77f';ctx.font='bold '+Math.max(6,Math.floor(r*.033))+'px Arial';ctx.fillText('EUROPEAN • 0–36',0,outer*.105);
+ // Bola de marfim com brilho especular e sombra, descendo para a coroa de bolsos.
+ const br=ballRadius;
+ ctx.save();ctx.rotate(ballAngle);const bx=0,by=-outer*br;
+ ctx.beginPath();ctx.ellipse(bx+2,by+3,5.8,4.2,.2,0,Math.PI*2);ctx.fillStyle='#0009';ctx.fill();
+ const ball=ctx.createRadialGradient(-2.5,by-3,1,0,by,7.5);ball.addColorStop(0,'#fff');ball.addColorStop(.38,'#fff7dc');ball.addColorStop(.75,'#d5d1bd');ball.addColorStop(1,'#65645e');
+ ctx.beginPath();ctx.arc(0,by,6.2,0,Math.PI*2);ctx.fillStyle=ball;ctx.shadowColor='#fff4c7';ctx.shadowBlur=13;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff';ctx.lineWidth=.7;ctx.stroke();ctx.restore();
+ if(landed>=0){const idx=europeanOrder.indexOf(landed),a=angle+(idx+.5)*seg-Math.PI/2;ctx.save();ctx.rotate(a+Math.PI/2);ctx.strokeStyle='#fff3b0';ctx.lineWidth=3;ctx.shadowColor='#ffe16b';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(0,0,outer*.80,-seg*.43,seg*.43);ctx.stroke();ctx.restore()}
  ctx.restore();
 };
 spinWheel=function(){
@@ -365,15 +382,16 @@ spinWheel=function(){
  const n=Math.floor(Math.random()*37),idx=europeanOrder.indexOf(n),start=wheelAngle,ballStart=rouletteBallAngle,seg=2*Math.PI/37;
  const target=-((idx+.5)*seg),extra=Math.PI*2*(7+Math.random()*3);
  const end=start+extra+(((target-(start+extra))%(Math.PI*2)+(Math.PI*2))%(Math.PI*2));
- const ballEnd=ballStart-Math.PI*2*(9+Math.random()*2)-Math.PI*2*(idx/37);
- const t0=performance.now(),duration=6200;
+ const ballEnd=end+(idx+.5)*seg-Math.PI*2*(8+Math.random()*3);
+ const t0=performance.now(),duration=7200;
  function frame(now){
-  const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,5);
+  const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,4);
   wheelAngle=start+(end-start)*ease;
-  rouletteBallAngle=ballStart+(ballEnd-ballStart)*(1-Math.pow(1-t,2.1));
-  drawWheel($('#wheel'),wheelAngle,rouletteBallAngle);
+  rouletteBallAngle=ballStart+(ballEnd-ballStart)*(1-Math.pow(1-t,2.05));
+  const drop=Math.max(0,Math.min(1,(t-.62)/.38));const radius=.91-.15*(drop*drop*(3-2*drop));
+  drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,radius,t>.985?n:-1);
   if(t<1)requestAnimationFrame(frame);else{
-   wheelAngle=end;rouletteBallAngle=ballEnd;drawWheel($('#wheel'),wheelAngle,rouletteBallAngle);
+   wheelAngle=end;rouletteBallAngle=end+(idx+.5)*seg;drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,.76,n);
    wheelBusy=false;$('#rouletteSpin').disabled=false;
    const mult=rouletteWins(n);if(mult)award(rouletteStake*mult);
    const color=n===0?'VERDE':reds.has(n)?'VERMELHO':'PRETO';
