@@ -335,13 +335,13 @@ function housePoolShot(){
  // Pequena imprecisão para manter a disputa desafiadora, sem fazer a casa acertar sempre.
  const error=(Math.random()-.5)*0.16,angle=Math.atan2(dy,dx)+error,speed=6.4+Math.random()*1.8;
  cue.vx=Math.cos(angle)*speed;cue.vy=Math.sin(angle)*speed;
- poolGame.shots++;poolGame.turn=1;$('#poolShots').textContent=poolGame.shots;
+ poolGame.turnPocketed=false;poolGame.shots++;poolGame.turn=1;$('#poolShots').textContent=poolGame.shots;
  message('VEZ DA CASA: a casa tenta encaçapar uma bola…');pinSound('launch');
 }
 function startPool(){
  if(state.balance<poolStake){message('Saldo insuficiente para essa aposta em fichas.');return}
  charge(poolStake);stopArcade();let cv=$('#arcade'),ctx=cv.getContext('2d');
- poolGame={balls:[],score:0,playerScore:0,houseScore:0,shots:0,moving:false,done:false,aiming:false,aim:null,scratch:false,stake:poolStake,turn:0,phase:'player'};
+ poolGame={balls:[],score:0,playerScore:0,houseScore:0,shots:0,moving:false,done:false,aiming:false,aim:null,scratch:false,turnPocketed:false,stake:poolStake,turn:0,phase:'player'};
  const R=10,left=44,right=716,top=44,bottom=396;poolGame.bounds={left,right,top,bottom};
  poolGame.balls.push({x:220,y:220,vx:0,vy:0,color:'#fff',cue:true,num:0});
  const rack=[[535,220],[553,210],[553,230],[571,200],[571,220],[571,240],[589,190],[589,210],[589,230],[589,250],[607,180],[607,200],[607,220],[607,240],[607,260]];
@@ -365,7 +365,7 @@ function startPool(){
    // Caçapas verificadas antes das bordas: a bola consegue realmente cair nos seis bolsos.
    if(pockets.some(([px,py])=>Math.hypot(b.x-px,b.y-py)<pocketR+8)){
     if(b.cue){b.pocket=true;poolGame.scratch=true;poolGame.foul=true;if(poolGame.phase==='player'){poolGame.houseScore++;$('#poolHouseScore').textContent=poolGame.houseScore;message('FALTA DO JOGADOR! A branca caiu: ponto para a casa.')}else{poolGame.playerScore++;$('#poolPlayerScore').textContent=poolGame.playerScore;message('FALTA DA CASA! A branca caiu: ponto para você.')} }
-    else{b.pocket=true;poolGame.score++;if(poolGame.phase==='player'){poolGame.playerScore++;$('#poolPlayerScore').textContent=poolGame.playerScore}else{poolGame.houseScore++;$('#poolHouseScore').textContent=poolGame.houseScore}pinSound('bonus')}
+    else{b.pocket=true;poolGame.turnPocketed=true;poolGame.score++;if(poolGame.phase==='player'){poolGame.playerScore++;$('#poolPlayerScore').textContent=poolGame.playerScore}else{poolGame.houseScore++;$('#poolHouseScore').textContent=poolGame.houseScore}pinSound('bonus')}
     continue;
    }
    if(b.x<50){b.x=50;b.vx=Math.abs(b.vx)*.86}else if(b.x>710){b.x=710;b.vx=-Math.abs(b.vx)*.86}if(b.y<50){b.y=50;b.vy=Math.abs(b.vy)*.86}else if(b.y>390){b.y=390;b.vy=-Math.abs(b.vy)*.86}
@@ -379,7 +379,11 @@ function startPool(){
     if(poolGame.phase==='house'){poolGame.phase='player';message('FALTA DA CASA: ponto para você. Sua vez de jogar!')}
     else{poolGame.phase='house';message('FALTA SUA: ponto para a casa. A casa vai jogar…');houseTimer=setTimeout(()=>{if(poolGame&&!poolGame.done){housePoolShot();drawTable()}},700)}
    }else if(poolGame.balls.slice(1).every(b=>b.pocket)){finishPoolGame()}
-   else if(poolGame.phase==='player'){
+   else if(poolGame.turnPocketed){
+    poolGame.turnPocketed=false;
+    if(poolGame.phase==='player'){message('BOA! Você encaçapou uma bola e continua jogando. Mire para a próxima tacada.')}
+    else{message('A casa encaçapou uma bola e joga novamente…');houseTimer=setTimeout(()=>{if(poolGame&&!poolGame.done){housePoolShot();drawTable()}},700)}
+   }else if(poolGame.phase==='player'){
     poolGame.phase='house';message('Bolas paradas. A casa vai jogar…');houseTimer=setTimeout(()=>{if(poolGame&&!poolGame.done){housePoolShot();drawTable()}},700);
    }else{poolGame.phase='player';message('Bolas paradas. Sua vez: mire e arraste para tacar.')}
   }
@@ -387,7 +391,7 @@ function startPool(){
  }
  function aimStart(e){if(!poolGame||poolGame.done||poolGame.moving||poolGame.scratch||poolGame.phase!=='player')return;e.preventDefault();const rect=cv.getBoundingClientRect();const x=(e.clientX-rect.left)*cv.width/rect.width,y=(e.clientY-rect.top)*cv.height/rect.height;pointer={x,y};poolGame.aiming=true;poolGame.aim=pointer;try{cv.setPointerCapture(e.pointerId)}catch(_){}drawTable()}
  function aimMove(e){if(!pointer||!poolGame||!poolGame.aiming)return;const rect=cv.getBoundingClientRect();pointer={x:(e.clientX-rect.left)*cv.width/rect.width,y:(e.clientY-rect.top)*cv.height/rect.height};poolGame.aim=pointer;drawTable()}
- function aimEnd(e){if(!pointer||!poolGame||!poolGame.aiming)return;const cue=poolGame.balls[0];let dx=cue.x-pointer.x,dy=cue.y-pointer.y,len=Math.hypot(dx,dy);poolGame.aiming=false;poolGame.aim=null;pointer=null;if(len<8){drawTable();return}const power=Number($('#poolPower')?.value||55)/100;const speed=Math.min(15,len*.035)*(0.25+power*.95);cue.vx=dx/(len||1)*speed;cue.vy=dy/(len||1)*speed;poolGame.shots++;poolGame.turn=1;$('#poolShots').textContent=poolGame.shots;pinSound('launch');message('SUA TACADA '+poolGame.shots+' · força '+Math.round(power*100)+'%.');drawTable()}
+ function aimEnd(e){if(!pointer||!poolGame||!poolGame.aiming)return;const cue=poolGame.balls[0];let dx=cue.x-pointer.x,dy=cue.y-pointer.y,len=Math.hypot(dx,dy);poolGame.aiming=false;poolGame.aim=null;pointer=null;if(len<8){drawTable();return}const power=Number($('#poolPower')?.value||55)/100;const speed=Math.min(15,len*.035)*(0.25+power*.95);cue.vx=dx/(len||1)*speed;cue.vy=dy/(len||1)*speed;poolGame.turnPocketed=false;poolGame.shots++;poolGame.turn=1;$('#poolShots').textContent=poolGame.shots;pinSound('launch');message('SUA TACADA '+poolGame.shots+' · força '+Math.round(power*100)+'%.');drawTable()}
  cv.addEventListener('pointerdown',aimStart);cv.addEventListener('pointermove',aimMove);cv.addEventListener('pointerup',aimEnd);cv.addEventListener('pointercancel',aimEnd);
  arcadeCleanup=()=>{cv.removeEventListener('pointerdown',aimStart);cv.removeEventListener('pointermove',aimMove);cv.removeEventListener('pointerup',aimEnd);cv.removeEventListener('pointercancel',aimEnd);if(houseTimer)clearTimeout(houseTimer)};
  drawTable();step();
