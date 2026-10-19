@@ -347,7 +347,7 @@ const paytable={'🍒':[2,4,8,20,60],'🍋':[0,3,6,15,40],'🔔':[0,0,8,20,55],'
 const paylines=[[1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],[0,1,2,1,0],[2,1,0,1,2],[0,0,1,2,2],[2,2,1,0,0],[1,0,0,0,1],[1,2,2,2,1],[0,1,1,1,2]];
 let slotBusy=false,slotFreeSpins=0,slotLastWin=0,slotGrid=[];
 function stopArcade(){/* Ponto seguro de encerramento antes de abrir outra mesa. */}
-function openGame(id){stopArcade();if(id==='megaSlots')return megaSlotsUI();if(id==='slots')return slotsUI();if(id==='roulette')return rouletteUI();if(id==='pinball')return pinballUI();if(id==='pool')return poolUI();if(id==='wheel')return wheelUI();if(id==='target')return targetUI()}
+function openGame(id){if(!cassinoUser){openPayments('account');setPayStatus('🔒 Para jogar, crie sua conta com nome, e-mail e senha, confirme a senha e entre.');return}stopArcade();if(id==='megaSlots')return megaSlotsUI();if(id==='slots')return slotsUI();if(id==='roulette')return rouletteUI();if(id==='pinball')return pinballUI();if(id==='pool')return poolUI();if(id==='wheel')return wheelUI();if(id==='target')return targetUI()}
 let megaBusy=false,megaBet=10,megaGrid=[];
 const megaSymbols=['🍒','🍋','🔔','💎','7️⃣','⭐','🍀'];
 function megaSlotsUI(){
@@ -824,10 +824,28 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closePayments()});
 function renderPayments(){
  setPayStatus('');
  if(!cassinoUser){
-  document.getElementById('payTitle').textContent='Entrar ou criar conta';
-  payContent.innerHTML='<p>Entre com seu e-mail e senha ou crie sua conta para consultar a carteira.</p><form id="cassinoAuthForm"><input id="cassinoEmail" type="email" autocomplete="email" placeholder="Seu e-mail" required><input id="cassinoPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Senha (mínimo 6 caracteres)" required><button class="goldbtn" type="submit">Entrar</button><button class="darkbtn" type="button" id="cassinoSignup">Criar conta</button></form><p class="legal">Use um e-mail seu. Nunca compartilhe sua senha.</p>';
-  document.getElementById('cassinoAuthForm').onsubmit=async e=>{e.preventDefault();await authCassino('login')};
-  document.getElementById('cassinoSignup').onclick=()=>authCassino('signup');
+  document.getElementById('payTitle').textContent='Cadastro obrigatório para jogar';
+  payContent.innerHTML='<p>🔒 Para entrar nos jogos, primeiro crie sua conta. Informe seu nome, e-mail, senha e confirme a senha.</p><form id="cassinoAuthForm"><div id="cassinoNameWrap"><input id="cassinoName" type="text" autocomplete="name" maxlength="60" placeholder="Seu nome" required></div><input id="cassinoEmail" type="email" autocomplete="email" placeholder="Seu e-mail" required><input id="cassinoPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Senha (mínimo 6 caracteres)" required><div id="cassinoConfirmWrap"><input id="cassinoConfirmPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Confirme sua senha" required></div><button class="goldbtn" type="submit" id="cassinoSubmit">Criar conta</button><button class="darkbtn" type="button" id="cassinoToggleMode">Já tenho conta</button></form><p class="legal">O e-mail é necessário para confirmar e recuperar sua conta. Nunca compartilhe sua senha.</p>';
+  let signupMode=true;
+  const form=document.getElementById('cassinoAuthForm');
+  const nameWrap=document.getElementById('cassinoNameWrap');
+  const confirmWrap=document.getElementById('cassinoConfirmWrap');
+  const submit=document.getElementById('cassinoSubmit');
+  const toggle=document.getElementById('cassinoToggleMode');
+  function setAuthMode(signup){
+   signupMode=signup;
+   nameWrap.style.display=signup?'block':'none';
+   confirmWrap.style.display=signup?'block':'none';
+   document.getElementById('cassinoName').required=signup;
+   document.getElementById('cassinoConfirmPassword').required=signup;
+   document.getElementById('cassinoPassword').autocomplete=signup?'new-password':'current-password';
+   submit.textContent=signup?'Criar conta':'Entrar';
+   toggle.textContent=signup?'Já tenho conta':'Criar nova conta';
+   document.getElementById('payTitle').textContent=signup?'Cadastro obrigatório para jogar':'Entrar na sua conta';
+   setPayStatus('');
+  }
+  form.onsubmit=async e=>{e.preventDefault();await authCassino(signupMode?'signup':'login')};
+  toggle.onclick=()=>setAuthMode(!signupMode);
   return;
  }
  document.getElementById('payTitle').textContent='Minha carteira';
@@ -841,14 +859,32 @@ async function authCassino(mode){
  setPayStatus('Processando...');
  const email=document.getElementById('cassinoEmail').value.trim();
  const password=document.getElementById('cassinoPassword').value;
+ const displayName=(document.getElementById('cassinoName')?.value||'').trim();
+ const confirmPassword=document.getElementById('cassinoConfirmPassword')?.value||'';
  try{
-  const result=mode==='signup'?await cassinoSupabase.auth.signUp({email,password}):await cassinoSupabase.auth.signInWithPassword({email,password});
+  let result;
+  if(mode==='signup'){
+   if(displayName.length<2){setPayStatus('Digite seu nome (pelo menos 2 caracteres).');return}
+   if(password.length<6){setPayStatus('A senha precisa ter pelo menos 6 caracteres.');return}
+   if(password!==confirmPassword){setPayStatus('As senhas não são iguais. Confira a confirmação.');return}
+   result=await cassinoSupabase.auth.signUp({email,password,options:{data:{display_name:displayName,full_name:displayName}}});
+  }else{
+   result=await cassinoSupabase.auth.signInWithPassword({email,password});
+  }
   if(result.error) throw result.error;
-  if(mode==='signup'&&!result.data.session){setPayStatus('Conta criada. Confira seu e-mail para confirmar o cadastro e depois entre.');return}
   cassinoUser=result.data.user||(result.data.session&&result.data.session.user)||null;
-  await atualizarCarteiraCassino();renderPayments();
-  setPayStatus('Conta conectada.');
- }catch(e){setPayStatus('Não foi possível entrar: '+(e.message||'verifique os dados e tente novamente.'))}
+  if(mode==='signup'&&!result.data.session){
+   setPayStatus('Cadastro criado! Confirme o e-mail enviado para ativar a conta. Depois volte aqui e entre para jogar.');
+   return;
+  }
+  if(mode==='signup'&&cassinoUser){
+   const profileResult=await cassinoSupabase.from('profiles').upsert({id:cassinoUser.id,display_name:displayName},{onConflict:'id'});
+   if(profileResult.error) throw profileResult.error;
+  }
+  await atualizarCarteiraCassino();
+  renderPayments();
+  setPayStatus('Conta conectada. Você já pode entrar nos jogos demonstrativos.');
+ }catch(e){setPayStatus('Não foi possível concluir: '+(e.message||'verifique os dados e tente novamente.'))}
 }
 async function atualizarCarteiraCassino(){
  try{
