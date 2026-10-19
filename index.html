@@ -475,7 +475,11 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 @media(max-width:600px){.jackpot-hero{min-height:400px!important;margin:16px 10px!important;background-position:54% center!important}.jackpot-hero:after{top:14px;padding:9px 8px;letter-spacing:2px}.jackpot-content{padding:90px 8px 26px!important}.jackpot-content h1{font-size:clamp(22px,7vw,34px)!important}.jackpot-value{font-size:clamp(38px,12vw,58px)!important}.quick-actions{padding:12px 10px!important;gap:7px!important}.quick-actions button{min-height:68px!important;border-radius:10px!important}.games .gamecard{border-radius:8px!important}}
 @media(prefers-reduced-motion:reduce){.topbar,.jackpot-hero:after,.jackpot-icons span{animation:none!important}}
 </style>
-</head>
+<style id="responsible-play-notice">
+.responsible-notice{margin:28px 14px 20px!important;padding:20px 16px!important;text-align:center!important;border:1px solid #ffcf63!important;border-radius:10px!important;background:linear-gradient(100deg,#260b28,#120b1b 55%,#35101e)!important;box-shadow:0 0 12px #ff2b9b55,0 0 24px #ffbd4430,inset 0 0 18px #ff2b9b16!important;color:#fff0d1!important}
+.responsible-notice strong{display:block;margin-bottom:9px;color:#ffe18a!important;font:900 clamp(13px,3vw,17px)/1.5 Arial,sans-serif!important;letter-spacing:1px;text-shadow:0 0 8px #ffb52e,0 0 15px #ff2b9b}
+.responsible-notice span{display:block;color:#f7e9e0!important;font:12px/1.7 Arial,sans-serif!important}
+</style></head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DEMO<br><b id="balance">1.000</b></div></div></nav></header>
 <div class="quick-actions"><button onclick="openPayments('deposit')">💰<span>Depositar</span></button><button onclick="openPayments('withdraw')">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
@@ -495,7 +499,7 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 <button class="gamecard" data-category="arcade" onclick="openGame('wheel')"><div class="gameimage"><img loading="lazy" src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80" alt="Roda de prêmios iluminada"><span class="gameicon">🎡</span></div><div class="cardinfo"><div class="type">RODA DE PRÊMIOS · VEGAS SHOW</div><h3>Fortune Wheel Deluxe</h3><p>Roda metálica com setores iluminados, ponteiro e prêmio alinhado ao resultado.</p><div class="playline"><span>GIRAR A RODA</span><span>↗</span></div></div></button>
 </div></section>
 <div class="promo"><div><h3>Seu lugar no salão está esperando.</h3><p>Crie um perfil local para guardar suas fichas fictícias neste aparelho.</p></div><button class="goldbtn" onclick="openAccount()">Meu perfil demo　→</button></div>
-<div class="notice">Esta é uma experiência demonstrativa com fichas fictícias, sem valor monetário. Não aceita depósitos ou saques e não permite apostas com dinheiro real. Não é um cassino licenciado nem uma cópia oficial de qualquer marca ou jogo comercial. Os resultados dos jogos são processados no navegador.</div></main>
+<div class="notice responsible-notice"><strong>🔞 JOGUE COM RESPONSABILIDADE — SOMENTE PARA MAIORES DE 18 ANOS</strong><span>Este é um jogo demonstrativo com fichas fictícias, sem apostas ou pagamentos com dinheiro real. Jogue com consciência e apenas por diversão.</span></div></main>
 <footer>♛　LAS VEGAS GRAND CASINO　 ·　 EXPERIÊNCIA DE DEMONSTRAÇÃO　 ·　 JOGUE COM RESPONSABILIDADE</footer>
 <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="dialog"><div class="dialoghead"><h2 id="gameTitle">Mesa de jogo</h2><button class="xbtn" onclick="closeModal()" aria-label="Fechar">✕</button></div><div id="gameBody"></div></div></div>
 <script>
