@@ -839,7 +839,7 @@ function renderPayments(){
  setPayStatus('');
  if(!cassinoUser){
   document.getElementById('payTitle').textContent='Cadastro obrigatório para jogar';
-  payContent.innerHTML='<p>🔒 Para entrar nos jogos, primeiro crie sua conta. Informe seu nome, e-mail, senha e confirme a senha.</p><form id="cassinoAuthForm"><div id="cassinoNameWrap"><input id="cassinoName" type="text" autocomplete="name" maxlength="60" placeholder="Seu nome" required></div><input id="cassinoEmail" type="email" autocomplete="email" placeholder="Seu e-mail" required><input id="cassinoPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Senha (mínimo 6 caracteres)" required><div id="cassinoConfirmWrap"><input id="cassinoConfirmPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Confirme sua senha" required></div><button class="goldbtn" type="submit" id="cassinoSubmit">Criar conta</button><button class="darkbtn" type="button" id="cassinoToggleMode">Já tenho conta</button></form><p class="legal">O e-mail é necessário para confirmar e recuperar sua conta. Nunca compartilhe sua senha.</p>';
+   payContent.innerHTML='<p>🔒 Para entrar nos jogos, primeiro crie sua conta. Informe seu nome, e-mail, senha e confirme a senha.</p><form id="cassinoAuthForm"><div id="cassinoNameWrap"><input id="cassinoName" type="text" autocomplete="name" maxlength="60" placeholder="Seu nome" required></div><input id="cassinoEmail" type="email" autocomplete="email" placeholder="Seu e-mail" required><input id="cassinoPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Senha (mínimo 6 caracteres)" required><div id="cassinoConfirmWrap"><input id="cassinoConfirmPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Confirme sua senha" required></div><button class="goldbtn" type="submit" id="cassinoSubmit">Criar conta</button><button class="darkbtn" type="button" id="cassinoToggleMode">Já tenho conta</button><button class="darkbtn" type="button" id="cassinoForgotPassword">Esqueci minha senha</button></form><p class="legal">O e-mail é necessário para confirmar e recuperar sua conta. Nunca compartilhe sua senha.</p>';
   let signupMode=true;
   const form=document.getElementById('cassinoAuthForm');
   const nameWrap=document.getElementById('cassinoNameWrap');
@@ -860,6 +860,13 @@ function renderPayments(){
   }
   form.onsubmit=async e=>{e.preventDefault();await authCassino(signupMode?'signup':'login')};
   toggle.onclick=()=>setAuthMode(!signupMode);
+   document.getElementById('cassinoForgotPassword').onclick=async()=>{
+    const email=document.getElementById('cassinoEmail').value.trim();
+    if(!email){setPayStatus('Digite seu e-mail acima para receber o link de recuperação.');document.getElementById('cassinoEmail').focus();return}
+    setPayStatus('Enviando link de recuperação para seu e-mail...');
+    try{const result=await cassinoSupabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});if(result.error)throw result.error;setPayStatus('Se esse e-mail estiver cadastrado, você receberá um link para criar uma nova senha. Confira também o spam.');}
+    catch(e){setPayStatus('Não consegui enviar a recuperação: '+(e.message||'tente novamente.'))}
+   };
   return;
  }
  document.getElementById('payTitle').textContent='Minha carteira';
@@ -876,6 +883,14 @@ async function copiarIdCassino(){
  if(!id){setPayStatus('Entre na sua conta para ver seu ID.');return}
  try{await navigator.clipboard.writeText(id);setPayStatus('ID do jogador copiado!')}
  catch(e){setPayStatus('Seu ID é: '+id)}
+}
+async function concluirRecuperacaoSenha(){
+ const nova=document.getElementById('cassinoNewPassword');const confirmar=document.getElementById('cassinoNewPasswordConfirm');if(!nova||!confirmar)return;
+ if(nova.value.length<6){setPayStatus('A nova senha precisa ter pelo menos 6 caracteres.');return}
+ if(nova.value!==confirmar.value){setPayStatus('As senhas não são iguais.');return}
+ setPayStatus('Salvando nova senha...');
+ try{const result=await cassinoSupabase.auth.updateUser({password:nova.value});if(result.error)throw result.error;setPayStatus('Senha alterada com sucesso! Entre com a nova senha.');nova.value='';confirmar.value='';}
+ catch(e){setPayStatus('Não consegui alterar a senha: '+(e.message||'abra novamente o link enviado por e-mail.'))}
 }
 async function authCassino(mode){
  setPayStatus('Processando...');
@@ -936,7 +951,7 @@ async function criarDepositoCassino(amount){
  }catch(e){setPayStatus('Não foi possível iniciar o pagamento: '+(e.message||'tente novamente.'))}
 }
 async function sairContaCassino(){await cassinoSupabase.auth.signOut();cassinoUser=null;cassinoWallet=0;renderPayments();setPayStatus('Você saiu da conta.')}
-cassinoSupabase.auth.onAuthStateChange((_event,session)=>{cassinoUser=session&&session.user?session.user:null;setTimeout(()=>{if(cassinoUser)atualizarCarteiraCassino();else{cassinoWallet=0;if(payModal.classList.contains('open'))renderPayments()}},0)});
+cassinoSupabase.auth.onAuthStateChange((event,session)=>{cassinoUser=session&&session.user?session.user:null;if(event==='PASSWORD_RECOVERY'){payMode='recovery';payModal.classList.add('open');document.getElementById('payTitle').textContent='Criar nova senha';payContent.innerHTML='<p>Digite sua nova senha e confirme abaixo.</p><form id="cassinoRecoveryForm"><input id="cassinoNewPassword" type="password" minlength="6" autocomplete="new-password" placeholder="Nova senha (mínimo 6 caracteres)" required><input id="cassinoNewPasswordConfirm" type="password" minlength="6" autocomplete="new-password" placeholder="Confirme a nova senha" required><button class="goldbtn" type="submit">Salvar nova senha</button></form>';document.getElementById('cassinoRecoveryForm').onsubmit=async e=>{e.preventDefault();await concluirRecuperacaoSenha()};setPayStatus('')};setTimeout(()=>{if(cassinoUser)atualizarCarteiraCassino();else{cassinoWallet=0;if(payModal.classList.contains('open')&&payMode!=='recovery')renderPayments()}},0)});
 atualizarCarteiraCassino();
 </script>
 <script>
