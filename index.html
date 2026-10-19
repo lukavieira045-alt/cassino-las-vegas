@@ -878,7 +878,7 @@ async function criarDepositoCassino(amount){
  }catch(e){setPayStatus('Não foi possível iniciar o pagamento: '+(e.message||'tente novamente.'))}
 }
 async function sairContaCassino(){await cassinoSupabase.auth.signOut();cassinoUser=null;cassinoWallet=0;renderPayments();setPayStatus('Você saiu da conta.')}
-cassinoSupabase.auth.onAuthStateChange((_event,session)=>{cassinoUser=session&&session.user?session.user:null;if(cassinoUser)atualizarCarteiraCassino()});
+cassinoSupabase.auth.onAuthStateChange((_event,session)=>{cassinoUser=session&&session.user?session.user:null;setTimeout(()=>{if(cassinoUser)atualizarCarteiraCassino();else{cassinoWallet=0;if(payModal.classList.contains('open'))renderPayments()}},0)});
 atualizarCarteiraCassino();
 </script></body></html>
 
