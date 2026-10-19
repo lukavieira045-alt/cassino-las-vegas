@@ -839,19 +839,18 @@ function renderPayments(){
  setPayStatus('');
  if(!cassinoUser){
   document.getElementById('payTitle').textContent='Cadastro obrigatório para jogar';
-   payContent.innerHTML='<p>🔒 Para entrar nos jogos, primeiro crie sua conta. Informe seu nome, e-mail, senha e confirme a senha.</p><form id="cassinoAuthForm"><div id="cassinoNameWrap"><input id="cassinoName" type="text" autocomplete="name" maxlength="60" placeholder="Seu nome" required></div><input id="cassinoEmail" type="email" autocomplete="email" placeholder="Seu e-mail" required><input id="cassinoPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Senha (mínimo 6 caracteres)" required><div id="cassinoConfirmWrap"><input id="cassinoConfirmPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Confirme sua senha" required></div><button class="goldbtn" type="submit" id="cassinoSubmit">Criar conta</button><button class="darkbtn" type="button" id="cassinoToggleMode">Já tenho conta</button><button class="darkbtn" type="button" id="cassinoForgotPassword">Esqueci minha senha</button></form><p class="legal">O e-mail é necessário para confirmar e recuperar sua conta. Nunca compartilhe sua senha.</p>';
+   payContent.innerHTML='<p>🔒 Para entrar nos jogos, primeiro crie sua conta. Informe seu nome, e-mail, senha e confirme a senha.</p><form id="cassinoAuthForm"><input id="cassinoEmail" type="text" autocomplete="username" maxlength="40" placeholder="Nome de jogador" required><input id="cassinoPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Crie sua senha (mínimo 6 caracteres)" required><div id="cassinoConfirmWrap"><input id="cassinoConfirmPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Confirme sua senha" required></div><button class="goldbtn" type="submit" id="cassinoSubmit">Criar conta</button><button class="darkbtn" type="button" id="cassinoToggleMode">Já tenho conta</button></form><p class="legal">Cadastro com nome de jogador e senha, sem e-mail. Guarde sua senha: a recuperação automática não está disponível sem e-mail.</p>';
   let signupMode=true;
   const form=document.getElementById('cassinoAuthForm');
-  const nameWrap=document.getElementById('cassinoNameWrap');
   const confirmWrap=document.getElementById('cassinoConfirmWrap');
   const submit=document.getElementById('cassinoSubmit');
   const toggle=document.getElementById('cassinoToggleMode');
   function setAuthMode(signup){
    signupMode=signup;
-   nameWrap.style.display=signup?'block':'none';
    confirmWrap.style.display=signup?'block':'none';
-   document.getElementById('cassinoName').required=signup;
    document.getElementById('cassinoConfirmPassword').required=signup;
+   document.getElementById('cassinoEmail').placeholder=signup?'Nome de jogador':'Nome de jogador';
+   document.getElementById('cassinoEmail').autocomplete='username';
    document.getElementById('cassinoPassword').autocomplete=signup?'new-password':'current-password';
    submit.textContent=signup?'Criar conta':'Entrar';
    toggle.textContent=signup?'Já tenho conta':'Criar nova conta';
@@ -860,13 +859,7 @@ function renderPayments(){
   }
   form.onsubmit=async e=>{e.preventDefault();await authCassino(signupMode?'signup':'login')};
   toggle.onclick=()=>setAuthMode(!signupMode);
-   document.getElementById('cassinoForgotPassword').onclick=async()=>{
-    const email=document.getElementById('cassinoEmail').value.trim();
-    if(!email){setPayStatus('Digite seu e-mail acima para receber o link de recuperação.');document.getElementById('cassinoEmail').focus();return}
-    setPayStatus('Enviando link de recuperação para seu e-mail...');
-    try{const result=await cassinoSupabase.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});if(result.error)throw result.error;setPayStatus('Se esse e-mail estiver cadastrado, você receberá um link para criar uma nova senha. Confira também o spam.');}
-    catch(e){setPayStatus('Não consegui enviar a recuperação: '+(e.message||'tente novamente.'))}
-   };
+
   return;
  }
  document.getElementById('payTitle').textContent='Minha carteira';
@@ -896,36 +889,36 @@ async function authCassino(mode){
  const submit=document.getElementById('cassinoSubmit');
  if(submit){submit.disabled=true;submit.textContent='Aguarde...'}
  setPayStatus(mode==='signup'?'Criando sua conta...':'Entrando na sua conta...');
- const email=document.getElementById('cassinoEmail').value.trim();
+ const playerName=document.getElementById('cassinoEmail').value.trim().replace(/\\s+/g,' ');
  const password=document.getElementById('cassinoPassword').value;
- const displayName=(document.getElementById('cassinoName')?.value||'').trim();
  const confirmPassword=document.getElementById('cassinoConfirmPassword')?.value||'';
+ const slug=playerName.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,30);
+ // Endereço interno usado apenas como identificador do Supabase; nenhum e-mail é enviado.
+ const authEmail=slug+'@players.cassino.local';
  let timeoutId;
  const timeout=(promise,label)=>Promise.race([promise,new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error(label+' demorou mais de 15 segundos. Confira sua conexão e tente novamente.')),15000)})]).finally(()=>clearTimeout(timeoutId));
  try{
+  if(playerName.length<2||!slug)throw new Error('Digite um nome de jogador válido (pelo menos 2 caracteres).');
+  if(password.length<6)throw new Error('A senha precisa ter pelo menos 6 caracteres.');
   let result;
   if(mode==='signup'){
-   if(displayName.length<2){setPayStatus('Digite seu nome (pelo menos 2 caracteres).');return}
-   if(password.length<6){setPayStatus('A senha precisa ter pelo menos 6 caracteres.');return}
-   if(password!==confirmPassword){setPayStatus('As senhas não são iguais. Confira a confirmação.');return}
-   result=await timeout(cassinoSupabase.auth.signUp({email,password,options:{data:{display_name:displayName,full_name:displayName}}}),'O cadastro');
+   if(password!==confirmPassword)throw new Error('As senhas não são iguais. Confira a confirmação.');
+   result=await timeout(cassinoSupabase.auth.signUp({email:authEmail,password,options:{data:{display_name:playerName,full_name:playerName,player_name:playerName}}}),'O cadastro');
   }else{
-   result=await timeout(cassinoSupabase.auth.signInWithPassword({email,password}),'O login');
+   result=await timeout(cassinoSupabase.auth.signInWithPassword({email:authEmail,password}),'O login');
   }
-  if(result.error) throw result.error;
+  if(result.error)throw result.error;
   cassinoUser=result.data.user||(result.data.session&&result.data.session.user)||null;
-  if(mode==='signup'&&!result.data.session){
-   setPayStatus('O Supabase criou ou recebeu o pedido, mas não devolveu uma sessão. A confirmação de e-mail ainda pode estar ativa neste projeto ou a conta já precisa ser confirmada. Tente entrar pela opção “Já tenho conta” e, se falhar, veja a mensagem de erro.');
-   return;
-  }
+  if(mode==='signup'&&!result.data.session)throw new Error('O Supabase não abriu a sessão. Confirme que a confirmação de e-mail está desativada no projeto.');
   if(!cassinoUser)throw new Error('O Supabase não retornou os dados da conta. Tente novamente.');
   renderPayments();
   setPayStatus(mode==='signup'?'Cadastro concluído! Sua conta está conectada.':'Login concluído! Você entrou na sua conta.');
-  // O nome já fica salvo no user_metadata. A criação de perfil/carteira não pode
-  // deixar o cadastro preso caso uma tabela ou política do banco esteja faltando.
   atualizarCarteiraCassino();
  }catch(e){
-  setPayStatus('Erro no cadastro/login: '+(e.message||'verifique os dados e tente novamente.'));
+  let msg=e.message||'verifique os dados e tente novamente.';
+  if(/already registered|already exists|user already registered/i.test(msg))msg='Esse nome de jogador já está cadastrado. Escolha outro nome.';
+  if(/invalid email/i.test(msg))msg='O Supabase recusou o identificador interno. Preciso ajustar a autenticação do projeto para aceitar cadastro sem e-mail.';
+  setPayStatus('Erro no cadastro/login: '+msg);
  }finally{
   const currentSubmit=document.getElementById('cassinoSubmit');
   if(currentSubmit){currentSubmit.disabled=false;currentSubmit.textContent=(document.getElementById('cassinoToggleMode')?.textContent||'').includes('Já tenho conta')?'Criar conta':'Entrar'}
