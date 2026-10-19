@@ -520,6 +520,29 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 @media(max-width:600px){.games{gap:12px!important}.gamecard{animation-duration:7s}.gameimage:before{animation-duration:7s}}
 @media(prefers-reduced-motion:reduce){.gamecard,.gamecard:before,.gameimage:before,.gameicon{animation:none!important}}
 </style>
+
+<style id="vegas-grand-salon-v2">
+/* Acabamento do salão: letreiros vivos, separadores luminosos e cartões com profundidade */
+.sectionTitle{position:relative!important;padding-bottom:13px!important;border-bottom:1px solid #ffcb604d!important}
+.sectionTitle:after{content:"";position:absolute;left:0;bottom:-2px;width:34%;max-width:190px;height:3px;border-radius:6px;background:linear-gradient(90deg,#fff0a4,#ffb52e,#ff2d9b,transparent);box-shadow:0 0 8px #ffce5c,0 0 16px #ff2d9b66;transform-origin:left;animation:vegasTitleBeam 4s ease-in-out infinite alternate}
+.sectionTitle h2{color:#fff0bf!important;text-shadow:0 0 8px #ffbd4b66,0 0 18px #ff2b9b22!important}
+.sectionTitle .label{border:1px solid #ffcf6366;border-radius:30px;padding:7px 10px;background:linear-gradient(90deg,#ffce5c12,#ff2b9b15);box-shadow:inset 0 0 10px #ffcf5c0c,0 0 12px #ff2b9b15}
+.games .gamecard{border-radius:12px!important;transform:translateZ(0);backface-visibility:hidden}
+.games .gamecard:focus-visible,.categorybar button:focus-visible,.goldbtn:focus-visible{outline:2px solid #fff0a6!important;outline-offset:4px!important}
+.games .gameimage{border-bottom:1px solid #ffcf5c55}
+.games .gameimage:after{background:linear-gradient(0deg,#10070ff2,transparent 78%),linear-gradient(135deg,#ffcf5c20,transparent 45%,#ff2b9b24)!important}
+.games .cardinfo h3{color:#fff2d1!important;text-shadow:0 0 9px #ffcf5c12}
+.games .playline{border-top-color:#ffcf5c55!important}
+.vegas-live-ribbon{background-size:200% 100%;animation:vegasRibbonBg 8s ease-in-out infinite alternate}
+.vegas-live-track{will-change:transform}
+.vegas-lightline{position:relative;overflow:hidden}
+.vegas-lightline:after{content:"";position:absolute;top:0;bottom:0;left:-30%;width:25%;background:linear-gradient(90deg,transparent,#fff8d9cc,transparent);filter:blur(2px);animation:vegasBulbSweep 3.6s linear infinite}
+@keyframes vegasTitleBeam{0%{width:20%;filter:brightness(.8)}100%{width:48%;filter:brightness(1.5)}}
+@keyframes vegasRibbonBg{0%{background-position:0% 50%}100%{background-position:100% 50%}}
+@keyframes vegasBulbSweep{0%{left:-30%}100%{left:115%}}
+@media(max-width:600px){.sectionTitle{gap:8px!important}.sectionTitle .label{font-size:8px!important;letter-spacing:.5px!important;padding:6px 7px!important}.sectionTitle:after{max-width:130px}}
+@media(prefers-reduced-motion:reduce){.sectionTitle:after,.vegas-live-ribbon,.vegas-lightline:after{animation:none!important}}
+</style>
 </head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DEMO<br><b id="balance">1.000</b></div></div></nav></header>
