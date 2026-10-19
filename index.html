@@ -497,7 +497,30 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 @keyframes vegasSparkRise{0%{transform:translate3d(0,0,0) rotate(0) scale(.55);opacity:0}12%{opacity:.85}80%{opacity:.65}100%{transform:translate3d(var(--drift,30px),-110vh,0) rotate(220deg) scale(1.2);opacity:0}}
 @media(max-width:600px){.vegas-live-ribbon{margin:10px 0 15px}.vegas-live-track{font-size:11px;letter-spacing:1.4px;gap:24px}.jackpot-hero:before{inset:6px}}
 @media(prefers-reduced-motion:reduce){.jackpot-hero,.jackpot-hero:before,.jackpot-hero:after,.vegas-live-track,.vegas-lightline,.vegas-spark{animation:none!important}.vegas-spark-layer{display:none}}
-</style></head>
+</style>
+<style id="vegas-machine-floor">
+/* Mais vida nas máquinas e nos cartões de jogos; não altera lógica de apostas ou cadastro */
+.games{gap:18px!important}
+.gamecard{isolation:isolate;animation:vegasCardGlow 5.5s ease-in-out infinite;will-change:transform,box-shadow}
+.gamecard:nth-child(3n+2){animation-delay:-1.8s}
+.gamecard:nth-child(3n){animation-delay:-3.6s}
+.gamecard:before{background-size:220% 220%!important;animation:vegasCardBorder 7s linear infinite;opacity:.7!important}
+.gameimage:before{content:"";position:absolute;z-index:1;top:-35%;bottom:-35%;left:-75%;width:42%;pointer-events:none;transform:rotate(18deg);background:linear-gradient(90deg,transparent,#fff3, #ffe28a88,#ff2e9d55,transparent);animation:vegasMachineSweep 5.8s ease-in-out infinite}
+.gameicon{animation:vegasIconFloat 3.2s ease-in-out infinite;filter:drop-shadow(0 0 10px #ffd76caa) drop-shadow(0 4px 9px #000)!important}
+.gamecard:nth-child(2n) .gameicon{animation-delay:-1.6s}
+.gamecard .playline span:first-child{text-shadow:0 0 7px #ffce5c88}
+.gamecard:hover .gameicon{animation-duration:.8s;filter:drop-shadow(0 0 14px #ffe28a) drop-shadow(0 4px 9px #000)!important}
+.categorybar button{transition:transform .22s,filter .22s,background .22s!important}
+.categorybar button:active{transform:scale(.94)}
+.categorybar button.active{box-shadow:0 0 14px #ff2b9b33,inset 0 0 12px #ffcf5c20}
+@keyframes vegasCardGlow{0%,100%{box-shadow:inset 0 1px #fff2,0 7px 22px #0005,0 0 0 #ff2b9b00}50%{box-shadow:inset 0 1px #fff3,0 8px 24px #0007,0 0 16px #ff2b9b22}}
+@keyframes vegasCardBorder{0%{background-position:0% 0%;filter:brightness(.9)}50%{background-position:100% 100%;filter:brightness(1.5)}100%{background-position:0% 0%;filter:brightness(.9)}}
+@keyframes vegasMachineSweep{0%,12%{left:-75%;opacity:0}25%{opacity:1}68%,100%{left:145%;opacity:0}}
+@keyframes vegasIconFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.04)}}
+@media(max-width:600px){.games{gap:12px!important}.gamecard{animation-duration:7s}.gameimage:before{animation-duration:7s}}
+@media(prefers-reduced-motion:reduce){.gamecard,.gamecard:before,.gameimage:before,.gameicon{animation:none!important}}
+</style>
+</head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DEMO<br><b id="balance">1.000</b></div></div></nav></header>
 <div class="quick-actions"><button onclick="openPayments('deposit')">💰<span>Depositar</span></button><button onclick="openPayments('withdraw')">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
@@ -1141,7 +1164,7 @@ atualizarCarteiraCassino();
       ribbon.innerHTML='<div class="vegas-live-track"><span>✦ BEM-VINDO AO CASSINO LAS VEGAS ✦</span><span>♛ SINTA A ENERGIA DO SALÃO ♛</span><span>✧ LUZES • GLAMOUR • DIVERSÃO ✧</span><span>✦ GIRO DA FORTUNA ✦</span><span>✦ BEM-VINDO AO CASSINO LAS VEGAS ✦</span><span>♛ SINTA A ENERGIA DO SALÃO ♛</span><span>✧ LUZES • GLAMOUR • DIVERSÃO ✧</span><span>✦ GIRO DA FORTUNA ✦</span>';
       hero.insertAdjacentElement('afterend',ribbon);
     }
-    const cards=document.querySelector('.games-grid,.games-container,.game-grid,.games-list');
+    const cards=document.querySelector('.games,.games-grid,.games-container,.game-grid,.games-list');
     if(cards&&!cards.previousElementSibling?.classList.contains('vegas-lightline')){const lights=document.createElement('div');lights.className='vegas-lightline';lights.setAttribute('aria-hidden','true');cards.parentNode.insertBefore(lights,cards);}
     if(!document.querySelector('.vegas-spark-layer')){
       const layer=document.createElement('div');layer.className='vegas-spark-layer';layer.setAttribute('aria-hidden','true');document.body.appendChild(layer);
