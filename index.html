@@ -900,7 +900,8 @@ async function authCassino(mode){
  const password=document.getElementById('cassinoPassword').value;
  const displayName=(document.getElementById('cassinoName')?.value||'').trim();
  const confirmPassword=document.getElementById('cassinoConfirmPassword')?.value||'';
- const timeout=(promise,label)=>Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error(label+' demorou mais de 15 segundos. Confira sua conexão e tente novamente.')),15000))]);
+ let timeoutId;
+ const timeout=(promise,label)=>Promise.race([promise,new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error(label+' demorou mais de 15 segundos. Confira sua conexão e tente novamente.')),15000)})]).finally(()=>clearTimeout(timeoutId));
  try{
   let result;
   if(mode==='signup'){
@@ -914,16 +915,15 @@ async function authCassino(mode){
   if(result.error) throw result.error;
   cassinoUser=result.data.user||(result.data.session&&result.data.session.user)||null;
   if(mode==='signup'&&!result.data.session){
-   setPayStatus('O Supabase ainda não liberou a sessão. Confira se “Confirm email” está DESATIVADO no provedor Email e salve a alteração. Nenhuma conta foi conectada nesta tela.');
+   setPayStatus('O Supabase criou ou recebeu o pedido, mas não devolveu uma sessão. A confirmação de e-mail ainda pode estar ativa neste projeto ou a conta já precisa ser confirmada. Tente entrar pela opção “Já tenho conta” e, se falhar, veja a mensagem de erro.');
    return;
   }
-  if(mode==='signup'&&cassinoUser){
-   const profileResult=await timeout(cassinoSupabase.from('profiles').upsert({id:cassinoUser.id,display_name:displayName},{onConflict:'id'}),'A criação do perfil');
-   if(profileResult.error) throw profileResult.error;
-  }
-  await atualizarCarteiraCassino();
+  if(!cassinoUser)throw new Error('O Supabase não retornou os dados da conta. Tente novamente.');
   renderPayments();
-  setPayStatus('Conta conectada. Você já pode entrar nos jogos demonstrativos.');
+  setPayStatus(mode==='signup'?'Cadastro concluído! Sua conta está conectada.':'Login concluído! Você entrou na sua conta.');
+  // O nome já fica salvo no user_metadata. A criação de perfil/carteira não pode
+  // deixar o cadastro preso caso uma tabela ou política do banco esteja faltando.
+  atualizarCarteiraCassino();
  }catch(e){
   setPayStatus('Erro no cadastro/login: '+(e.message||'verifique os dados e tente novamente.'));
  }finally{
