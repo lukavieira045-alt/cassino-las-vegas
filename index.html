@@ -865,10 +865,18 @@ function renderPayments(){
  document.getElementById('payTitle').textContent='Minha carteira';
  const statusNotice=REAL_MONEY_GAMES_ENABLED?'':'<div class="payNotice"><b>⚠️ Depósitos reais bloqueados por segurança.</b><p>O saldo e os jogos ainda não estão conectados a um motor de apostas seguro no servidor. Não envie dinheiro ainda.</p></div>';
  const buttons=REAL_MONEY_GAMES_ENABLED?'<p>Escolha o valor para depositar:</p><div class="payAmounts">'+[5,10,20,50,100,200].map(n=>'<button class="goldbtn" onclick="criarDepositoCassino('+n+')">R$ '+n+'</button>').join('')+'</div>':'<button class="darkbtn" disabled style="opacity:.55">Depósitos temporariamente desativados</button>';
- payContent.innerHTML='<p>Conta: <b>'+escapePay(cassinoUser.email||'')+'</b></p><div class="payNotice">Saldo da carteira: <b>R$ '+Number(cassinoWallet).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+'</b></div>'+statusNotice+buttons+'<p><button class="darkbtn" onclick="atualizarCarteiraCassino()">Atualizar saldo</button><button class="darkbtn" onclick="sairContaCassino()">Sair da conta</button></p><p class="legal">O saldo da carteira é separado das fichas demonstrativas dos jogos.</p>';
+  const playerName=(cassinoUser.user_metadata&&(cassinoUser.user_metadata.display_name||cassinoUser.user_metadata.full_name))||'Jogador';
+  const playerId=cassinoUser.id||'';
+  payContent.innerHTML='<div class="payNotice"><b>👤 Meu perfil</b><p>Nome: <b>'+escapePay(playerName)+'</b></p><p>E-mail: <b>'+escapePay(cassinoUser.email||'')+'</b></p><p style="overflow-wrap:anywhere">ID do jogador: <code id="cassinoPlayerId">'+escapePay(playerId)+'</code></p><button class="darkbtn" type="button" onclick="copiarIdCassino()">Copiar meu ID</button></div><div class="payNotice">Saldo da carteira: <b>R$ '+Number(cassinoWallet).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+'</b></div>'+statusNotice+buttons+'<p><button class="darkbtn" onclick="atualizarCarteiraCassino()">Atualizar saldo</button><button class="darkbtn" onclick="sairContaCassino()">Sair da conta</button></p><p class="legal">Seu perfil e ID são vinculados à sua conta no Supabase. O saldo da carteira é separado das fichas demonstrativas dos jogos.</p>';
  if(payMode==='withdraw') setPayStatus('Saques ainda não foram implementados; nenhum pedido foi enviado.');
 }
 function escapePay(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function copiarIdCassino(){
+ const id=cassinoUser&&cassinoUser.id;
+ if(!id){setPayStatus('Entre na sua conta para ver seu ID.');return}
+ try{await navigator.clipboard.writeText(id);setPayStatus('ID do jogador copiado!')}
+ catch(e){setPayStatus('Seu ID é: '+id)}
+}
 async function authCassino(mode){
  setPayStatus('Processando...');
  const email=document.getElementById('cassinoEmail').value.trim();
