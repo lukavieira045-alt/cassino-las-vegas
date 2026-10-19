@@ -479,6 +479,24 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 .responsible-notice{margin:28px 14px 20px!important;padding:20px 16px!important;text-align:center!important;border:1px solid #ffcf63!important;border-radius:10px!important;background:linear-gradient(100deg,#260b28,#120b1b 55%,#35101e)!important;box-shadow:0 0 12px #ff2b9b55,0 0 24px #ffbd4430,inset 0 0 18px #ff2b9b16!important;color:#fff0d1!important}
 .responsible-notice strong{display:block;margin-bottom:9px;color:#ffe18a!important;font:900 clamp(13px,3vw,17px)/1.5 Arial,sans-serif!important;letter-spacing:1px;text-shadow:0 0 8px #ffb52e,0 0 15px #ff2b9b}
 .responsible-notice span{display:block;color:#f7e9e0!important;font:12px/1.7 Arial,sans-serif!important}
+</style><style id="vegas-atmosphere-motion">
+/* Atmosfera Vegas: luzes em movimento sem interferir nos botões */
+.jackpot-hero{isolation:isolate;overflow:hidden;animation:vegasRoomGlow 7s ease-in-out infinite alternate}
+.jackpot-hero:before{content:"";position:absolute;z-index:0;inset:9px;border:2px dotted rgba(255,211,91,.8);border-radius:inherit;pointer-events:none;opacity:.72;animation:vegasBulbs 1.8s steps(2,end) infinite}
+.jackpot-hero:after{content:"";position:absolute;z-index:0;top:-45%;bottom:-45%;left:-70%;width:45%;pointer-events:none;transform:rotate(18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),rgba(255,218,112,.23),rgba(255,255,255,.07),transparent);animation:vegasSpotlight 6s ease-in-out infinite}
+.jackpot-hero>*{position:relative;z-index:1}
+.vegas-live-ribbon{position:relative;overflow:hidden;margin:14px 0 20px;padding:11px 0;border-top:1px solid #ffce59;border-bottom:1px solid #ffce59;background:linear-gradient(90deg,#16051d,#451044,#16051d);box-shadow:0 0 18px #ff2ca455,inset 0 0 15px #ffbf3322}
+.vegas-live-track{display:flex;width:max-content;gap:34px;white-space:nowrap;animation:vegasRibbonMove 27s linear infinite;color:#ffe6a0;font:900 12px/1.5 Arial,sans-serif;letter-spacing:2px;text-shadow:0 0 7px #ffb82e,0 0 13px #ff2d9b}
+.vegas-lightline{height:8px;margin:10px 2px 14px;border-radius:10px;background:radial-gradient(circle,#fff4b0 0 2px,#ffbd39 3px,transparent 5px) 0 0/25px 8px repeat-x;filter:drop-shadow(0 0 5px #ffc344);animation:vegasBulbs .9s steps(2,end) infinite}
+.vegas-spark-layer{position:fixed;inset:0;z-index:20;pointer-events:none;overflow:hidden}
+.vegas-spark{position:absolute;bottom:-30px;color:#ffd66b;text-shadow:0 0 8px #ffad22,0 0 18px #ff2ca4;opacity:0;animation:vegasSparkRise var(--duration,8s) linear forwards}
+@keyframes vegasRoomGlow{0%{box-shadow:0 0 15px #ff2ca433,0 0 25px #582aff22}50%{box-shadow:0 0 26px #ff2ca477,0 0 45px #582aff44}100%{box-shadow:0 0 20px #ffd34c55,0 0 38px #ff2ca455}}
+@keyframes vegasBulbs{0%,100%{opacity:.48;filter:brightness(.9)}50%{opacity:1;filter:brightness(1.6)}}
+@keyframes vegasSpotlight{0%{left:-75%}60%,100%{left:140%}}
+@keyframes vegasRibbonMove{to{transform:translateX(-50%)}}
+@keyframes vegasSparkRise{0%{transform:translate3d(0,0,0) rotate(0) scale(.55);opacity:0}12%{opacity:.85}80%{opacity:.65}100%{transform:translate3d(var(--drift,30px),-110vh,0) rotate(220deg) scale(1.2);opacity:0}}
+@media(max-width:600px){.vegas-live-ribbon{margin:10px 0 15px}.vegas-live-track{font-size:11px;letter-spacing:1.4px;gap:24px}.jackpot-hero:before{inset:6px}}
+@media(prefers-reduced-motion:reduce){.jackpot-hero,.jackpot-hero:before,.jackpot-hero:after,.vegas-live-track,.vegas-lightline,.vegas-spark{animation:none!important}.vegas-spark-layer{display:none}}
 </style></head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DEMO<br><b id="balance">1.000</b></div></div></nav></header>
@@ -1113,5 +1131,26 @@ atualizarCarteiraCassino();
 // Contador visual animado; não representa usuários reais conectados.
 (function(){const el=document.getElementById('onlinePlayers');if(!el)return;let value=60000;function format(n){return Math.round(n).toLocaleString('pt-BR');}function tick(){const change=Math.floor(Math.random()*1801)-900;value=Math.max(45000,Math.min(68000,value+change));el.textContent=format(value);setTimeout(tick,2500+Math.random()*3500);}el.textContent=format(value);setTimeout(tick,2200);})();
 </script>
-</body></html>
+<script id="vegas-atmosphere-motion-script">
+(function(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  function setup(){
+    const hero=document.querySelector('.jackpot-hero');
+    if(hero&&!document.querySelector('.vegas-live-ribbon')){
+      const ribbon=document.createElement('div');ribbon.className='vegas-live-ribbon';ribbon.setAttribute('aria-label','Ambiente Cassino Las Vegas');
+      ribbon.innerHTML='<div class="vegas-live-track"><span>✦ BEM-VINDO AO CASSINO LAS VEGAS ✦</span><span>♛ SINTA A ENERGIA DO SALÃO ♛</span><span>✧ LUZES • GLAMOUR • DIVERSÃO ✧</span><span>✦ GIRO DA FORTUNA ✦</span><span>✦ BEM-VINDO AO CASSINO LAS VEGAS ✦</span><span>♛ SINTA A ENERGIA DO SALÃO ♛</span><span>✧ LUZES • GLAMOUR • DIVERSÃO ✧</span><span>✦ GIRO DA FORTUNA ✦</span>';
+      hero.insertAdjacentElement('afterend',ribbon);
+    }
+    const cards=document.querySelector('.games-grid,.games-container,.game-grid,.games-list');
+    if(cards&&!cards.previousElementSibling?.classList.contains('vegas-lightline')){const lights=document.createElement('div');lights.className='vegas-lightline';lights.setAttribute('aria-hidden','true');cards.parentNode.insertBefore(lights,cards);}
+    if(!document.querySelector('.vegas-spark-layer')){
+      const layer=document.createElement('div');layer.className='vegas-spark-layer';layer.setAttribute('aria-hidden','true');document.body.appendChild(layer);
+      const symbols=['✦','✧','✦','•','♛'];
+      function spark(){if(document.hidden)return;const e=document.createElement('span');e.className='vegas-spark';e.textContent=symbols[Math.floor(Math.random()*symbols.length)];e.style.left=(Math.random()*100)+'%';e.style.setProperty('--duration',(7+Math.random()*7)+'s');e.style.setProperty('--drift',((Math.random()-.5)*120)+'px');e.style.fontSize=(10+Math.random()*12)+'px';layer.appendChild(e);setTimeout(()=>e.remove(),14500);}
+      for(let i=0;i<7;i++)setTimeout(spark,i*350);setInterval(spark,850);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
+})();
+</script></body></html>
 
