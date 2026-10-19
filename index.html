@@ -306,11 +306,19 @@ body{background:#09070b;color:#f4fff7;font-family:Arial,Helvetica,sans-serif;pad
 .cardinfo .type{font-size:7px!important}
 .playline{font-size:7px!important;margin-top:6px!important;padding-top:6px!important}
 @media(min-width:760px){.games{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}.gameimage{height:130px!important}}
+</style><style>
+#payModal{display:none;position:fixed;inset:0;z-index:1000;background:#050406ed;padding:14px;overflow:auto;place-items:center;font-family:Arial,sans-serif}
+#payModal.open{display:grid}#payPanel{width:min(100%,480px);max-height:94vh;overflow:auto;background:linear-gradient(145deg,#21180e,#0b090d);border:1px solid #d8b45f;border-radius:18px;padding:20px;color:#f8f0dc;box-shadow:0 15px 60px #000}
+#payPanel h2{color:#f4cf78;font-size:22px;margin:0 0 12px}#payPanel p{font-size:13px;line-height:1.55;color:#d7cbb8}
+#payPanel input{display:block;width:100%;padding:13px;margin:9px 0;background:#0c090d;border:1px solid #80683e;color:#fff;border-radius:8px}
+#payPanel button{margin:5px 4px 5px 0}#payStatus{font-size:13px;line-height:1.5;margin:10px 0;color:#ffe8a8;overflow-wrap:anywhere}
+.payAmounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.payAmounts button{margin:0;min-height:42px}
+.payNotice{padding:10px;border:1px solid #b9944c66;border-radius:10px;background:#120e12}
 </style></head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DEMO<br><b id="balance">1.000</b></div></div></nav></header>
-<div class="quick-actions"><button onclick="openAccount()">💰<span>Depositar</span></button><button onclick="openAccount()">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
-<div class="id-strip"><span>🎰 LAS VEGAS · SALÃO DE JOGOS</span><button onclick="openAccount()">👤 Perfil demo　▣</button></div>
+<div class="quick-actions"><button onclick="openPayments('deposit')">💰<span>Depositar</span></button><button onclick="openPayments('withdraw')">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
+<div class="id-strip"><span>🎰 LAS VEGAS · SALÃO DE JOGOS</span><button onclick="openPayments('account')">👤 Minha conta　▣</button></div>
 <nav class="categorybar"><button class="active" data-filter="all">🔥<span>Popular</span></button><button data-filter="slots">🎰<span>Slots</span></button><button data-filter="arcade">⚡<span>Minijogos</span></button><button data-filter="table">🎲<span>Mesas</span></button></nav>
 <section class="jackpot-hero"><div class="jackpot-content"><span>✦ CASSINO LAS VEGAS ✦</span><h1>JACKPOT ACUMULADO</h1><strong class="jackpot-value">1.452.319 <small>FICHAS DEMO</small></strong><div class="jackpot-icons"><span>🎰</span><span>💎</span></div><button class="goldbtn" onclick="document.querySelector('#salon').scrollIntoView({behavior:'smooth'})">JOGAR AGORA ↓</button></div></section><div class="marquee"><span>Grand Casino</span><span>Roleta europeia</span><span>Máquinas de slots</span><span>Arcade</span><span>Estilo Las Vegas</span></div>
 <div class="marquee"><span>Grand Casino</span><span>Roleta ao vivo simulada</span><span>Mesas clássicas</span><span>Arcade</span><span>Estilo Las Vegas</span></div>
@@ -792,5 +800,85 @@ spinWheel=function(){
 document.querySelectorAll('.categorybar [data-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.categorybar [data-filter]').forEach(b=>b.classList.toggle('active',b===btn));const f=btn.dataset.filter;document.querySelectorAll('.gamecard[data-category]').forEach(c=>c.style.display=(f==='all'||c.dataset.category===f)?'':'none')}));
 </script>
 
-<nav class="bottom-nav"><button onclick="window.scrollTo({top:0,behavior:'smooth'})">🏠<span>Início</span></button><button onclick="document.querySelector('#salon').scrollIntoView({behavior:'smooth'})">🎰<span>Jogos</span></button><button onclick="openAccount()">🎁<span>Bônus</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">👤<span>Perfil</span></button></nav></body></html>
+<nav class="bottom-nav"><button onclick="window.scrollTo({top:0,behavior:'smooth'})">🏠<span>Início</span></button><button onclick="document.querySelector('#salon').scrollIntoView({behavior:'smooth'})">🎰<span>Jogos</span></button><button onclick="openAccount()">🎁<span>Bônus</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">👤<span>Perfil</span></button></nav><div id="payModal" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+ <div id="payPanel">
+  <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+   <h2 id="payTitle">Minha conta</h2><button class="xbtn" onclick="closePayments()" aria-label="Fechar">✕</button>
+  </div>
+  <div id="payContent"></div><div id="payStatus" role="status" aria-live="polite"></div>
+ </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const CASSINO_SUPABASE_URL='https://qmqlqjpdznhbaqnqylgl.supabase.co';
+const CASSINO_SUPABASE_KEY='sb_publishable_Bw_BakUlG_tjPLBP6k5f-w_K6A8YSSa';
+const cassinoSupabase=window.supabase.createClient(CASSINO_SUPABASE_URL,CASSINO_SUPABASE_KEY);
+let cassinoUser=null,cassinoWallet=0,payMode='account';
+const payModal=document.getElementById('payModal'),payContent=document.getElementById('payContent'),payStatus=document.getElementById('payStatus');
+const REAL_MONEY_GAMES_ENABLED=false;
+function closePayments(){payModal.classList.remove('open')}
+function setPayStatus(t){payStatus.textContent=t||''}
+function openPayments(mode){payMode=mode||'account';payModal.classList.add('open');renderPayments()}
+payModal.addEventListener('click',e=>{if(e.target===payModal)closePayments()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePayments()});
+function renderPayments(){
+ setPayStatus('');
+ if(!cassinoUser){
+  document.getElementById('payTitle').textContent='Entrar ou criar conta';
+  payContent.innerHTML='<p>Entre com seu e-mail e senha ou crie sua conta para consultar a carteira.</p><form id="cassinoAuthForm"><input id="cassinoEmail" type="email" autocomplete="email" placeholder="Seu e-mail" required><input id="cassinoPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Senha (mínimo 6 caracteres)" required><button class="goldbtn" type="submit">Entrar</button><button class="darkbtn" type="button" id="cassinoSignup">Criar conta</button></form><p class="legal">Use um e-mail seu. Nunca compartilhe sua senha.</p>';
+  document.getElementById('cassinoAuthForm').onsubmit=async e=>{e.preventDefault();await authCassino('login')};
+  document.getElementById('cassinoSignup').onclick=()=>authCassino('signup');
+  return;
+ }
+ document.getElementById('payTitle').textContent='Minha carteira';
+ const statusNotice=REAL_MONEY_GAMES_ENABLED?'':'<div class="payNotice"><b>⚠️ Depósitos reais bloqueados por segurança.</b><p>O saldo e os jogos ainda não estão conectados a um motor de apostas seguro no servidor. Não envie dinheiro ainda.</p></div>';
+ const buttons=REAL_MONEY_GAMES_ENABLED?'<p>Escolha o valor para depositar:</p><div class="payAmounts">'+[5,10,20,50,100,200].map(n=>'<button class="goldbtn" onclick="criarDepositoCassino('+n+')">R$ '+n+'</button>').join('')+'</div>':'<button class="darkbtn" disabled style="opacity:.55">Depósitos temporariamente desativados</button>';
+ payContent.innerHTML='<p>Conta: <b>'+escapePay(cassinoUser.email||'')+'</b></p><div class="payNotice">Saldo da carteira: <b>R$ '+Number(cassinoWallet).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+'</b></div>'+statusNotice+buttons+'<p><button class="darkbtn" onclick="atualizarCarteiraCassino()">Atualizar saldo</button><button class="darkbtn" onclick="sairContaCassino()">Sair da conta</button></p><p class="legal">O saldo da carteira é separado das fichas demonstrativas dos jogos.</p>';
+ if(payMode==='withdraw') setPayStatus('Saques ainda não foram implementados; nenhum pedido foi enviado.');
+}
+function escapePay(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function authCassino(mode){
+ setPayStatus('Processando...');
+ const email=document.getElementById('cassinoEmail').value.trim();
+ const password=document.getElementById('cassinoPassword').value;
+ try{
+  const result=mode==='signup'?await cassinoSupabase.auth.signUp({email,password}):await cassinoSupabase.auth.signInWithPassword({email,password});
+  if(result.error) throw result.error;
+  if(mode==='signup'&&!result.data.session){setPayStatus('Conta criada. Confira seu e-mail para confirmar o cadastro e depois entre.');return}
+  cassinoUser=result.data.user||(result.data.session&&result.data.session.user)||null;
+  await atualizarCarteiraCassino();renderPayments();
+  setPayStatus('Conta conectada.');
+ }catch(e){setPayStatus('Não foi possível entrar: '+(e.message||'verifique os dados e tente novamente.'))}
+}
+async function atualizarCarteiraCassino(){
+ try{
+  const result=await cassinoSupabase.auth.getUser();
+  if(result.error)throw result.error;
+  const user=result.data.user;
+  cassinoUser=user;
+  if(!user){cassinoWallet=0;if(payModal.classList.contains('open'))renderPayments();return}
+  const walletResult=await cassinoSupabase.from('wallets').select('balance').eq('user_id',user.id).single();
+  if(walletResult.error)throw walletResult.error;
+  cassinoWallet=Number(walletResult.data.balance||0);
+  if(payModal.classList.contains('open'))renderPayments();
+ }catch(e){setPayStatus('Não consegui carregar a carteira: '+(e.message||'tente novamente.'))}
+}
+async function criarDepositoCassino(amount){
+ if(!REAL_MONEY_GAMES_ENABLED){setPayStatus('Depósitos bloqueados até os jogos reais estarem integrados com segurança.');return}
+ if(!cassinoUser){setPayStatus('Entre na sua conta primeiro.');return}
+ setPayStatus('Criando pagamento...');
+ try{
+  const sessionResult=await cassinoSupabase.auth.getSession();
+  const session=sessionResult.data.session;
+  if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
+  const result=await cassinoSupabase.functions.invoke('criar-deposito-cassino',{body:{amount:amount}});
+  if(result.error)throw result.error;
+  if(!result.data||!result.data.checkout_url)throw new Error((result.data&&result.data.error)||'O Mercado Pago não retornou o link de pagamento.');
+  window.location.href=result.data.checkout_url;
+ }catch(e){setPayStatus('Não foi possível iniciar o pagamento: '+(e.message||'tente novamente.'))}
+}
+async function sairContaCassino(){await cassinoSupabase.auth.signOut();cassinoUser=null;cassinoWallet=0;renderPayments();setPayStatus('Você saiu da conta.')}
+cassinoSupabase.auth.onAuthStateChange((_event,session)=>{cassinoUser=session&&session.user?session.user:null;if(cassinoUser)atualizarCarteiraCassino()});
+atualizarCarteiraCassino();
+</script></body></html>
 
