@@ -397,7 +397,38 @@ header{background:linear-gradient(100deg,#09070bf5,#1d0d1df2,#09070bf5);box-shad
 @media(max-width:700px){.hero{background-position:58% center;min-height:470px}.heroInner{padding-top:48px;padding-bottom:54px}.games{gap:11px}.gamecard{box-shadow:inset 0 1px #fff2,0 5px 16px #0007}.gameimage img{filter:brightness(.82) saturate(1.1)}}
 @media(prefers-reduced-motion:reduce){.hero:before{animation:none}*{scroll-behavior:auto!important;transition:none!important}}
 </style>
-</head>
+<style id="vegas-visible-lighting">
+/* Atualização forte de iluminação e letreiro para o salão */
+body{background-color:#07050b;background-image:radial-gradient(ellipse at 50% 0%,#76242e 0%,#281026 32%,#09070d 75%);background-attachment:fixed}
+.topbar{height:6px;background:linear-gradient(90deg,#ff1e74,#ffe58a,#fff,#ffcf48,#a51cff,#ff1e74);background-size:300% 100%;animation:vegasBar 5s linear infinite;box-shadow:0 0 14px #ffca5c,0 0 28px #ff2c93}
+header{border-bottom:1px solid #ffe08a;box-shadow:0 4px 28px #ffae3c30,0 0 24px #e82d8a20}
+.brandtext strong{color:#fff0b2;text-shadow:0 0 5px #fff,0 0 12px #ffd65c,0 0 26px #ffb52d,0 0 42px #ff2d8d}
+.crest{background:radial-gradient(circle,#ffdf7b2b,transparent 70%);box-shadow:0 0 12px #ffe08a,0 0 30px #ff9f2d99,inset 0 0 15px #ffe08a55}
+.hero{min-height:560px;background-image:linear-gradient(90deg,#08060de8 0%,#100916b8 42%,#13091626 100%),url('https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?auto=format&fit=crop&w=2000&q=90');background-position:center 48%;border-bottom:2px solid #ffca5c;box-shadow:inset 0 -25px 60px #08050d,0 0 30px #ffb52f18}
+.hero:before{content:"";position:absolute;z-index:0;inset:0;pointer-events:none;background:radial-gradient(ellipse at 80% 38%,#ffce5c55 0%,transparent 28%),radial-gradient(ellipse at 65% 55%,#ff208b30 0%,transparent 36%),repeating-linear-gradient(115deg,transparent 0 80px,#ffdf8a0a 82px,transparent 85px);animation:vegasPulse 4s ease-in-out infinite alternate}
+.hero:after{background:linear-gradient(0deg,#09070b 0%,transparent 22%,#12081525 68%,#09070b66 100%)}
+.heroInner{z-index:2}
+.heroInner:after{content:"✦  WELCOME TO LAS VEGAS  ✦   •   JACKPOT • LIVE CASINO •";display:block;width:max-content;max-width:100%;margin-top:30px;padding:12px 18px;border:1px solid #ffe18a;background:#130912c9;color:#ffeaa0;font:700 10px Arial,sans-serif;letter-spacing:3px;text-shadow:0 0 8px #ffc94d;box-shadow:0 0 10px #ffcb4c99,inset 0 0 15px #ffcb4c22;animation:signGlow 2.4s ease-in-out infinite alternate}
+.hero h1{color:#fff8df;text-shadow:0 0 7px #fff4c2,0 0 18px #ffc54f,0 0 38px #ff8c28,0 5px 28px #000}
+.hero h1 span{color:#ffe28a;text-shadow:0 0 7px #fff0b8,0 0 18px #ffc13d,0 0 35px #ff8b25}
+.overline{color:#ffdf83;text-shadow:0 0 8px #ffc54f,0 0 18px #ff9d36}
+.marquee{position:relative;background:linear-gradient(90deg,#220b1b,#5b142f,#251027);border-top:1px solid #ffdf83;border-bottom:1px solid #ffdf83;box-shadow:0 0 16px #ff2d8c55,0 0 26px #ffc34b22;color:#fff0b2;text-shadow:0 0 8px #ffcf58}
+.sectionTitle{border-bottom-color:#ffcf5c;box-shadow:0 4px 16px -13px #ffce5c}
+.sectionTitle h2{color:#fff0c1;text-shadow:0 0 12px #ffbc4c44}
+.games .gamecard{border:1px solid #e9b94c;background:linear-gradient(145deg,#291426,#100b16 70%);box-shadow:0 0 0 1px #f72d8c20,0 0 18px #ffb52f15,inset 0 0 18px #ff2e8b0c}
+.games .gamecard:before{content:"";position:absolute;z-index:2;inset:0;pointer-events:none;border:1px solid #ffdf8355;box-shadow:inset 0 0 16px #ffce5c12}
+.games .gamecard:hover{border-color:#fff0a6;box-shadow:0 0 10px #ffdf83aa,0 0 28px #ff2d8c66,0 14px 34px #000b}
+.gameimage img{filter:brightness(.92) saturate(1.3) contrast(1.06)}
+.gameicon{filter:drop-shadow(0 0 8px #ffdf83) drop-shadow(0 0 18px #ff2d8c88)}
+.goldbtn{border-color:#fff0a6;box-shadow:0 0 8px #ffdf83aa,0 0 20px #ffb52f55;background:linear-gradient(135deg,#fff8cb,#ffca4e 55%,#f59b27)}
+.promo{border-color:#ffe08a;background:linear-gradient(110deg,#401425,#241024 58%,#0e101d);box-shadow:0 0 20px #ff2d8c30,0 0 32px #ffbd4420}
+.balance{border-color:#ffe08a;box-shadow:0 0 12px #ffbd4430}
+@keyframes vegasBar{to{background-position:300% 0}}
+@keyframes vegasPulse{from{opacity:.65;filter:saturate(1)}to{opacity:1;filter:saturate(1.35)}}
+@keyframes signGlow{from{box-shadow:0 0 8px #ffcb4c66,inset 0 0 10px #ffcb4c11}to{box-shadow:0 0 20px #ffcb4cbb,0 0 28px #ff2d8c55,inset 0 0 18px #ffcb4c33}}
+@media(max-width:600px){.hero{min-height:530px;background-position:59% center}.heroInner:after{font-size:8px;letter-spacing:1.5px;padding:10px 9px;margin-top:22px}.hero h1{font-size:clamp(39px,12vw,60px)}}
+@media(prefers-reduced-motion:reduce){.topbar,.hero:before,.heroInner:after{animation:none}}
+</style></head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DEMO<br><b id="balance">1.000</b></div></div></nav></header>
 <div class="quick-actions"><button onclick="openPayments('deposit')">💰<span>Depositar</span></button><button onclick="openPayments('withdraw')">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
