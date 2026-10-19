@@ -328,6 +328,45 @@ body{background:#09070b;color:#f4fff7;font-family:Arial,Helvetica,sans-serif;pad
 #payPanel .legal{font-size:11px;color:#bfb5a5}
 #payPanel .xbtn{border:1px solid #b88a36;background:#120d10;color:#ffe6a2;border-radius:50%;width:34px;height:34px;flex-shrink:0}
 @media(max-width:420px){#payModal{padding:7px}#payPanel{padding:14px;border-radius:15px}#payPanel:before{letter-spacing:1px;padding-top:9px;margin-bottom:13px}#payPanel input{padding:13px 11px}}
+
+
+/* LAS VEGAS NIGHTLIGHTS — visual-only home-page polish */
+:root{--gold:#ffd66f;--gold2:#fff0b5;--red:#ff294f;--wine:#26091c;--ink:#05050b;--panel:#0b0b14;--line:#72502b;--cream:#fff8e8;--muted:#c0b5c7}
+body{background:radial-gradient(ellipse at 50% 0%,#17102b 0,#07060d 43%,#020307 100%);background-attachment:fixed}
+header{background:linear-gradient(100deg,#05050bf5,#13091df2,#050b17f5);border-bottom:1px solid #ffd66f8a;box-shadow:0 5px 24px #000b,0 1px 16px #ff2d9d20}
+.brand{filter:drop-shadow(0 0 8px #ffb52b66)}
+.crest{border-color:#ffe69a;box-shadow:0 0 9px #ffc84a,0 0 24px #ff2d9d55,inset 0 0 12px #ffb52b25}
+.brandtext strong{text-shadow:0 0 6px #fff2bd,0 0 15px #ffb52b,0 0 30px #ff2d9d88}
+.balance{border-color:#ffe28c;background:linear-gradient(135deg,#20120c,#08070d);box-shadow:0 0 12px #ffbd3b38,inset 0 0 15px #ffbd3b0d}
+.goldbtn{box-shadow:0 0 8px #ffd66f88,0 0 20px #ff9c2b3b,inset 0 1px #fff8d8}
+.darkbtn{border-color:#d8b45f;box-shadow:inset 0 0 12px #ff2d9d0b,0 0 10px #00d9ff12}
+.hero{min-height:620px;border-bottom:1px solid #ffd66f8c;background-image:linear-gradient(90deg,#05040bf2 0%,#080610d4 32%,#08061075 63%,#05040b99 100%),url('https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?auto=format&fit=crop&w=2200&q=90');background-position:center 53%;background-size:cover;box-shadow:inset 0 0 100px #000a,0 12px 36px #0009}
+.hero:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.8;background:radial-gradient(ellipse at 8% 25%,#ff2d9d32,transparent 25%),radial-gradient(ellipse at 85% 17%,#00d9ff30,transparent 26%),linear-gradient(115deg,transparent 0 35%,#ffffff0b 48%,transparent 53% 100%);animation:vegasGlow 5s ease-in-out infinite alternate}
+.hero:after{background:linear-gradient(0deg,#030308 0%,transparent 22%,transparent 78%,#0303088c)}
+.hero h1{color:#fff8df;text-shadow:0 3px 2px #000,0 0 10px #fff4c6aa,0 0 26px #ff2d9d88,0 0 48px #00d9ff38}
+.hero h1 span{color:#ffdc75;text-shadow:0 0 8px #ffe9a1,0 0 23px #ff9e28,0 0 42px #ff2d9d75}
+.overline{color:#ffdf7c;text-shadow:0 0 12px #ff2d9d88}
+.marquee{border-color:#ffd66f8c;background:linear-gradient(90deg,#090711,#200b25,#071522,#200b25,#090711);box-shadow:inset 0 0 25px #000,0 0 18px #ff2d9d13}
+.marquee span{color:#fff0b3;text-shadow:0 0 8px #ffd66f,0 0 17px #ff2d9d,0 0 25px #00d9ff55}
+.sectionTitle{border-bottom-color:#ffd66f88;box-shadow:0 8px 20px -19px #ff2d9d}
+.sectionTitle h2{color:#fff0bd;text-shadow:0 0 8px #ffbd3b55,0 0 20px #ff2d9d28}
+.sectionTitle .label{color:#8deeff;text-shadow:0 0 10px #00d9ff77}
+.gamecard{border:1px solid #e1b95c;background:linear-gradient(145deg,#1a1021,#080a13 75%);box-shadow:0 8px 25px #000a,inset 0 0 0 1px #fff1,0 0 12px #ff2d9d12}
+.gamecard:hover{border-color:#fff0a4;box-shadow:0 0 0 1px #ffd66f,0 0 17px #ff2d9d55,0 0 28px #00d9ff26,0 15px 32px #000c}
+.gameimage{background:radial-gradient(ellipse at center,#311337,#070913)}
+.gameimage img{filter:brightness(.86) saturate(1.22) contrast(1.08)}
+.gameimage:after{background:linear-gradient(0deg,#05050cf2,transparent 78%),linear-gradient(135deg,#ff2d9d20,transparent 45%,#00d9ff20)}
+.gameicon{filter:drop-shadow(0 0 8px #ffdf76) drop-shadow(0 0 17px #ff2d9d55)}
+.cardinfo .type{color:#8deeff;text-shadow:0 0 9px #00d9ff66}
+.cardinfo h3{color:#fff1cb;text-shadow:0 0 10px #ffcf6c33}
+.playline{border-top-color:#ffd66f66;color:#ffe7a1}
+.promo{position:relative;overflow:hidden;border-color:#ffd66f;background:radial-gradient(ellipse at 15% 50%,#5b1b39,#17101d 42%,#07121c 100%);box-shadow:0 0 0 1px #ff2d9d24,0 0 24px #ff2d9d22,0 0 34px #00d9ff14,inset 0 0 35px #0008}
+.promo:after{content:"✦　✧　✦";position:absolute;right:25%;top:8px;color:#ffdc73;text-shadow:0 0 8px #ff2d9d,0 0 16px #ffbd3b;opacity:.65;pointer-events:none}
+.promo h3{color:#ffdc75;text-shadow:0 0 12px #ff9f2d66}
+footer{border-top-color:#ffd66f55;color:#c5b6d0}
+@media(max-width:850px){.hero{min-height:500px;background-position:59% center}}
+@media(max-width:480px){.hero{min-height:470px;background-position:58% center}.heroInner{padding:48px 18px}.promo:after{display:none}.gameimage img{filter:brightness(.9) saturate(1.25) contrast(1.08)}}
+@media(prefers-reduced-motion:reduce){.hero:before{animation:none}}
 </style></head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DEMO<br><b id="balance">1.000</b></div></div></nav></header>
