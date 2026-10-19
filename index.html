@@ -903,7 +903,11 @@ async function authCassino(mode){
   let result;
   if(mode==='signup'){
    if(password!==confirmPassword)throw new Error('As senhas não são iguais. Confira a confirmação.');
-   result=await timeout(cassinoSupabase.auth.signUp({email:authEmail,password,options:{data:{display_name:playerName,full_name:playerName,player_name:playerName}}}),'O cadastro');
+   // Cadastro feito no servidor com confirmação interna, sem disparar e-mail do Supabase.
+   const created=await timeout(cassinoSupabase.functions.invoke('cassino-criar-conta',{body:{playerName,password}}),'O cadastro');
+   if(created.error)throw created.error;
+   if(!created.data||created.data.error)throw new Error((created.data&&created.data.error)||'Não foi possível criar a conta.');
+   result=await timeout(cassinoSupabase.auth.signInWithPassword({email:created.data.email||authEmail,password}),'A entrada após cadastro');
   }else{
    result=await timeout(cassinoSupabase.auth.signInWithPassword({email:authEmail,password}),'O login');
   }
