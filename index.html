@@ -367,7 +367,37 @@ footer{border-top-color:#ffd66f55;color:#c5b6d0}
 @media(max-width:850px){.hero{min-height:500px;background-position:59% center}}
 @media(max-width:480px){.hero{min-height:470px;background-position:58% center}.heroInner{padding:48px 18px}.promo:after{display:none}.gameimage img{filter:brightness(.9) saturate(1.25) contrast(1.08)}}
 @media(prefers-reduced-motion:reduce){.hero:before{animation:none}}
-</style></head>
+</style><style id="vegas-neon-upgrade">
+/* Camada visual Vegas: somente CSS, sem alterar cadastro, carteira ou jogos */
+:root{--gold:#ffe28a;--gold2:#fff4c2;--line:#80602d}
+body{background:radial-gradient(ellipse at 50% -12%,#422016 0%,#170d18 34%,#08070c 72%);background-attachment:fixed}
+header{background:linear-gradient(100deg,#09070bf5,#1d0d1df2,#09070bf5);box-shadow:0 5px 30px #0009,0 1px 0 #ffcf5c33}
+.crest{border-color:#ffe49a;box-shadow:0 0 9px #ffd45b,0 0 24px #ffb52f66,inset 0 0 14px #ffd45b2b}
+.brandtext strong{color:#ffe7a0;text-shadow:0 0 8px #ffc34d,0 0 22px #ff9f2d88}
+.hero{isolation:isolate;background-image:linear-gradient(90deg,#08060df2 0%,#130916c9 43%,#12081655 100%),url('https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?auto=format&fit=crop&w=2000&q=85');}
+.hero:before{content:"";position:absolute;z-index:0;inset:0;pointer-events:none;background:radial-gradient(ellipse at 75% 42%,#ffcf5c24,transparent 34%),linear-gradient(115deg,transparent 30%,#ff2f8c13 53%,transparent 72%);animation:vegasGlow 6s ease-in-out infinite alternate}
+.hero h1{text-shadow:0 0 12px #f6bd5c45,0 0 35px #f28b3b38,0 5px 28px #000}
+.hero h1 span{color:#ffe28a;text-shadow:0 0 8px #ffce59,0 0 25px #ffb12c99}
+.overline,.sectionTitle .label{color:#ffe28a;text-shadow:0 0 12px #ffbd4d66}
+.marquee{background:linear-gradient(90deg,#130a13,#271019,#130a13);box-shadow:0 0 22px #ffb52f12}
+.sectionTitle{border-image:linear-gradient(90deg,#ffdc7c99,#f044a955,transparent) 1}
+.gamecard{background:linear-gradient(150deg,#211521,#100d14 65%);border:1px solid #d5a84b70;box-shadow:inset 0 1px #fff2,0 7px 22px #0005}
+.gamecard:before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border:1px solid transparent;background:linear-gradient(135deg,#ffe59a55,transparent 30%,#f23e9b22 75%,#55cfff33) border-box;opacity:.42}
+.gamecard:hover{border-color:#ffe28a;box-shadow:0 0 0 1px #ffdc7c44,0 0 24px #f7b83b36,0 16px 35px #000a}
+.gameimage{background:radial-gradient(ellipse at 50% 45%,#5d2447,#201126 60%,#0d0a11)}
+.gameimage img{filter:brightness(.78) saturate(1.18) contrast(1.05)}
+.gamecard:hover img{filter:brightness(1) saturate(1.25) contrast(1.05)}
+.gameicon{filter:drop-shadow(0 0 9px #ffd76c88) drop-shadow(0 4px 9px #000)}
+.goldbtn{box-shadow:0 0 10px #ffce5c55,0 0 25px #e7a72c22,inset 0 1px #fff9}
+.goldbtn:hover{box-shadow:0 0 12px #ffe28a99,0 0 30px #e7a72c55}
+.darkbtn,.balance{box-shadow:inset 0 0 15px #f4c45b0c,0 0 14px #f4c45b0b}
+.promo{position:relative;overflow:hidden;background:linear-gradient(110deg,#28140f,#19101e 58%,#10101a);box-shadow:0 0 28px #f6bd5c13,inset 0 1px #ffe28a22}
+.promo:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,#ffda7b0b 50%,transparent 65%)}
+@keyframes vegasGlow{from{opacity:.55}to{opacity:1}}
+@media(max-width:700px){.hero{background-position:58% center;min-height:470px}.heroInner{padding-top:48px;padding-bottom:54px}.games{gap:11px}.gamecard{box-shadow:inset 0 1px #fff2,0 5px 16px #0007}.gameimage img{filter:brightness(.82) saturate(1.1)}}
+@media(prefers-reduced-motion:reduce){.hero:before{animation:none}*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DEMO<br><b id="balance">1.000</b></div></div></nav></header>
 <div class="quick-actions"><button onclick="openPayments('deposit')">💰<span>Depositar</span></button><button onclick="openPayments('withdraw')">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
