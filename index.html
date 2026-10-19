@@ -889,10 +889,10 @@ async function authCassino(mode){
  const submit=document.getElementById('cassinoSubmit');
  if(submit){submit.disabled=true;submit.textContent='Aguarde...'}
  setPayStatus(mode==='signup'?'Criando sua conta...':'Entrando na sua conta...');
- const playerName=document.getElementById('cassinoEmail').value.trim().replace(/\\s+/g,' ');
+ const playerName=document.getElementById('cassinoEmail').value.trim().replace(/\s+/g,' ');
  const password=document.getElementById('cassinoPassword').value;
  const confirmPassword=document.getElementById('cassinoConfirmPassword')?.value||'';
- const slug=playerName.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,30);
+ const slug=playerName.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,30);
  // Endereço interno usado apenas como identificador do Supabase; nenhum e-mail é enviado.
  const authEmail=slug+'@players.cassino.local';
  let timeoutId;
