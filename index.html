@@ -428,7 +428,54 @@ header{border-bottom:1px solid #ffe08a;box-shadow:0 4px 28px #ffae3c30,0 0 24px 
 @keyframes signGlow{from{box-shadow:0 0 8px #ffcb4c66,inset 0 0 10px #ffcb4c11}to{box-shadow:0 0 20px #ffcb4cbb,0 0 28px #ff2d8c55,inset 0 0 18px #ffcb4c33}}
 @media(max-width:600px){.hero{min-height:530px;background-position:59% center}.heroInner:after{font-size:8px;letter-spacing:1.5px;padding:10px 9px;margin-top:22px}.hero h1{font-size:clamp(39px,12vw,60px)}}
 @media(prefers-reduced-motion:reduce){.topbar,.hero:before,.heroInner:after{animation:none}}
-</style></head>
+</style>
+<style id="vegas-real-homepage-fix">
+/* Correção real: o painel principal é .jackpot-hero (não .hero). Visual inspirado nos letreiros de Las Vegas. */
+:root{--gold:#ffe28a;--gold2:#fff5c4;--red:#ff245f;--wine:#360b38}
+body{background:radial-gradient(ellipse at 50% 0%,#47103e 0,#170b20 36%,#07060c 78%)!important;color:#fff4df}
+.topbar{height:7px!important;background:linear-gradient(90deg,#ff176c,#ffdb62,#fff8d0,#ffb52e,#c42dff,#00dfff,#ff176c)!important;background-size:300% 100%!important;animation:vegas-real-rainbow 5s linear infinite!important;box-shadow:0 0 18px #ff2c91}
+header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important;border-bottom:1px solid #ffcf62!important;box-shadow:0 4px 25px #e927a633!important}
+.brandtext strong{color:#fff0a6!important;text-shadow:0 0 5px #fff,0 0 13px #ffcb3f,0 0 26px #ff1b91!important;letter-spacing:3px!important}
+.brandtext small{color:#ff8cda!important}
+.quick-actions{background:linear-gradient(180deg,#170b20,#09070d)!important;gap:10px!important}
+.quick-actions button{position:relative;background:linear-gradient(145deg,#321033,#130c20)!important;border:1px solid #ffcb60!important;box-shadow:inset 0 0 18px #ff299e20,0 0 12px #ff299e2a!important;color:#fff4d0!important}
+.quick-actions button:first-child,.quick-actions button:nth-child(2){border-color:#ffdb72!important}
+.quick-actions button span{color:#fff1c4!important}
+.id-strip{background:#120918!important;border-top:1px solid #ff2b9b!important;border-bottom:1px solid #ffcb60!important;color:#ffe79b!important}
+.categorybar{background:linear-gradient(90deg,#2b0d32,#100b1c)!important;border:1px solid #b83fff!important;box-shadow:0 0 20px #a22aff25!important}
+.categorybar button.active{background:linear-gradient(135deg,#ff2c90,#8d28d6)!important;color:white!important;box-shadow:0 0 15px #ff2c90aa!important}
+.categorybar button{color:#ead3ff!important}
+/* Hero verdadeiro que aparece na tela inicial */
+.jackpot-hero{position:relative!important;isolation:isolate;min-height:450px!important;margin:20px 14px!important;border:3px solid #ffcf63!important;border-radius:14px!important;overflow:hidden!important;
+ background:linear-gradient(90deg,#08050bdc 0%,#1607198a 45%,#08050b75 100%),linear-gradient(0deg,#08050bc9,transparent 45%),url('https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?auto=format&fit=crop&w=1800&q=90') center 48%/cover!important;
+ box-shadow:0 0 0 3px #ff2b9b44,0 0 18px #ffcc58cc,0 0 42px #ff2b9b88,0 0 85px #7627ff55,inset 0 0 55px #000!important}
+.jackpot-hero:before{content:"";position:absolute;z-index:-1;inset:8px;border:2px solid #ffe9a0;border-radius:7px;pointer-events:none;box-shadow:inset 0 0 15px #ffc94c,0 0 13px #ffcf63}
+.jackpot-hero:after{content:"✦  LAS VEGAS  ✦  GRAND CASINO  ✦";position:absolute;left:50%;top:18px;transform:translateX(-50%);width:max-content;max-width:90%;padding:10px 18px;border:2px solid #ffe9a0;border-radius:5px;background:linear-gradient(90deg,#4c0b43,#180923,#4c0b43);color:#fff4ae;font:900 clamp(12px,2.5vw,20px) Arial,sans-serif;letter-spacing:clamp(2px,.6vw,6px);text-align:center;text-shadow:0 0 5px #fff,0 0 13px #ffb82e,0 0 23px #ff2b9b;box-shadow:0 0 8px #ffe27b,0 0 23px #ff2b9b,inset 0 0 14px #ff2b9b55;animation:vegas-real-sign 1.8s ease-in-out infinite alternate;pointer-events:none}
+.jackpot-content{position:relative!important;z-index:1;padding:100px 14px 34px!important;text-align:center!important}
+.jackpot-content>span{display:block;color:#fff1b0!important;font:900 10px Arial,sans-serif!important;letter-spacing:5px!important;text-shadow:0 0 9px #ffb52e,0 0 17px #ff258f!important}
+.jackpot-content h1{font:900 clamp(24px,5vw,48px)/1.05 Arial,sans-serif!important;letter-spacing:clamp(1px,.8vw,7px)!important;margin:18px 0 9px!important;color:#fff!important;text-shadow:0 0 5px #fff,0 0 15px #ffbd37,0 0 30px #ff258f,0 4px 5px #000!important}
+.jackpot-value{font-size:clamp(42px,9vw,76px)!important;color:#fff3a8!important;line-height:1.05;text-shadow:0 0 5px #fff,0 0 14px #ffdb50,0 0 28px #ff8a22,0 0 48px #ff238c!important}
+.jackpot-value small{font-size:10px!important;color:#fff!important;letter-spacing:4px!important;text-shadow:0 0 10px #ff269d!important}
+.jackpot-icons{gap:22px!important;margin:20px 0!important}
+.jackpot-icons span{width:66px!important;height:66px!important;border:2px solid #ffe28a!important;background:radial-gradient(circle,#51113e,#120a1c)!important;box-shadow:0 0 10px #ffe28a,0 0 23px #ff268f!important;animation:vegas-real-icon 2s ease-in-out infinite alternate}
+.jackpot-content .goldbtn{padding:15px 27px!important;border:2px solid #fff1ac!important;border-radius:4px!important;background:linear-gradient(120deg,#fff7bf,#ffb82d 45%,#ff438b)!important;color:#210b22!important;font:900 13px Arial,sans-serif!important;letter-spacing:2px!important;box-shadow:0 0 10px #fff1ac,0 0 25px #ff268f,0 0 40px #ffae27!important}
+.marquee{position:relative;background:linear-gradient(90deg,#4a0b32,#160a25,#4a0b32)!important;border-top:2px solid #ffdb69!important;border-bottom:2px solid #ff2c9b!important;color:#fff0b4!important;box-shadow:0 0 17px #ff2b9b77!important;text-shadow:0 0 8px #ffcf58!important;padding:16px 10px!important}
+.games .gamecard{border:1px solid #ffcf63!important;background:linear-gradient(145deg,#31112f,#100b1b 75%)!important;box-shadow:0 0 0 1px #ff2b9b44,0 0 15px #ff2b9b25!important}
+.games .gamecard:before{border:1px solid #ffe7a066!important;box-shadow:inset 0 0 18px #ff2b9b1c!important}
+.gameimage{background:linear-gradient(135deg,#4d104c,#100a20)!important}
+.gameimage img{filter:brightness(1) saturate(1.35) contrast(1.08)!important}
+.cardinfo .type,.playline{color:#ffe28a!important;text-shadow:0 0 8px #ff9f35!important}
+.cardinfo h3{color:#fff2ce!important}
+.goldbtn{box-shadow:0 0 10px #ffcf63aa,0 0 22px #ff2b9b44!important}
+.promo{border:1px solid #ffcf63!important;background:linear-gradient(110deg,#48102d,#21102c 60%,#0c1022)!important;box-shadow:0 0 24px #ff2b9b35,0 0 35px #ffbd4420!important}
+.sectionTitle h2{color:#fff0b9!important;text-shadow:0 0 12px #ff2b9b77!important}
+@keyframes vegas-real-rainbow{to{background-position:300% 0}}
+@keyframes vegas-real-sign{from{filter:brightness(.88);box-shadow:0 0 8px #ffe27b,0 0 15px #ff2b9b,inset 0 0 10px #ff2b9b33}to{filter:brightness(1.25);box-shadow:0 0 16px #ffe27b,0 0 32px #ff2b9b,0 0 45px #7a2bff,inset 0 0 18px #ff2b9b77}}
+@keyframes vegas-real-icon{to{transform:translateY(-4px) scale(1.06);filter:brightness(1.3)}}
+@media(max-width:600px){.jackpot-hero{min-height:400px!important;margin:16px 10px!important;background-position:54% center!important}.jackpot-hero:after{top:14px;padding:9px 8px;letter-spacing:2px}.jackpot-content{padding:90px 8px 26px!important}.jackpot-content h1{font-size:clamp(22px,7vw,34px)!important}.jackpot-value{font-size:clamp(38px,12vw,58px)!important}.quick-actions{padding:12px 10px!important;gap:7px!important}.quick-actions button{min-height:68px!important;border-radius:10px!important}.games .gamecard{border-radius:8px!important}}
+@media(prefers-reduced-motion:reduce){.topbar,.jackpot-hero:after,.jackpot-icons span{animation:none!important}}
+</style>
+</head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DEMO<br><b id="balance">1.000</b></div></div></nav></header>
 <div class="quick-actions"><button onclick="openPayments('deposit')">💰<span>Depositar</span></button><button onclick="openPayments('withdraw')">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
