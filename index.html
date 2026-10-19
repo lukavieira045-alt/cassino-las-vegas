@@ -334,7 +334,7 @@ body{background:#09070b;color:#f4fff7;font-family:Arial,Helvetica,sans-serif;pad
 <div class="quick-actions"><button onclick="openPayments('deposit')">💰<span>Depositar</span></button><button onclick="openPayments('withdraw')">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
 <div class="id-strip"><span>🎰 LAS VEGAS · SALÃO DE JOGOS</span><button onclick="openPayments('account')">👤 Minha conta　▣</button></div>
 <nav class="categorybar"><button class="active" data-filter="all">🔥<span>Popular</span></button><button data-filter="slots">🎰<span>Slots</span></button><button data-filter="arcade">⚡<span>Minijogos</span></button><button data-filter="table">🎲<span>Mesas</span></button></nav>
-<section class="jackpot-hero"><div class="jackpot-content"><span>✦ CASSINO LAS VEGAS ✦</span><h1>JACKPOT ACUMULADO</h1><strong class="jackpot-value">1.452.319 <small>FICHAS DEMO</small></strong><div class="jackpot-icons"><span>🎰</span><span>💎</span></div><button class="goldbtn" onclick="document.querySelector('#salon').scrollIntoView({behavior:'smooth'})">JOGAR AGORA ↓</button></div></section><div class="marquee"><span>Grand Casino</span><span>Roleta europeia</span><span>Máquinas de slots</span><span>Arcade</span><span>Estilo Las Vegas</span></div>
+<section class="jackpot-hero"><div class="jackpot-content"><span>✦ CASSINO LAS VEGAS ✦</span><h1>JOGADORES ONLINE</h1><strong class="jackpot-value"><span id="onlinePlayers">60.000</span> <small>JOGADORES</small></strong><div class="jackpot-icons"><span>🎰</span><span>💎</span></div><button class="goldbtn" onclick="document.querySelector('#salon').scrollIntoView({behavior:'smooth'})">JOGAR AGORA ↓</button></div></section><div class="marquee"><span>Grand Casino</span><span>Roleta europeia</span><span>Máquinas de slots</span><span>Arcade</span><span>Estilo Las Vegas</span></div>
 <div class="marquee"><span>Grand Casino</span><span>Roleta ao vivo simulada</span><span>Mesas clássicas</span><span>Arcade</span><span>Estilo Las Vegas</span></div>
 <main class="wrap"><section class="section" id="salon"><div class="sectionTitle"><div><h2>🔥 Jogos em Alta</h2><p>Escolha seu jogo e entre no salão.</p></div><div class="label">✦ GRAND CASINO · LAS VEGAS ✦</div></div>
 <div class="games">
@@ -930,5 +930,10 @@ async function criarDepositoCassino(amount){
 async function sairContaCassino(){await cassinoSupabase.auth.signOut();cassinoUser=null;cassinoWallet=0;renderPayments();setPayStatus('Você saiu da conta.')}
 cassinoSupabase.auth.onAuthStateChange((_event,session)=>{cassinoUser=session&&session.user?session.user:null;setTimeout(()=>{if(cassinoUser)atualizarCarteiraCassino();else{cassinoWallet=0;if(payModal.classList.contains('open'))renderPayments()}},0)});
 atualizarCarteiraCassino();
-</script></body></html>
+</script>
+<script>
+// Contador visual animado; não representa usuários reais conectados.
+(function(){const el=document.getElementById('onlinePlayers');if(!el)return;let value=60000;function format(n){return Math.round(n).toLocaleString('pt-BR');}function tick(){const change=Math.floor(Math.random()*1801)-900;value=Math.max(45000,Math.min(68000,value+change));el.textContent=format(value);setTimeout(tick,2500+Math.random()*3500);}el.textContent=format(value);setTimeout(tick,2200);})();
+</script>
+</body></html>
 
