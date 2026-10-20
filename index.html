@@ -1126,7 +1126,7 @@ function renderPayments(){
  }
  document.getElementById('payTitle').textContent='Minha carteira';
  const statusNotice=REAL_MONEY_GAMES_ENABLED?'':'<div class="payNotice"><b>⚠️ Apostas e depósitos reais ainda estão bloqueados.</b><p>O jogo já tem a estrutura de liquidação no servidor, mas a carteira real só poderá movimentar dinheiro quando a ativação e a configuração de pagamentos estiverem autorizadas e testadas.</p></div>';
- const buttons=REAL_MONEY_GAMES_ENABLED?'<p>Escolha o valor para depositar:</p><div class="payAmounts">'+[5,10,20,30,40,50,60,100,200,300,500,1000].map(n=>'<button class="goldbtn" onclick="criarDepositoCassino('+n+')">R$ '+n.toLocaleString('pt-BR')+'</button>').join('')+'</div>':'<button class="darkbtn" disabled style="opacity:.55">Depósitos temporariamente desativados</button>'
+ const buttons=REAL_MONEY_GAMES_ENABLED?'<p>Escolha o valor para depositar:</p><div class="payAmounts">'+[5,10,20,30,40,50,60,100,200,300,500,1000].map(n=>'<button class="goldbtn" onclick="criarDepositoCassino('+n+')">R$ '+n.toLocaleString('pt-BR')+'</button>').join('')+'</div><p class="legal">Após escolher o valor, informe um e-mail para identificação desta cobrança Pix. Isso não altera seu cadastro por nome e senha.</p>':'<button class="darkbtn" disabled style="opacity:.55">Depósitos temporariamente desativados</button>'
   const playerName=(cassinoUser.user_metadata&&(cassinoUser.user_metadata.display_name||cassinoUser.user_metadata.full_name))||'Jogador';
   const playerId=cassinoUser.id||'';
   payContent.innerHTML='<div class="payNotice"><b>👤 Meu perfil</b><p>Nome: <b>'+escapePay(playerName)+'</b></p><p style="overflow-wrap:anywhere">ID do jogador: <code id="cassinoPlayerId">'+escapePay(playerId)+'</code></p><button class="darkbtn" type="button" onclick="copiarIdCassino()">Copiar meu ID</button></div><div class="payNotice">Saldo da carteira: <b>R$ '+Number(cassinoWallet).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+'</b></div>'+statusNotice+buttons+'<p><button class="darkbtn" onclick="atualizarCarteiraCassino()">Atualizar saldo</button><button class="darkbtn" onclick="sairContaCassino()">Sair da conta</button></p><p class="legal">Seu perfil e ID são vinculados à sua conta no Supabase. O saldo da carteira é separado das fichas demonstrativas dos jogos.</p>';
@@ -1204,22 +1204,32 @@ async function atualizarCarteiraCassino(){
   if(payModal.classList.contains('open'))renderPayments();
  }catch(e){setPayStatus('Não consegui carregar a carteira: '+(e.message||'tente novamente.'))}
 }
-async function criarDepositoCassino(amount){
+async function criarDepositoCassino(amount, submitPayment=false){
  if(!REAL_MONEY_GAMES_ENABLED){setPayStatus('Depósitos bloqueados até os jogos reais estarem integrados com segurança.');return}
  if(!cassinoUser){setPayStatus('Entre na sua conta primeiro.');return}
- setPayStatus('Criando pagamento...');
+ if(!submitPayment){
+  payContent.innerHTML='<div class="payNotice"><b>Depósito Pix de R$ '+Number(amount).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+'</b><p>Informe um e-mail válido para identificar esta cobrança no Mercado Pago. Ele não será usado no seu cadastro do cassino.</p><form id="cassinoPixEmailForm" onsubmit="event.preventDefault();criarDepositoCassino('+Number(amount)+',true)"><input id="cassinoPayerEmail" class="accountfield" type="email" autocomplete="email" maxlength="120" placeholder="Seu e-mail" required><button class="goldbtn" type="submit">Gerar QR Code Pix</button></form><p class="legal">O QR Code será exibido aqui na plataforma.</p></div><button class="darkbtn" type="button" onclick="renderPayments()">Voltar</button>';
+  setPayStatus('Informe o e-mail para gerar seu Pix.');
+  return;
+ }
+ const payerEmail=(document.getElementById('cassinoPayerEmail')?.value||'').trim().toLowerCase();
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)){setPayStatus('Digite um e-mail válido para gerar o Pix.');return}
+ setPayStatus('Gerando seu QR Code Pix...');
  try{
   const sessionResult=await cassinoSupabase.auth.getSession();
   const session=sessionResult.data.session;
   if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
-  const result=await cassinoSupabase.functions.invoke('criar-deposito-cassino',{body:{amount:amount}});
-  if(result.error)throw result.error;
-  if(!result.data||!result.data.checkout_url)throw new Error((result.data&&result.data.error)||'O Mercado Pago não retornou o link de pagamento Pix.');
-  payContent.innerHTML='<div class="payNotice"><b>Depósito de R$ '+Number(result.data.amount).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+'</b><p>O Mercado Pago vai abrir a página segura de pagamento. Nela, escolha Pix para exibir o QR Code e o código copia e cola.</p><p>O saldo só será creditado depois da confirmação do pagamento pelo Mercado Pago.</p><p><a class="goldbtn" style="display:inline-block;text-decoration:none" href="'+escapePay(result.data.checkout_url)+'" target="_blank" rel="noopener">Abrir pagamento Pix</a></p><button class="darkbtn" type="button" onclick="atualizarCarteiraCassino()">Já paguei — atualizar saldo</button></div><button class="darkbtn" type="button" onclick="renderPayments()">Voltar à carteira</button>';
-  setPayStatus('Pagamento criado no Mercado Pago. Abra o link para pagar com Pix.');
+  const result=await cassinoSupabase.functions.invoke('criar-deposito-cassino',{body:{amount:amount,payer_email:payerEmail}});
+  if(result.error){
+   let detail=result.data&&result.data.error;
+   if(!detail)detail=result.error.message||'Falha na função de pagamento.';
+   throw new Error(detail);
+  }
+  if(!result.data||!result.data.qr_code_base64||!result.data.qr_code)throw new Error((result.data&&result.data.error)||'O Mercado Pago não retornou o QR Code Pix.');
+  payContent.innerHTML='<div class="payNotice"><b>PIX DE R$ '+Number(result.data.amount).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+'</b><p>Escaneie o QR Code com o aplicativo do seu banco ou copie o código Pix abaixo.</p><div style="display:grid;place-items:center;background:#fff;border-radius:12px;padding:12px;margin:14px auto;max-width:300px;box-shadow:0 0 25px #f4cf7855"><img alt="QR Code Pix para pagamento" style="width:100%;height:auto;display:block" src="data:image/png;base64,'+result.data.qr_code_base64+'"></div><label for="cassinoPixCopiaCola" style="display:block;margin:10px 0 6px;color:#ffe8a8">Pix copia e cola</label><textarea id="cassinoPixCopiaCola" readonly style="width:100%;min-height:100px;background:#09070b;color:#fff;padding:10px;border:1px solid #c8a45b;border-radius:8px;overflow-wrap:anywhere">'+escapePay(result.data.qr_code)+'</textarea><p><button class="goldbtn" type="button" onclick="copiarPixCassino()">📋 Copiar código Pix</button></p><p>Depois de pagar, aguarde a confirmação automática do Mercado Pago. O saldo só será creditado após a confirmação oficial.</p><button class="darkbtn" type="button" onclick="atualizarCarteiraCassino()">Já paguei — atualizar saldo</button></div><button class="darkbtn" type="button" onclick="renderPayments()">Voltar à carteira</button>';
+  setPayStatus('QR Code Pix gerado dentro do cassino.');
  }catch(e){setPayStatus('Não foi possível iniciar o pagamento: '+(e.message||'tente novamente.'))}
 }
-async function copiarPixCassino(){const el=document.getElementById('cassinoPixCopiaCola');if(!el)return;try{await navigator.clipboard.writeText(el.value);setPayStatus('Código Pix copiado!')}catch(e){el.focus();el.select();setPayStatus('Selecione e copie o código Pix.')}}
  async function sairContaCassino(){await cassinoSupabase.auth.signOut();cassinoUser=null;cassinoWallet=0;renderPayments();setPayStatus('Você saiu da conta.')}
 cassinoSupabase.auth.onAuthStateChange((event,session)=>{cassinoUser=session&&session.user?session.user:null;if(event==='PASSWORD_RECOVERY'){payMode='recovery';payModal.classList.add('open');document.getElementById('payTitle').textContent='Criar nova senha';payContent.innerHTML='<p>Digite sua nova senha e confirme abaixo.</p><form id="cassinoRecoveryForm"><input id="cassinoNewPassword" type="password" minlength="6" autocomplete="new-password" placeholder="Nova senha (mínimo 6 caracteres)" required><input id="cassinoNewPasswordConfirm" type="password" minlength="6" autocomplete="new-password" placeholder="Confirme a nova senha" required><button class="goldbtn" type="submit">Salvar nova senha</button></form>';document.getElementById('cassinoRecoveryForm').onsubmit=async e=>{e.preventDefault();await concluirRecuperacaoSenha()};setPayStatus('')};setTimeout(()=>{if(cassinoUser)atualizarCarteiraCassino();else{cassinoWallet=0;if(payModal.classList.contains('open')&&payMode!=='recovery')renderPayments()}},0)});
 atualizarCarteiraCassino();
