@@ -1214,8 +1214,9 @@ async function criarDepositoCassino(amount){
   if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
   const result=await cassinoSupabase.functions.invoke('criar-deposito-cassino',{body:{amount:amount}});
   if(result.error)throw result.error;
-  if(!result.data||!result.data.checkout_url)throw new Error((result.data&&result.data.error)||'O Mercado Pago não retornou o link de pagamento.');
-  window.location.href=result.data.checkout_url;
+  if(!result.data||!result.data.qr_code_base64||!result.data.qr_code)throw new Error((result.data&&result.data.error)||'O Mercado Pago não retornou o QR Code Pix.');
+  payContent.innerHTML='<div class="payNotice"><b>Pix de R$ '+Number(result.data.amount).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})+'</b><p>Abra o aplicativo do seu banco e escaneie o QR Code abaixo.</p><div style="display:grid;place-items:center;background:#fff;padding:12px;margin:14px auto;max-width:300px"><img alt="QR Code Pix para pagamento" style="width:100%;height:auto;display:block" src="data:image/png;base64,'+result.data.qr_code_base64+'"></div><textarea id="cassinoPixCopiaCola" readonly style="width:100%;min-height:100px;background:#09070b;color:#fff;padding:10px;overflow-wrap:anywhere">'+escapePay(result.data.qr_code)+'</textarea><p><button class="goldbtn" type="button" onclick="copiarPixCassino()">Copiar código Pix</button> <button class="darkbtn" type="button" onclick="atualizarCarteiraCassino()">Já paguei — atualizar saldo</button></p><p>O saldo só entra depois da confirmação do Mercado Pago. Se acabou de pagar, aguarde alguns instantes e atualize.</p></div><button class="darkbtn" type="button" onclick="renderPayments()">Voltar à carteira</button>';
+  setPayStatus('QR Code Pix gerado.');
  }catch(e){setPayStatus('Não foi possível iniciar o pagamento: '+(e.message||'tente novamente.'))}
 }
 async function copiarPixCassino(){const el=document.getElementById('cassinoPixCopiaCola');if(!el)return;try{await navigator.clipboard.writeText(el.value);setPayStatus('Código Pix copiado!')}catch(e){el.focus();el.select();setPayStatus('Selecione e copie o código Pix.')}}
