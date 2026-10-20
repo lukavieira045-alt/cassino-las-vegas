@@ -1091,7 +1091,7 @@ const CASSINO_SUPABASE_KEY='sb_publishable_Bw_BakUlG_tjPLBP6k5f-w_K6A8YSSa';
 const cassinoSupabase=window.supabase.createClient(CASSINO_SUPABASE_URL,CASSINO_SUPABASE_KEY);
 let cassinoUser=null,cassinoWallet=0,payMode='account';
 const payModal=document.getElementById('payModal'),payContent=document.getElementById('payContent'),payStatus=document.getElementById('payStatus');
-const REAL_MONEY_GAMES_ENABLED=false;
+const REAL_MONEY_GAMES_ENABLED=true;
 function closePayments(){payModal.classList.remove('open')}
 function setPayStatus(t){payStatus.textContent=t||''}
 function openPayments(mode){payMode=mode||'account';payModal.classList.add('open');renderPayments()}
