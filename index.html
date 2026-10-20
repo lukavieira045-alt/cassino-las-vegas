@@ -545,7 +545,7 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 </style>
 </head>
 <body><div class="topbar"></div>
-<header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DEMO<br><b id="balance">1.000</b></div></div></nav></header>
+<header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DA CARTEIRA<br><b id="balance">R$ 0,00</b></div></div></nav></header>
 <div class="quick-actions"><button onclick="openPayments('deposit')">💰<span>Depositar</span></button><button onclick="openPayments('withdraw')">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
 <div class="id-strip"><span>🎰 LAS VEGAS · SALÃO DE JOGOS</span></div>
 <nav class="categorybar"><button class="active" data-filter="all">🔥<span>Popular</span></button><button data-filter="slots">🎰<span>Slots</span></button><button data-filter="arcade">⚡<span>Minijogos</span></button><button data-filter="table">🎲<span>Mesas</span></button></nav>
@@ -567,7 +567,7 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 <footer>♛　LAS VEGAS GRAND CASINO　 ·　 EXPERIÊNCIA DE DEMONSTRAÇÃO　 ·　 JOGUE COM RESPONSABILIDADE</footer>
 <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="dialog"><div class="dialoghead"><h2 id="gameTitle">Mesa de jogo</h2><button class="xbtn" onclick="closeModal()" aria-label="Fechar">✕</button></div><div id="gameBody"></div></div></div>
 <script>
-const STORE='grand_vegas_demo_v2';let state;try{state=JSON.parse(localStorage.getItem(STORE))||{balance:1000,user:''}}catch{state={balance:1000,user:''}};const $=s=>document.querySelector(s);function save(){state.balance=Math.max(0,Math.round(Number(state.balance)*100)/100);localStorage.setItem(STORE,JSON.stringify(state));$('#balance').textContent=state.balance.toLocaleString('pt-BR',{minimumFractionDigits:state.balance%1?2:0,maximumFractionDigits:2})}save();const modal=$('#modal'),body=$('#gameBody');function show(title,html){$('#gameTitle').textContent=title;body.innerHTML=html;modal.classList.add('open')}function closeModal(){modal.classList.remove('open')}modal.addEventListener('click',e=>{if(e.target===modal){stopArcade();closeModal()}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){stopArcade();closeModal()}});function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const STORE='grand_vegas_demo_v2';let state;try{state=JSON.parse(localStorage.getItem(STORE))||{balance:1000,user:''}}catch{state={balance:1000,user:''}};const $=s=>document.querySelector(s);function save(){state.balance=Math.max(0,Math.round(Number(state.balance)*100)/100);localStorage.setItem(STORE,JSON.stringify(state))}save();const modal=$('#modal'),body=$('#gameBody');function show(title,html){$('#gameTitle').textContent=title;body.innerHTML=html;modal.classList.add('open')}function closeModal(){modal.classList.remove('open')}modal.addEventListener('click',e=>{if(e.target===modal){stopArcade();closeModal()}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){stopArcade();closeModal()}});function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function openAccount(){openPayments("account")} function betHTML(){return '<div class="betcontrols"><label for="bet">FICHAS POR JOGADA</label><input id="bet" class="betinput" type="number" min="5" max="200" step="5" value="10"></div>'}function bet(){let b=Number($('#bet')?.value||10);if(!Number.isInteger(b)||b<5||b>200||b>state.balance){message('Escolha de 5 a 200 fichas, sem ultrapassar seu saldo.');return 0}return b}function message(t){let m=$('#message');if(m)m.textContent=t}function charge(n){state.balance-=n;save()}function award(n){state.balance+=n;save()}
 const symbols=['🍒','🍋','🔔','💎','7️⃣','🍀','⭐','🃏','🎁'];
 const symbolInfo={'🍒':['CHERRY','cereja'],'🍋':['LEMON','limão'],'🔔':['BELL','sino'],'💎':['DIAMOND','diamante'],'7️⃣':['LUCKY 7','sete da sorte'],'🍀':['CLOVER','trevo'],'⭐':['STAR','estrela'],'🃏':['WILD','coringa'],'🎁':['SCATTER','bônus']};
@@ -604,11 +604,59 @@ function spinMegaSlots(){
  }
  requestAnimationFrame(frame);
 }
-function slotsUI(){slotGrid=Array.from({length:3},()=>Array.from({length:5},()=>symbols[Math.floor(Math.random()*symbols.length)]));show('Royal Slots · 5 × 3','<div class="slotcab"><div class="slotbrand">♛ ROYAL <span>FORTUNE</span> ♛</div><div class="slotjackpot"><span>JACKPOT DA CASA</span><b id="slotJackpot">25.000</b><small>FICHAS DEMONSTRATIVAS</small></div><div class="slotreels" id="slotReels">'+slotGrid.flat().map((s,i)=>'<div class="slotcell" data-cell="'+i+'"><span>'+s+'</span></div>').join('')+'</div><div class="slotpaylines"><span>5 ROLOS</span><span>3 LINHAS</span><span>10 LINHAS DE PAGAMENTO</span></div><div class="slotcontrol"><button class="darkbtn" onclick="changeSlotBet(-5)">−</button><div><small>APOSTA TOTAL</small><strong id="slotBetValue">10</strong></div><button class="darkbtn" onclick="changeSlotBet(5)">+</button><button class="goldbtn slotspin" id="spin" onclick="spinSlots()">GIRAR　↻</button></div><div class="slotresult" id="message">Combine símbolos da esquerda para a direita. 🃏 substitui símbolos; 🎁 ativa giros grátis.</div><div class="slotfree" id="slotFree">'+(slotFreeSpins?'GIROS GRÁTIS: '+slotFreeSpins:'')+'</div></div><details class="slotrules"><summary>Tabela de pagamentos e regras</summary><div class="slotpaytable"><p><b>5 iguais</b> — até 250× a aposta da linha</p><p><b>4 iguais</b> — até 60× a aposta da linha</p><p><b>3 iguais</b> — até 20× a aposta da linha</p><p>🃏 WILD substitui símbolos normais. 🎁 SCATTER: 3 ou mais concedem 8 giros grátis.</p><p>As 10 linhas de pagamento estão indicadas no painel; a aposta total é dividida entre elas.</p></div></details><p class="help">Slot demonstrativo autoral. Resultados e fichas são simulados no navegador, sem dinheiro real.</p>');}
-let slotBetAmount=10;
-function changeSlotBet(delta){if(slotBusy)return;slotBetAmount=Math.max(10,Math.min(200,slotBetAmount+delta));slotBetAmount=Math.round(slotBetAmount/5)*5;let e=$('#slotBetValue');if(e)e.textContent=slotBetAmount}
-function slotPayout(grid,totalBet){let lineBet=totalBet/paylines.length,total=0,winning=[];for(let p=0;p<paylines.length;p++){let line=paylines[p],vals=line.map((row,col)=>grid[row][col]);let target=vals.find(v=>v!=='🃏'&&v!=='🎁')||'7️⃣';let count=0;for(let v of vals){if(v==='🎁')break;if(v===target||v==='🃏')count++;else break}if(count>=3&&paytable[target]){let mult=paytable[target][count-1]||0;if(mult){total+=Math.floor(lineBet*mult);winning.push({p,line,mult})}}}let scatters=grid.flat().filter(s=>s==='🎁').length;if(scatters>=3){total+=Math.floor(totalBet*(scatters===3?2:scatters===4?5:10));slotFreeSpins+=8}return {total,winning,scatters}}
-function spinSlots(){if(slotBusy)return;let totalBet=slotBetAmount||10;let free=slotFreeSpins>0;if(!free&&totalBet>state.balance){message('Saldo insuficiente. Diminua a aposta ou recarregue as fichas demo.');return}if(!free)charge(totalBet);else slotFreeSpins--;slotBusy=true;$('#spin').disabled=true;$('#spin').textContent='GIRANDO…';$('#slotFree').textContent=slotFreeSpins?'GIROS GRÁTIS: '+slotFreeSpins:'';let cells=[...document.querySelectorAll('.slotcell')],result=Array.from({length:3},()=>Array.from({length:5},()=>symbols[Math.floor(Math.random()*symbols.length)]));let start=performance.now(),duration=2300;function frame(now){let t=Math.min(1,(now-start)/duration);cells.forEach((el,i)=>{let col=i%5;if(t<Math.min(.96,.38+col*.12)){el.classList.add('rolling');el.querySelector('span').textContent=symbols[Math.floor(Math.random()*symbols.length)]}else{el.classList.remove('rolling');el.querySelector('span').textContent=result[Math.floor(i/5)][col]}});if(t<1){requestAnimationFrame(frame)}else{slotGrid=result;let outcome=slotPayout(result,totalBet);slotLastWin=outcome.total;if(outcome.total)award(outcome.total);let msg=outcome.total?'✦ PRÊMIO: +'+outcome.total.toLocaleString('pt-BR')+' FICHAS ✦':'Nenhuma linha premiada desta vez.';if(outcome.scatters>=3)msg+=' 🎁 '+outcome.scatters+' SCATTERS: +8 GIROS GRÁTIS!';$('#message').textContent=msg;$('#slotFree').textContent=slotFreeSpins?'GIROS GRÁTIS RESTANTES: '+slotFreeSpins:'';cells.forEach((el,i)=>{let row=Math.floor(i/5),col=i%5;el.classList.remove('rolling','winner');if(outcome.winning.some(w=>w.line[col]===row))el.classList.add('winner')});$('#spin').disabled=false;$('#spin').textContent=slotFreeSpins?'GIRO GRÁTIS ↻':'GIRAR NOVAMENTE ↻';slotBusy=false}}requestAnimationFrame(frame)}
+function moneyBRL(value){return Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function slotsUI(){
+ slotGrid=Array.from({length:3},()=>Array.from({length:5},()=>symbols[Math.floor(Math.random()*symbols.length)]));
+ show('Royal Slots · 5 × 3','<div class="slotcab"><div class="slotbrand">♛ ROYAL <span>FORTUNE</span> ♛</div><div class="slotjackpot"><span>PRÊMIO DA COMBINAÇÃO</span><b>2× A APOSTA</b><small>DINHEIRO DA CARTEIRA</small></div><div class="slotreels" id="slotReels">'+slotGrid.flat().map((v,i)=>'<div class="slotcell" data-cell="'+i+'"><span>'+v+'</span></div>').join('')+'</div><div class="slotpaylines"><span>5 ROLOS</span><span>1 LINHA PREMIADA</span><span>5 SÍMBOLOS IGUAIS NA FILEIRA DE CIMA</span></div><div class="slotcontrol"><button class="darkbtn" onclick="changeSlotBet(-1)">−</button><div><small>APOSTA REAL</small><strong id="slotBetValue">'+moneyBRL(slotBetAmount/100)+'</strong></div><button class="darkbtn" onclick="changeSlotBet(1)">+</button><button class="goldbtn slotspin" id="spin" onclick="spinSlots()">GIRAR ↻</button></div><div class="slotresult" id="message">Aposta de R$ 0,50 ou mais. Se os cinco símbolos da primeira fileira forem iguais, recebe 2× a aposta no total.</div><div class="slotfree" id="slotFree">Saldo: '+moneyBRL(cassinoWallet)+'</div></div><details class="slotrules"><summary>Regra do prêmio</summary><div class="slotpaytable"><p><b>Primeira fileira com 5 símbolos iguais:</b> recebe 2 vezes o valor apostado no total.</p><p><b>Qualquer outro resultado:</b> a aposta é perdida.</p><p>O giro e o cálculo do prêmio são feitos no servidor; o saldo vem da carteira individual do Supabase.</p></div></details>');
+}
+let slotBetAmount=50;
+const slotBetOptions=[50,100,200,500,1000,2000,5000,10000];
+function changeSlotBet(direction){if(slotBusy)return;let index=slotBetOptions.indexOf(slotBetAmount);if(index<0)index=0;index=Math.max(0,Math.min(slotBetOptions.length-1,index+direction));slotBetAmount=slotBetOptions[index];const e=$('#slotBetValue');if(e)e.textContent=moneyBRL(slotBetAmount/100)}
+function spinSlots(){
+ if(slotBusy)return;
+ if(!cassinoUser){message('Entre na sua conta antes de jogar.');return}
+ slotBusy=true;const btn=$('#spin');if(btn){btn.disabled=true;btn.textContent='CONECTANDO…'}
+ message('Conferindo a carteira e preparando o giro…');
+ (async()=>{
+  try{
+   const sessionResult=await cassinoSupabase.auth.getSession();
+   const session=sessionResult.data&&sessionResult.data.session;
+   if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
+   const result=await cassinoSupabase.functions.invoke('jogar-royal-slots-real',{body:{stake_cents:slotBetAmount}});
+   if(result.error){
+    const ctx=result.error.context;
+    let body=null;try{body=ctx&&typeof ctx.json==='function'?await ctx.json():null}catch{}
+    throw new Error((body&&body.error)||result.error.message||'Não foi possível concluir o giro.');
+   }
+   if(!result.data||!result.data.ok)throw new Error((result.data&&result.data.error)||'O servidor não confirmou o giro.');
+   const grid=result.data.grid;
+   if(!Array.isArray(grid)||grid.length!==3||grid.some(row=>!Array.isArray(row)||row.length!==5))throw new Error('Resultado inválido recebido do servidor.');
+   const cells=[...document.querySelectorAll('.slotcell')],start=performance.now(),duration=2200;
+   function frame(now){
+    const t=Math.min(1,(now-start)/duration);
+    cells.forEach((el,i)=>{
+     const col=i%5;
+     if(t<Math.min(.97,.35+col*.13)){el.classList.add('rolling');el.querySelector('span').textContent=symbols[Math.floor(Math.random()*symbols.length)]}
+     else{el.classList.remove('rolling');el.querySelector('span').textContent=grid[Math.floor(i/5)][col]}
+    });
+    if(t<1){requestAnimationFrame(frame);return}
+    slotGrid=grid;cells.forEach(el=>el.classList.remove('rolling','winner'));
+    const won=Boolean(result.data.won);
+    if(won)for(let col=0;col<5;col++)cells[col].classList.add('winner');
+    cassinoWallet=Number(result.data.balance||0);
+    const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent=moneyBRL(cassinoWallet);
+    const slotFree=document.getElementById('slotFree');if(slotFree)slotFree.textContent='Saldo da carteira: '+moneyBRL(cassinoWallet);
+    message(won?'🎉 PRIMEIRA FILEIRA COMPLETA! Prêmio creditado: '+moneyBRL(result.data.payout)+'. Novo saldo: '+moneyBRL(cassinoWallet):'Não completou a primeira fileira. Aposta de '+moneyBRL(result.data.stake)+' debitada. Saldo: '+moneyBRL(cassinoWallet));
+    if(btn){btn.disabled=false;btn.textContent='GIRAR ↻'}slotBusy=false;
+   }
+   requestAnimationFrame(frame);
+  }catch(e){
+   message(e.message||'Não foi possível girar. Nenhuma aposta foi confirmada se o servidor recusou a operação.');
+   if(btn){btn.disabled=false;btn.textContent='GIRAR ↻'}slotBusy=false;
+   await atualizarCarteiraCassino();
+  }
+ })();
+}
 const reds=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);let wheelAngle=0,wheelBusy=false;function drawWheel(canvas,angle=0){let ctx=canvas.getContext('2d'),n=37,r=canvas.width/2,outer=r-8;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();ctx.translate(r,r);ctx.rotate(angle);for(let i=0;i<n;i++){let a=i*2*Math.PI/n-Math.PI/2,b=(i+1)*2*Math.PI/n-Math.PI/2;ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,outer,a,b);ctx.closePath();ctx.fillStyle=i===0?'#168052':reds.has(i)?'#a71e32':'#17191b';ctx.fill();ctx.strokeStyle='#e0bd72';ctx.lineWidth=1.5;ctx.stroke();ctx.save();ctx.rotate((a+b)/2);ctx.translate(outer*.81,0);ctx.rotate(Math.PI/2);ctx.fillStyle='#fff1c8';ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.fillText(i,0,4);ctx.restore()}ctx.beginPath();ctx.arc(0,0,outer*.24,0,Math.PI*2);ctx.fillStyle='#b28b45';ctx.fill();ctx.beginPath();ctx.arc(0,0,outer*.19,0,Math.PI*2);ctx.fillStyle='#143e2d';ctx.fill();ctx.fillStyle='#f8d989';ctx.font='bold 13px Georgia';ctx.textAlign='center';ctx.fillText('VEGAS',0,4);ctx.restore()}
 let rouletteBet={type:'color',value:'vermelho'},rouletteStake=10;
 function rouletteUI(){rouletteBet={type:'color',value:'vermelho'};rouletteStake=10;show('Roleta Europeia · 0–36','<div class="wheelwrap"><canvas id="wheel" width="340" height="340"></canvas></div><div class="casinoBet"><div class="casinoBetHead"><span>VALOR DA FICHA</span><strong id="rouletteStake">10</strong><button class="choice" onclick="changeRouletteStake(-5)">−</button><button class="choice" onclick="changeRouletteStake(5)">+</button></div><div class="rouletteOptions"><button class="choice red" onclick="setRouletteBet(\'color\',\'vermelho\')">Vermelho · 1:1</button><button class="choice black" onclick="setRouletteBet(\'color\',\'preto\')">Preto · 1:1</button><button class="choice green" onclick="setRouletteBet(\'color\',\'verde\')">Zero · 35:1</button><button class="choice" onclick="setRouletteBet(\'parity\',\'par\')">Par · 1:1</button><button class="choice" onclick="setRouletteBet(\'parity\',\'ímpar\')">Ímpar · 1:1</button><button class="choice" onclick="setRouletteBet(\'range\',\'baixo\')">1–18 · 1:1</button><button class="choice" onclick="setRouletteBet(\'range\',\'alto\')">19–36 · 1:1</button><button class="choice" onclick="setRouletteBet(\'dozen\',\'1ª dúzia\')">1ª dúzia · 2:1</button><button class="choice" onclick="setRouletteBet(\'dozen\',\'2ª dúzia\')">2ª dúzia · 2:1</button><button class="choice" onclick="setRouletteBet(\'dozen\',\'3ª dúzia\')">3ª dúzia · 2:1</button></div><div class="numbergrid" id="numberGrid">'+Array.from({length:37},(_,n)=>'<button class="numberbtn '+(n===0?'nzero':reds.has(n)?'nred':'nblack')+'" onclick="setRouletteBet(\'number\',\''+n+'\')">'+n+'</button>').join('')+'</div><div class="casinoSelected" id="rouletteSelected">Aposta selecionada: Vermelho</div><div class="choiceRow"><button class="goldbtn" id="rouletteSpin" onclick="spinWheel()">GIRAR A ROLETA</button></div><div class="message" id="message">Escolha uma aposta e gire a roda.</div><p class="help">Roleta europeia: 37 casas (0–36). Número direto paga 35:1; dúzia 2:1; cor, paridade e faixa 1:1. Fichas fictícias.</p>');drawWheel($('#wheel'),wheelAngle);markRouletteBet()}
@@ -1077,7 +1125,7 @@ function renderPayments(){
   return;
  }
  document.getElementById('payTitle').textContent='Minha carteira';
- const statusNotice=REAL_MONEY_GAMES_ENABLED?'':'<div class="payNotice"><b>⚠️ Depósitos reais bloqueados por segurança.</b><p>O saldo e os jogos ainda não estão conectados a um motor de apostas seguro no servidor. Não envie dinheiro ainda.</p></div>';
+ const statusNotice=REAL_MONEY_GAMES_ENABLED?'':'<div class="payNotice"><b>⚠️ Apostas e depósitos reais ainda estão bloqueados.</b><p>O jogo já tem a estrutura de liquidação no servidor, mas a carteira real só poderá movimentar dinheiro quando a ativação e a configuração de pagamentos estiverem autorizadas e testadas.</p></div>';
  const buttons=REAL_MONEY_GAMES_ENABLED?'<p>Escolha o valor para depositar:</p><div class="payAmounts">'+[5,10,20,50,100,200].map(n=>'<button class="goldbtn" onclick="criarDepositoCassino('+n+')">R$ '+n+'</button>').join('')+'</div>':'<button class="darkbtn" disabled style="opacity:.55">Depósitos temporariamente desativados</button>';
   const playerName=(cassinoUser.user_metadata&&(cassinoUser.user_metadata.display_name||cassinoUser.user_metadata.full_name))||'Jogador';
   const playerId=cassinoUser.id||'';
@@ -1148,10 +1196,11 @@ async function atualizarCarteiraCassino(){
   if(result.error)throw result.error;
   const user=result.data.user;
   cassinoUser=user;
-  if(!user){cassinoWallet=0;if(payModal.classList.contains('open'))renderPayments();return}
+  if(!user){cassinoWallet=0;const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent='Entre na conta';if(payModal.classList.contains('open'))renderPayments();return}
   const walletResult=await cassinoSupabase.from('wallets').select('balance').eq('user_id',user.id).single();
   if(walletResult.error)throw walletResult.error;
   cassinoWallet=Number(walletResult.data.balance||0);
+  const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent=moneyBRL(cassinoWallet);
   if(payModal.classList.contains('open'))renderPayments();
  }catch(e){setPayStatus('Não consegui carregar a carteira: '+(e.message||'tente novamente.'))}
 }
