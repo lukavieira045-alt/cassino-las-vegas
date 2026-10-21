@@ -714,7 +714,7 @@ function pinSound(kind='hit'){
 async async function playRealArcade(game, stakeCents, buttonId, resultId){
  const btn=$('#'+buttonId),out=$('#'+resultId);
  if(!cassinoUser){openPayments('account');setPayStatus('Entre na sua conta para jogar.');return}
- if(!Number.isInteger(stakeCents)||![50,100,200,500,1000,2000,5000,10000].includes(stakeCents)){if(out)out.textContent='Valor de aposta inválido.';return}
+ const allowedStakes=game==='neon_pinball_real'?[50,100,200,500,1000,2000,3000]:game==='eight_ball_real'?[1000,2000,3000,4000,5000]:[50,100,200,500,1000,2000,5000,10000];if(!Number.isInteger(stakeCents)||!allowedStakes.includes(stakeCents)){if(out)out.textContent='Valor de aposta inválido para este jogo.';return}
  if(btn){btn.disabled=true;btn.textContent='PROCESSANDO NO SERVIDOR…'}
  if(out)out.textContent='O servidor está processando a rodada…';
  try{
@@ -734,7 +734,7 @@ async async function playRealArcade(game, stakeCents, buttonId, resultId){
 function realArcadeStakeSelect(id){return '<label for="'+id+'">APOSTA REAL</label><select id="'+id+'" class="betinput"><option value="50">R$ 0,50</option><option value="100">R$ 1,00</option><option value="200">R$ 2,00</option><option value="500">R$ 5,00</option><option value="1000" selected>R$ 10,00</option><option value="2000">R$ 20,00</option><option value="5000">R$ 50,00</option><option value="10000">R$ 100,00</option></select>'}
 
 function pinballUI(){
- show('NEON PINBALL · LAS VEGAS', `<div class="pinball-shell"><div class="pinball-marquee">✦ VEGAS <span>PINBALL</span> ✦<small>MESA INTERATIVA · PRÓXIMA ETAPA: FÍSICA E FLIPPERS</small></div>
+ show('NEON PINBALL · LAS VEGAS', `<div class="pinball-shell"><div class="pinball-marquee">✦ VEGAS <span>PINBALL</span> ✦<small>FÍSICA DE BOLA · FLIPPERS · BUMPERS · EFEITOS NEON</small></div>
  <div style="max-width:440px;margin:0 auto 12px;padding:8px;border:2px solid #c7a15a;border-radius:12px;background:linear-gradient(145deg,#090b1e,#24102e);box-shadow:0 0 22px #ff2d9d33">
  <svg viewBox="0 0 320 430" role="img" aria-label="Mesa Neon Pinball" style="display:block;width:100%;height:auto;max-height:58vh">
  <defs><linearGradient id="pinBoard" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#151b45"/><stop offset="1" stop-color="#310d35"/></linearGradient><radialGradient id="pinGlow"><stop stop-color="#fff"/><stop offset=".35" stop-color="#00eaff"/><stop offset="1" stop-color="#ff2d9d" stop-opacity="0"/></radialGradient></defs>
@@ -887,7 +887,7 @@ function startPinball(){
  frame()
 }function poolUI(){
  show('VEGAS BILLIARDS · 8 BALL', `<div class="pool-room"><div class="pool-marquee">🎱 VEGAS BILLIARDS · 8 BALL</div>
- <div class="pool-hud"><div>JOGADOR<b>VOCÊ</b></div><div>MESA<b>8 BALL · VEGAS</b></div><div>PARTIDA<b>8-BALL · MESA E REGRAS EM IMPLEMENTAÇÃO</b></div></div>
+ <div class="pool-hud"><div>JOGADOR<b>VOCÊ</b></div><div>MESA<b>8 BALL · VEGAS</b></div><div>PARTIDA<b>MESA 3D VISUAL · FÍSICA DE COLISÕES</b></div></div>
  <div class="pool-table-wrap" style="max-width:760px;margin:auto"><svg viewBox="0 0 700 390" role="img" aria-label="Mesa de sinuca Vegas com bolas" style="display:block;width:100%;height:auto;touch-action:manipulation">
  <defs><linearGradient id="poolFelt" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#16845a"/><stop offset="1" stop-color="#06452e"/></linearGradient></defs>
  <rect x="4" y="4" width="692" height="382" rx="18" fill="#503019" stroke="#e6c06d" stroke-width="8"/><rect x="24" y="24" width="652" height="342" rx="10" fill="url(#poolFelt)" stroke="#c89a4a" stroke-width="4"/>
@@ -1008,7 +1008,7 @@ function wheelUI(){show('FORTUNE WHEEL DELUXE · VEGAS SHOW','<div class="fortun
 let targetGame=null,targetStake=1,arcadeCleanup=null,arcadeTimer=null;
 function targetUI(){
  stopArcade();
- show('NEON TARGET PRO · SHOOTING RANGE','<div class="target-pro"><div class="target-brand"><span>★ VEGAS ARCADE ★</span><h2>NEON TARGET <small>PRO RANGE</small></h2><p>RODADA REAL · RESULTADO NO SERVIDOR</p></div><div class="casinoBet">'+realArcadeStakeSelect('targetRealStake')+'</div><div class="target-actions"><button class="goldbtn" id="targetRealPlay" onclick="playRealArcade(\'neon_target_real\',Number($(\'#targetRealStake\').value),\'targetRealPlay\',\'targetRealResult\')">DISPARAR · JOGAR</button></div><div class="target-message" id="targetRealResult">Escolha a aposta e inicie a rodada.</div></div>');
+ show('NEON TARGET PRO · SHOOTING RANGE','<div class="target-pro"><div class="target-brand"><span>★ VEGAS ARCADE ★</span><h2>NEON TARGET <small>PRO RANGE</small></h2><p>ESTANDE NEON · MIRA, TEMPO E PRECISÃO</p></div><div class="casinoBet">'+realArcadeStakeSelect('targetRealStake')+'</div><div class="target-actions"><button class="goldbtn" id="targetRealPlay" onclick="playRealArcade(\'neon_target_real\',Number($(\'#targetRealStake\').value),\'targetRealPlay\',\'targetRealResult\')">DISPARAR · JOGAR</button></div><div class="target-message" id="targetRealResult">Escolha a aposta e inicie a rodada.</div></div>');
 }
 
 function selectTargetStake(v){if(targetGame&&targetGame.active)return;targetStake=v;document.querySelectorAll('.target-stake').forEach(b=>b.classList.toggle('selected',Number(b.dataset.stake)===v));const e=$('#targetStakeLabel');if(e)e.textContent=v===0.5?'R$ 0,50':'R$ '+v.toLocaleString('pt-BR')}
