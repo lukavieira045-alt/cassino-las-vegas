@@ -666,6 +666,11 @@ function rouletteWins(n){let color=n===0?'verde':reds.has(n)?'vermelho':'preto';
 async function spinWheel(){
  if(wheelBusy)return;
  if(!cassinoUser){openPayments('account');setPayStatus('Entre na sua conta para jogar.');return}
+ // Atualiza a carteira real antes de permitir que a Roleta Royale inicie a rodada.
+ await atualizarCarteiraCassino();
+ if(!cassinoUser){openPayments('account');setPayStatus('Entre na sua conta para jogar.');return}
+ if(!Number.isFinite(rouletteStake)||rouletteStake<=0){message('Valor de aposta inválido.');return}
+ if(cassinoWallet < rouletteStake){message('Saldo real insuficiente. Deposite ou escolha uma aposta menor antes de girar.');return}
  wheelBusy=true;const btn=$('#rouletteSpin');if(btn)btn.disabled=true;
  try{
   const session=(await cassinoSupabase.auth.getSession()).data?.session;if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
