@@ -692,7 +692,7 @@ function pinSound(kind='hit'){
   const now=pinAudio.currentTime,osc=pinAudio.createOscillator(),gain=pinAudio.createGain();
   osc.connect(gain);gain.connect(pinAudio.destination);
   const cfg={launch:[180,620,.22,'triangle'],flipper:[260,480,.07,'square'],bumper:[480,1050,.16,'sine'],wall:[160,100,.05,'triangle'],drain:[240,65,.28,'sawtooth'],bonus:[520,1320,.35,'triangle']};
-  const c=cfg[kind]||cfg.hit;osc.type=c[3];osc.frequency.setValueAtTime(c[0],now);osc.frequency.exponentialRampToValueAtTime(Math.max(35,c[1]),now+c[2]);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(kind==='bumper'?.12:.07,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+c[2]);osc.start(now);osc.stop(now+c[2]+.02);
+  const c=cfg[kind]||cfg.hit;osc.type=c[3];osc.frequency.setValueAtTime(c[0],now);osc.frequency.exponentialRampToValueAtTime(Math.max(35,c[1]),now+c[2]);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime((kind === 'bumper' ? 0.12 : 0.07),now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+c[2]);osc.start(now);osc.stop(now+c[2]+.02);
  }catch(e){}
 }
 async function playRealArcade(game, stakeCents, buttonId, resultId){
@@ -715,7 +715,7 @@ async function playRealArcade(game, stakeCents, buttonId, resultId){
  }catch(e){if(out)out.textContent=e.message||'Erro ao processar a rodada.';await atualizarCarteiraCassino()}
  finally{if(btn){btn.disabled=false;btn.textContent='JOGAR NOVAMENTE'}}
 }
-function realArcadeStakeSelect(id){return '<label for="'+id+'">APOSTA REAL</label><select id="'+id+'" class="betinput"><option value="50">R$ 0,50</option><option value="100">R$ 1,00</option><option value="200">R$ 2,00</option><option value="500">R$ 5,00</option><option value="1000" selected>R$ 10,00</option><option value="2000">R$ 20,00</option><option value="5000">R$ 50,00</option><option value="10000">R$ 100,00</option></select>}
+function realArcadeStakeSelect(id){return '<label for="'+id+'">APOSTA REAL</label><select id="'+id+'" class="betinput"><option value="50">R$ 0,50</option><option value="100">R$ 1,00</option><option value="200">R$ 2,00</option><option value="500">R$ 5,00</option><option value="1000" selected>R$ 10,00</option><option value="2000">R$ 20,00</option><option value="5000">R$ 50,00</option><option value="10000">R$ 100,00</option></select>'}
 
 function pinballUI(){
  show('NEON PINBALL · LAS VEGAS','<div class="pinball-shell"><div class="pinball-marquee">✦ VEGAS <span>PINBALL</span> ✦<small>RODADA PROCESSADA NO SERVIDOR</small></div><div class="casinoBet">'+realArcadeStakeSelect('pinRealStake')+'</div><div class="choiceRow"><button class="goldbtn" id="pinRealPlay" onclick="playRealArcade(\'neon_pinball_real\',Number($(\'#pinRealStake\').value),\'pinRealPlay\',\'pinRealResult\')">JOGAR · PINBALL</button></div><div class="message" id="pinRealResult">Escolha a aposta. Resultado e prêmio são definidos no servidor.</div></div>');
