@@ -1223,11 +1223,12 @@ async function atualizarCarteiraCassino(){
   if(result.error)throw result.error;
   const user=result.data.user;
   cassinoUser=user;
-  if(!user){cassinoWallet=0;const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent='Entre na conta';if(payModal.classList.contains('open'))renderPayments();return}
+  if(!user){cassinoWallet=0;const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent='Entre na conta';if(typeof syncRouletteSpinButton==='function')syncRouletteSpinButton();if(payModal.classList.contains('open'))renderPayments();return}
   const walletResult=await cassinoSupabase.from('wallets').select('balance').eq('user_id',user.id).single();
   if(walletResult.error)throw walletResult.error;
   cassinoWallet=Number(walletResult.data.balance||0);
   const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent=moneyBRL(cassinoWallet);
+  if(typeof syncRouletteSpinButton==='function')syncRouletteSpinButton();
   if(payModal.classList.contains('open'))renderPayments();
  }catch(e){setPayStatus('Não consegui carregar a carteira: '+(e.message||'tente novamente.'))}
 }
