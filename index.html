@@ -695,7 +695,32 @@ function pinSound(kind='hit'){
   const c=cfg[kind]||cfg.hit;osc.type=c[3];osc.frequency.setValueAtTime(c[0],now);osc.frequency.exponentialRampToValueAtTime(Math.max(35,c[1]),now+c[2]);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(kind==='bumper'?.12:.07,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+c[2]);osc.start(now);osc.stop(now+c[2]+.02);
  }catch(e){}
 }
-function pinballUI(){show('NEON PINBALL · LAS VEGAS','<div class="pinball-shell"><div class="pinball-marquee">✦ VEGAS <span>PINBALL</span> ✦<small>LIGHTS • SOUND • BONUS MULTIPLIERS</small></div><canvas id="arcade" class="arcadeCanvas" width="360" height="500" style="width:100%;max-width:360px;aspect-ratio:18/25;height:auto;border-radius:14px;box-shadow:0 0 24px #ff2d9d88,0 0 45px #00e5ff33"></canvas><div class="scoreline"><span>SCORE <b id="arcadeScore">0</b></span><span>BALL <b id="ballCount">3</b></span><span>MULTI <b id="pinMulti">×1</b></span></div><div class="choiceRow"><button class="goldbtn" id="startPin" onclick="startPinball()">INICIAR · 10 FICHAS</button></div><div class="choiceRow" style="display:flex;gap:10px;align-items:stretch;touch-action:none"><button class="choice" style="min-height:68px;flex:1;font-size:17px;font-weight:900;border:2px solid #ff2d9d;touch-action:none;user-select:none;-webkit-user-select:none" onpointerdown="holdPinFlipper(event,\'left\')" onpointerup="releasePinFlipper(\'left\')" onpointercancel="releasePinFlipper(\'left\')" oncontextmenu="event.preventDefault()">◀<br>FLIPPER ESQ.</button><button class="choice" style="min-height:68px;flex:1;font-size:17px;font-weight:900;border:2px solid #00e5ff;touch-action:none;user-select:none;-webkit-user-select:none" onpointerdown="holdPinFlipper(event,\'right\')" onpointerup="releasePinFlipper(\'right\')" onpointercancel="releasePinFlipper(\'right\')" oncontextmenu="event.preventDefault()">FLIPPER DIR.<br>▶</button></div><div class="choiceRow" style="display:flex;gap:10px"><button class="choice" id="pinLaunchBtn" style="min-height:64px;min-width:100px;flex:1;font-size:16px;font-weight:900;touch-action:none;user-select:none" onpointerdown="beginPinLaunch(event)" onpointerup="releasePinLaunch(event)" onpointercancel="cancelPinLaunch()">SEGURE<br>LANÇAR ⬆<small id="pinPower" style="display:block;font-size:11px">POTÊNCIA 0%</small></button></div><p class="help">CELULAR: segure LANÇAR para carregar a mola e solte para lançar a bola. Segure os botões grandes FLIPPER ESQ./DIR. quando a bola chegar. PC: ← e → para rebater; segure Espaço para carregar e solte para lançar.</p><div class="message" id="message">Mesa de pinball arcade com luzes, colisões, efeitos sonoros e bônus demonstrativos.</div></div>')}
+async function playRealArcade(game, stakeCents, buttonId, resultId){
+ const btn=$('#'+buttonId),out=$('#'+resultId);
+ if(!cassinoUser){openPayments('account');setPayStatus('Entre na sua conta para jogar.');return}
+ if(!Number.isInteger(stakeCents)||![50,100,200,500,1000,2000,5000,10000].includes(stakeCents)){if(out)out.textContent='Valor de aposta inválido.';return}
+ if(btn){btn.disabled=true;btn.textContent='PROCESSANDO NO SERVIDOR…'}
+ if(out)out.textContent='O servidor está processando a rodada…';
+ try{
+  const session=(await cassinoSupabase.auth.getSession()).data?.session;
+  if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
+  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game,stake_cents:stakeCents}});
+  if(res.error){let b=null;try{b=await res.error.context?.json()}catch{}throw new Error(b?.error||res.error.message||'Não foi possível finalizar a rodada.')}
+  if(!res.data?.ok)throw new Error(res.data?.error||'O servidor não confirmou a rodada.');
+  cassinoWallet=Number(res.data.balance||0);
+  const balanceEl=$('#balance');if(balanceEl)balanceEl.textContent=moneyBRL(cassinoWallet);
+  const result=res.data.result||{},outcome=result.outcome||('Multiplicador ×'+(result.multiplier??result.prize_multiplier??0)),payout=Number(res.data.payout||0);
+  if(out)out.textContent=outcome+' · '+(payout>0?'Retorno '+moneyBRL(payout):'Sem prêmio')+' · Saldo '+moneyBRL(cassinoWallet);
+  await atualizarCarteiraCassino();
+ }catch(e){if(out)out.textContent=e.message||'Erro ao processar a rodada.';await atualizarCarteiraCassino()}
+ finally{if(btn){btn.disabled=false;btn.textContent='JOGAR NOVAMENTE'}}
+}
+function realArcadeStakeSelect(id){return '<label for="'+id+'">APOSTA REAL</label><select id="'+id+'" class="betinput"><option value="50">R$ 0,50</option><option value="100">R$ 1,00</option><option value="200">R$ 2,00</option><option value="500">R$ 5,00</option><option value="1000" selected>R$ 10,00</option><option value="2000">R$ 20,00</option><option value="5000">R$ 50,00</option><option value="10000">R$ 100,00</option></select>}
+
+function pinballUI(){
+ show('NEON PINBALL · LAS VEGAS','<div class="pinball-shell"><div class="pinball-marquee">✦ VEGAS <span>PINBALL</span> ✦<small>RODADA PROCESSADA NO SERVIDOR</small></div><div class="casinoBet">'+realArcadeStakeSelect('pinRealStake')+'</div><div class="choiceRow"><button class="goldbtn" id="pinRealPlay" onclick="playRealArcade(\'neon_pinball_real\',Number($(\'#pinRealStake\').value),\'pinRealPlay\',\'pinRealResult\')">JOGAR · PINBALL</button></div><div class="message" id="pinRealResult">Escolha a aposta. Resultado e prêmio são definidos no servidor.</div></div>');
+}
+
 let pinLeft=false,pinRight=false,pinGame=null,pinChargeStart=0,pinChargeTimer=0;
 function holdPinFlipper(e,side){if(e&&e.preventDefault)e.preventDefault();try{e.currentTarget.setPointerCapture(e.pointerId)}catch(_){}if(side==='left')pinLeft=true;else pinRight=true;pinSound('flipper')}
 function releasePinFlipper(side){if(side==='left')pinLeft=false;else pinRight=false}
@@ -835,7 +860,10 @@ function startPinball(){
   arcadeTimer=requestAnimationFrame(frame)
  }
  frame()
-}function poolUI(){show('VEGAS BILLIARDS · 8 BALL','<div class="pool-room"><div class="pool-hud"><span>FICHAS <b id="poolBalance">'+Math.floor(state.balance)+'</b></span><span>JOGADOR <b id="poolPlayerScore">0</b></span><span>CASA <b id="poolHouseScore">0</b></span><span>TACADAS <b id="poolShots">0</b></span></div><div class="pool-table-wrap"><canvas id="arcade" class="arcadeCanvas pool-canvas" width="760" height="440" aria-label="Mesa de sinuca 8-ball"></canvas></div><div class="pool-controls"><div class="pool-bet"><label for="poolStake">APOSTA EM FICHAS (DEMO)</label><div class="pool-stake-row"><button class="choice" onclick="changePoolStake(-10)">−10</button><strong id="poolStakeValue">25</strong><button class="choice" onclick="changePoolStake(10)">+10</button><button class="choice" onclick="changePoolStake(25)">+25</button></div></div><div class="pool-power"><label for="poolPower">FORÇA DA TACADA <b id="poolPowerValue">55%</b></label><input id="poolPower" type="range" min="10" max="100" value="55" oninput="if($(\'#poolPowerValue\'))$(\'#poolPowerValue\').textContent=this.value+\'%\'"></div><button class="goldbtn" id="poolStart" onclick="startPool()">NOVA PARTIDA</button><button class="choice" id="poolResetCue" onclick="resetPoolCue()" disabled>REPOSICIONAR BRANCA</button></div><p class="help">CONTROLES: arraste na mesa para mirar; solte para tacar. Ajuste a força no controle. No celular, use o dedo. A linha mostra a direção da tacada.</p><div class="message" id="message">Partida contra a casa: vença para receber 2× a aposta (inclui a devolução das fichas apostadas). Só fichas demonstrativas.</div></div>')}
+}function poolUI(){
+ show('VEGAS BILLIARDS · 8 BALL','<div class="pool-room"><div class="pool-marquee">🎱 VEGAS BILLIARDS · 8 BALL</div><div class="casinoBet">'+realArcadeStakeSelect('poolRealStake')+'</div><div class="choiceRow"><button class="goldbtn" id="poolRealPlay" onclick="playRealArcade(\'eight_ball_real\',Number($(\'#poolRealStake\').value),\'poolRealPlay\',\'poolRealResult\')">INICIAR PARTIDA</button></div><div class="message" id="poolRealResult">Resultado processado no servidor e saldo na carteira compartilhada.</div></div>');
+}
+
 let poolGame=null,poolStake=25;
 function changePoolStake(delta){poolStake=Math.max(10,Math.min(250,poolStake+delta));const el=$('#poolStakeValue');if(el)el.textContent=poolStake}
 function resetPoolCue(){if(!poolGame||!poolGame.scratch||poolGame.moving)return;const b=poolGame.balls[0];b.x=220;b.y=220;b.vx=b.vy=0;b.pocket=false;poolGame.scratch=false;poolGame.aiming=false;$('#poolResetCue').disabled=true;message('Branca reposicionada. Sua vez: mire e arraste para tacar.')}
@@ -946,52 +974,10 @@ function wheelUI(){show('FORTUNE WHEEL DELUXE · VEGAS SHOW','<div class="fortun
 /* NEON TARGET PRO: moving arcade range, selectable stakes and score-based returns (demo credits only). */
 let targetGame=null,targetStake=1,arcadeCleanup=null,arcadeTimer=null;
 function targetUI(){
-  stopArcade();
-  targetGame=null;
-  const stakeButtons=[0.5,1,2,5,10,20].map(v=>'<button class="target-stake '+(v===targetStake?'selected':'')+'" data-stake="'+v+'" onclick="selectTargetStake('+v+')">'+(v===0.5?'R$ 0,50':'R$ '+v.toLocaleString('pt-BR'))+'</button>').join('');
-  show('NEON TARGET PRO · SHOOTING RANGE',
-  '<div class="target-pro"><div class="target-brand"><span>★ VEGAS ARCADE ★</span><h2>NEON TARGET <small>PRO RANGE</small></h2><p>PRECISÃO • TEMPO • PRÊMIO</p></div>'+
-  '<div class="target-hud"><span>APOSTA <strong id="targetStakeLabel">R$ '+targetStake.toLocaleString('pt-BR',{minimumFractionDigits:targetStake%1?2:0})+'</strong></span><span>TIROS <strong id="targetShots">5</strong></span><span>PONTOS <strong id="targetScore">0</strong></span><span>COMBO <strong id="targetCombo">×1</strong></span></div>'+
-  '<div class="target-stakes">'+stakeButtons+'</div>'+
-  '<canvas id="arcade" class="arcadeCanvas target-range" width="720" height="390" aria-label="Campo de tiro. Toque no alvo para disparar."></canvas>'+
-  '<div class="target-actions"><button class="goldbtn" id="targetStart" onclick="startTargetRound()">INICIAR RODADA</button><button class="choice" id="targetFire" onclick="fireTarget()" disabled>DISPARAR</button></div>'+
-  '<div class="target-message" id="targetMessage">Escolha o valor da aposta e inicie. Toque no alvo em movimento para atirar.</div>'+
-  '<div class="target-paytable"><span>ANEL EXTERNO <b>25 pts</b></span><span>ANEL INTERNO <b>60 pts</b></span><span>CENTRO <b>100 pts</b></span></div></div>'+
-  '<p class="help">Jogo demonstrativo: as apostas e os prêmios são créditos virtuais do navegador, sem dinheiro real e sem saque. O retorno depende da pontuação final; a mira não garante acerto.</p>');
-  const cv=$('#arcade'),ctx=cv.getContext('2d');
-  const move=e=>{if(!targetGame||!targetGame.active)return;const r=cv.getBoundingClientRect();targetGame.aimX=(e.clientX-r.left)*cv.width/r.width;targetGame.aimY=(e.clientY-r.top)*cv.height/r.height};
-  cv.addEventListener('pointermove',move);
-  cv.addEventListener('pointerdown',e=>{move(e);if(targetGame&&targetGame.active)fireTarget()});
-  if(arcadeCleanup)arcadeCleanup();
-  arcadeCleanup=()=>{if(targetGame)targetGame.active=false;cv.removeEventListener('pointermove',move)};
-  const draw=(now)=>{
-    if(!$('#arcade')||!document.querySelector('#modal.open'))return;
-    const g=targetGame;ctx.clearRect(0,0,720,390);
-    const bg=ctx.createLinearGradient(0,0,720,390);bg.addColorStop(0,'#030912');bg.addColorStop(.5,'#102332');bg.addColorStop(1,'#190b20');ctx.fillStyle=bg;ctx.fillRect(0,0,720,390);
-    // Distant casino range, lit panels and perspective floor.
-    for(let i=0;i<10;i++){const x=i*78;ctx.fillStyle=i%2?'#00d9ff':'#ff2d9d';ctx.globalAlpha=.12+.08*Math.sin(now/250+i);ctx.fillRect(x,35,42,4);ctx.globalAlpha=1}
-    ctx.strokeStyle='#42dfff25';ctx.lineWidth=1;for(let y=220;y<390;y+=22){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(720,y);ctx.stroke()}for(let x=-390;x<1100;x+=65){ctx.beginPath();ctx.moveTo(360,205);ctx.lineTo(x,390);ctx.stroke()}
-    // Back wall and illuminated range lanes.
-    ctx.fillStyle='#050a12';ctx.fillRect(0,60,720,150);for(let i=0;i<6;i++){ctx.strokeStyle=i%2?'#00d9ff66':'#ff2d9d66';ctx.lineWidth=2;ctx.strokeRect(22+i*113,75,95,116)}
-    if(g&&g.active){
-      const t=now/1000;g.x=360+Math.sin(t*g.speed+g.phase)*g.range;g.y=142+Math.sin(t*1.35+g.phase)*38;
-      // Target shadow, rotating ring, metallic face and concentric scoring rings.
-      ctx.save();ctx.translate(g.x,g.y);ctx.rotate(Math.sin(t*1.7)*.08);
-      ctx.beginPath();ctx.ellipse(5,9,58,58,0,0,Math.PI*2);ctx.fillStyle='#000a';ctx.fill();
-      [[54,'#b8c4d0'],[46,'#c5284e'],[35,'#f1e8d8'],[25,'#cf294c'],[15,'#f8d98b'],[6,'#fff9e8']].forEach(([r,c],i)=>{ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fillStyle=c;ctx.shadowColor=i%2?'#ff2d68':'#00d9ff';ctx.shadowBlur=i===5?20:7;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff9';ctx.lineWidth=1.4;ctx.stroke()});
-      ctx.beginPath();ctx.arc(0,0,57,0,Math.PI*2);ctx.strokeStyle='#00e5ff';ctx.lineWidth=2;ctx.shadowColor='#00d9ff';ctx.shadowBlur=18;ctx.stroke();ctx.restore();ctx.shadowBlur=0;
-      // A small hit marker fades naturally between shots.
-      if(g.hitFlash>0){ctx.globalAlpha=Math.min(1,g.hitFlash/18);ctx.strokeStyle='#ffe88c';ctx.lineWidth=4;ctx.beginPath();ctx.arc(g.hitX,g.hitY,25+(18-g.hitFlash)*2,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;g.hitFlash--}
-    } else {
-      ctx.fillStyle='#c4dce8';ctx.font='bold 18px Arial';ctx.textAlign='center';ctx.fillText('RANGE STANDBY',360,145);
-      ctx.fillStyle='#718b9b';ctx.font='12px Arial';ctx.fillText('INICIE A RODADA PARA LIBERAR OS ALVOS',360,171);
-    }
-    if(g){ctx.strokeStyle='#ffe7a1';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(g.aimX-13,g.aimY);ctx.lineTo(g.aimX+13,g.aimY);ctx.moveTo(g.aimX,g.aimY-13);ctx.lineTo(g.aimX,g.aimY+13);ctx.arc(g.aimX,g.aimY,5,0,Math.PI*2);ctx.stroke()}
-    ctx.textAlign='left';ctx.fillStyle='#ffe7a1';ctx.font='bold 12px Arial';ctx.fillText('VEGAS SHOOTING CLUB',18,25);ctx.fillStyle='#79eaff';ctx.font='10px Arial';ctx.fillText('TOQUE NO ALVO • 5 DISPAROS POR RODADA',18,374);
-    if($('#arcade'))arcadeTimer=requestAnimationFrame(draw);
-  };
-  arcadeTimer=requestAnimationFrame(draw);
+ stopArcade();
+ show('NEON TARGET PRO · SHOOTING RANGE','<div class="target-pro"><div class="target-brand"><span>★ VEGAS ARCADE ★</span><h2>NEON TARGET <small>PRO RANGE</small></h2><p>RODADA REAL · RESULTADO NO SERVIDOR</p></div><div class="casinoBet">'+realArcadeStakeSelect('targetRealStake')+'</div><div class="target-actions"><button class="goldbtn" id="targetRealPlay" onclick="playRealArcade(\'neon_target_real\',Number($(\'#targetRealStake\').value),\'targetRealPlay\',\'targetRealResult\')">DISPARAR · JOGAR</button></div><div class="target-message" id="targetRealResult">Escolha a aposta e inicie a rodada.</div></div>');
 }
+
 function selectTargetStake(v){if(targetGame&&targetGame.active)return;targetStake=v;document.querySelectorAll('.target-stake').forEach(b=>b.classList.toggle('selected',Number(b.dataset.stake)===v));const e=$('#targetStakeLabel');if(e)e.textContent=v===0.5?'R$ 0,50':'R$ '+v.toLocaleString('pt-BR')}
 function startTargetRound(){
   if(targetGame&&targetGame.active)return;
