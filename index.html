@@ -574,7 +574,7 @@ const symbolInfo={'🍒':['CHERRY','cereja'],'🍋':['LEMON','limão'],'🔔':['
 const paytable={'🍒':[2,4,8,20,60],'🍋':[0,3,6,15,40],'🔔':[0,0,8,20,55],'💎':[0,0,12,35,100],'7️⃣':[0,0,20,60,250],'🍀':[0,0,10,25,80],'⭐':[0,0,15,40,120]};
 const paylines=[[1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],[0,1,2,1,0],[2,1,0,1,2],[0,0,1,2,2],[2,2,1,0,0],[1,0,0,0,1],[1,2,2,2,1],[0,1,1,1,2]];
 let slotBusy=false,slotFreeSpins=0,slotLastWin=0,slotGrid=[];
-function stopArcade(){/* Ponto seguro de encerramento antes de abrir outra mesa. */}
+function stopArcade(){if(typeof arcadeTimer!=='undefined'&&arcadeTimer){cancelAnimationFrame(arcadeTimer);arcadeTimer=0}if(typeof targetAnimFrame!=='undefined'&&targetAnimFrame){cancelAnimationFrame(targetAnimFrame);targetAnimFrame=0}if(typeof arcadeCleanup==='function'){try{arcadeCleanup()}catch(e){}arcadeCleanup=null}if(typeof pinChargeTimer!=='undefined'&&pinChargeTimer){clearInterval(pinChargeTimer);pinChargeTimer=0}pinLeft=false;pinRight=false;}
 function openGame(id){try{if(!window.cassinoUser&&!cassinoUser){openPayments('account');setPayStatus('🔒 Para jogar, crie sua conta com nome, e-mail e senha, confirme a senha e entre.');return}stopArcade();if(id==='megaSlots')return megaSlotsUI();if(id==='slots')return slotsUI();if(id==='roulette')return rouletteUI();if(id==='pinball')return pinballUI();if(id==='pool')return poolUI();if(id==='wheel')return wheelUI();if(id==='target')return targetUI();console.error('Jogo não reconhecido:',id)}catch(err){console.error('Erro ao abrir jogo:',err);const el=document.getElementById('gameBody');if(el)el.innerHTML='<div class="message">Não foi possível abrir este jogo: '+String(err.message||err).replace(/[&<>"']/g,'')+'</div>';const m=document.getElementById('modal');if(m)m.classList.add('open')}}window.openGame=openGame;document.addEventListener('click',function(e){const card=e.target.closest&&e.target.closest('.gamecard[onclick]');if(!card)return;const match=card.getAttribute('onclick').match(/openGame\(['\"]([^'\"]+)['\"]\)/);if(!match)return;e.preventDefault();e.stopImmediatePropagation();try{window.openGame(match[1])}catch(err){console.error(err);alert('Erro ao abrir o jogo. Atualize a página e tente novamente.')}},{capture:true});
 let megaBusy=false,megaBet=1000,megaGrid=[]; const realStakeOptions=[50,100,200,500,1000,2000,5000,10000];
 function gameStakeSelect(id, values, selected){return '<label for="'+id+'">VALOR DA APOSTA</label><select id="'+id+'" class="betinput">'+values.map(v=>'<option value="'+Math.round(v*100)+'" '+(v===selected?'selected':'')+'>R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'</option>').join('')+'</select>'}
@@ -1005,22 +1005,33 @@ function wheelUI(){show('FORTUNE WHEEL DELUXE · VEGAS SHOW','<div class="fortun
  }catch(e){prizeBusy=false;if(btn){btn.disabled=false;btn.textContent='GIRAR A RODA ✦'}message(e.message||'Não foi possível concluir a rodada.');await atualizarCarteiraCassino()}
 }
 /* NEON TARGET PRO: moving arcade range, selectable stakes and score-based returns (demo credits only). */
-let targetGame=null,targetStake=1,arcadeCleanup=null,arcadeTimer=null;
+let targetGame=null,targetStake=1,arcadeCleanup=null,arcadeTimer=null,targetAnimFrame=0;
 function targetUI(){
- stopArcade();
- show('NEON TARGET PRO · SHOOTING RANGE','<div class="target-pro"><div class="target-brand"><span>★ VEGAS ARCADE ★</span><h2>NEON TARGET <small>PRO RANGE</small></h2><p>ESTANDE NEON · MIRA, TEMPO E PRECISÃO</p></div><div class="casinoBet">'+realArcadeStakeSelect('targetRealStake')+'</div><div class="target-actions"><button class="goldbtn" id="targetRealPlay" onclick="playRealArcade(\'neon_target_real\',Number($(\'#targetRealStake\').value),\'targetRealPlay\',\'targetRealResult\')">DISPARAR · JOGAR</button></div><div class="target-message" id="targetRealResult">Escolha a aposta e inicie a rodada.</div></div>');
+ stopArcade();targetGame=null;
+ show('NEON TARGET PRO · SHOOTING RANGE','<div class="target-pro"><div class="target-brand"><span>★ VEGAS ARCADE ★</span><h2>NEON TARGET <small>PRO RANGE</small></h2><p>MIRA LIVRE · ALVO EM MOVIMENTO · 5 DISPAROS</p></div><div class="pool-table-wrap" style="max-width:760px;margin:auto;border:2px solid #00eaff;border-radius:14px;overflow:hidden;box-shadow:0 0 24px #00eaff44"><canvas id="targetCanvas" width="720" height="360" style="display:block;width:100%;height:auto;touch-action:manipulation;background:#07091b" aria-label="Estande de tiro neon"></canvas></div><div class="pool-hud"><div>DISPAROS<b id="targetShots">5</b></div><div>PONTOS<b id="targetScore">0</b></div><div>COMBO<b id="targetCombo">×1</b></div></div><div class="casinoBet">'+realArcadeStakeSelect('targetRealStake')+'</div><div class="target-actions"><button class="goldbtn" id="targetStart" onclick="startTargetRound()">INICIAR RODADA</button><button class="goldbtn" id="targetFire" onclick="fireTarget()" disabled>DISPARAR ✦</button></div><div class="target-message" id="targetMessage">Toque no alvo para mirar. Acerte mais perto do centro para pontuar mais.</div><div class="message">MODO PRÁTICA: mira e pontuação são suas; não há débito nem prêmio financeiro nesta versão.</div></div>');
+ const cv=$('#targetCanvas');if(cv){cv.addEventListener('pointerdown',function(e){const r=cv.getBoundingClientRect();if(!targetGame)return;targetGame.aimX=(e.clientX-r.left)*cv.width/r.width;targetGame.aimY=(e.clientY-r.top)*cv.height/r.height;drawTargetScene()});drawTargetScene()}
 }
 
+function drawTargetScene(){
+ const cv=$('#targetCanvas');if(!cv)return;const ctx=cv.getContext('2d'),w=cv.width,h=cv.height;ctx.clearRect(0,0,w,h);
+ const bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#050719');bg.addColorStop(.5,'#12103a');bg.addColorStop(1,'#071b2a');ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+ for(let i=0;i<28;i++){const x=(i*137+31)%w,y=(i*73+19)%h;ctx.fillStyle=i%2?'#00eaff':'#ff3bd4';ctx.globalAlpha=.22;ctx.fillRect(x,y,2,2)}ctx.globalAlpha=1;
+ ctx.strokeStyle='#00eaff';ctx.shadowColor='#00eaff';ctx.shadowBlur=16;ctx.lineWidth=3;ctx.strokeRect(12,12,w-24,h-24);ctx.shadowBlur=0;
+ const g=targetGame,x=g?g.x:360,y=g?g.y:145;
+ for(let i=4;i>=1;i--){ctx.beginPath();ctx.arc(x,y,i*17,0,Math.PI*2);ctx.strokeStyle=i%2?'#ff2bd6':'#00eaff';ctx.lineWidth=3;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=12;ctx.stroke()}
+ ctx.shadowBlur=0;ctx.beginPath();ctx.arc(x,y,14,0,Math.PI*2);ctx.fillStyle='#ffe66d';ctx.fill();ctx.strokeStyle='#fff';ctx.stroke();
+ ctx.beginPath();ctx.moveTo(x-29,y);ctx.lineTo(x+29,y);ctx.moveTo(x,y-29);ctx.lineTo(x,y+29);ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke();
+ if(g&&g.aimX!=null){ctx.strokeStyle='#9efcff';ctx.setLineDash([6,6]);ctx.beginPath();ctx.moveTo(g.aimX-18,g.aimY);ctx.lineTo(g.aimX+18,g.aimY);ctx.moveTo(g.aimX,g.aimY-18);ctx.lineTo(g.aimX,g.aimY+18);ctx.stroke();ctx.setLineDash([])}
+ ctx.fillStyle='#fff0a5';ctx.font='bold 17px Arial';ctx.textAlign='center';ctx.fillText('NEON TARGET • VEGAS RANGE',w/2,34);
+}
 function selectTargetStake(v){if(targetGame&&targetGame.active)return;targetStake=v;document.querySelectorAll('.target-stake').forEach(b=>b.classList.toggle('selected',Number(b.dataset.stake)===v));const e=$('#targetStakeLabel');if(e)e.textContent=v===0.5?'R$ 0,50':'R$ '+v.toLocaleString('pt-BR')}
 function startTargetRound(){
-  targetUI();return;
   if(targetGame&&targetGame.active)return;
-  if(targetStake>state.balance){$('#targetMessage').textContent='Saldo demonstrativo insuficiente para essa aposta. Escolha um valor menor.';return}
-  charge(targetStake);
+  const stakeCents=Number($('#targetRealStake')?.value||1000);targetStake=stakeCents/100;
   targetGame={stake:targetStake,shots:5,score:0,combo:1,maxCombo:1,active:true,x:360,y:142,aimX:360,aimY:300,phase:Math.random()*6,speed:1.05+Math.random()*.75,range:100+Math.random()*100,hitFlash:0,hitX:360,hitY:142,lastHit:0};
   $('#targetShots').textContent='5';$('#targetScore').textContent='0';$('#targetCombo').textContent='×1';$('#targetStart').disabled=true;$('#targetFire').disabled=false;
-  $('#targetMessage').textContent='Rodada iniciada! Acerte o centro para pontuar mais. Cada tiro consome uma tentativa.';
-  document.querySelectorAll('.target-stake').forEach(b=>b.disabled=true);
+  $('#targetMessage').textContent='Rodada iniciada! Toque na tela para mirar e dispare quando estiver alinhado.';
+  const frame=()=>{if(!targetGame||!targetGame.active||!$('#targetCanvas')){targetAnimFrame=0;return}targetGame.phase+=.035;targetGame.x=360+Math.sin(targetGame.phase)*targetGame.range;targetGame.y=145+Math.cos(targetGame.phase*1.35)*42;drawTargetScene();targetAnimFrame=requestAnimationFrame(frame)};frame();
 }
 function fireTarget(){
   const g=targetGame;if(!g||!g.active||g.shots<=0)return;
