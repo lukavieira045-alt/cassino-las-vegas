@@ -590,7 +590,7 @@ async function spinMegaSlots(){
  try{
   const session=(await cassinoSupabase.auth.getSession()).data?.session;
   if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
-  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game:'mega_slots_real',stake_cents:megaBet,test_mode:cassinoTestMode,test_mode:cassinoTestMode}});
+  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game:'mega_slots_real',stake_cents:megaBet,test_mode:cassinoTestMode}});
   if(res.error){let b=null;try{b=await res.error.context?.json()}catch{}throw new Error(b?.error||res.error.message||'Não foi possível jogar.')}
   if(!res.data?.ok)throw new Error(res.data?.error||'O servidor não confirmou a rodada.');
   const grid=res.data.result?.grid;if(!Array.isArray(grid)||grid.length!==3)throw new Error('Resultado inválido do servidor.');
@@ -719,7 +719,7 @@ async function playRealArcade(game, stakeCents, buttonId, resultId){
  try{
   const session=(await cassinoSupabase.auth.getSession()).data?.session;
   if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
-  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game,stake_cents:stakeCents}});
+  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game,stake_cents:stakeCents,test_mode:cassinoTestMode}});
   if(res.error){let b=null;try{b=await res.error.context?.json()}catch{}throw new Error(b?.error||res.error.message||'Não foi possível finalizar a rodada.')}
   if(!res.data?.ok)throw new Error(res.data?.error||'O servidor não confirmou a rodada.');
   cassinoWallet=Number(res.data.balance||0);
