@@ -710,7 +710,7 @@ function pinSound(kind='hit'){
   const c=cfg[kind]||cfg.hit;osc.type=c[3];osc.frequency.setValueAtTime(c[0],now);osc.frequency.exponentialRampToValueAtTime(Math.max(35,c[1]),now+c[2]);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime((kind === 'bumper' ? 0.12 : 0.07),now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+c[2]);osc.start(now);osc.stop(now+c[2]+.02);
  }catch(e){}
 }
-async function playRealArcade(game, stakeCents, buttonId, resultId){
+async async function playRealArcade(game, stakeCents, buttonId, resultId){
  const btn=$('#'+buttonId),out=$('#'+resultId);
  if(!cassinoUser){openPayments('account');setPayStatus('Entre na sua conta para jogar.');return}
  if(!Number.isInteger(stakeCents)||![50,100,200,500,1000,2000,5000,10000].includes(stakeCents)){if(out)out.textContent='Valor de aposta inválido.';return}
