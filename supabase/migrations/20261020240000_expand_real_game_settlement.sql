@@ -1,7 +1,7 @@
--- Cassino Las Vegas: expansão segura da liquidação da carteira real.
--- ATENÇÃO: este arquivo precisa ser aplicado no SQL Editor do Supabase.
--- Ele NÃO é executado automaticamente pelo GitHub Pages.
--- Só habilite cada jogo depois de existir lógica server-side que determine resultado e prêmio.
+-- Cassino Las Vegas: migração de proteção da liquidação da carteira real.
+-- NÃO habilitar novos jogos nesta função antes de implantar e validar a lógica server-side.
+-- Este arquivo não é executado automaticamente pelo GitHub Pages.
+-- Mantém apenas os três jogos cuja função Edge já calcula o resultado no servidor.
 CREATE OR REPLACE FUNCTION public.settle_cassino_arcade_round(
   p_user_id uuid,
   p_round_id uuid,
@@ -28,10 +28,7 @@ BEGIN
   IF p_game_key NOT IN (
     'mega_slots_real',
     'roulette_real',
-    'fortune_wheel_real',
-    'neon_pinball_real',
-    'eight_ball_real',
-    'neon_target_real'
+    'fortune_wheel_real'
   ) THEN
     RAISE EXCEPTION 'Unsupported game';
   END IF;
