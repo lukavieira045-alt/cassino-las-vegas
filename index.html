@@ -753,9 +753,7 @@ function cancelPinLaunch(){pinChargeStart=0;clearInterval(pinChargeTimer);pinCha
 
 function launchPinball(power){if(!pinGame||!pinGame.live||!pinGame.waiting)return;power=typeof power==='number'?power:0.7;power=Math.max(.2,Math.min(1,power));pinGame.waiting=false;pinGame.x=321;pinGame.y=450;pinGame.vx=0;pinGame.vy=-(15+power*5);pinGame.launchLane=true;pinGame.stallFrames=0;pinGame.lastMoveX=pinGame.x;pinGame.lastMoveY=pinGame.y;pinSound('launch');message('LANÇAMENTO '+Math.round(power*100)+'% · SEGURE OS FLIPPERS!')}
 function startPinball(){
- pinballUI();return;
- if(state.balance<10){message('Saldo insuficiente.');return}
- charge(10);stopArcade();let cv=$('#arcade'),ctx=cv.getContext('2d');
+ stopArcade();let cv=$('#arcade'),ctx=cv.getContext('2d');
  pinGame={x:321,y:450,vx:0,vy:0,score:0,balls:3,live:true,waiting:true,mult:1,flash:0,bumperCooldown:Array(5).fill(0),lastFlipper:0,lights:0,tilt:0,bonusHits:0,spiralTimer:0,spiralCooldown:0,spiralPhase:0,animalCooldown:[0,0,0],animalCombo:0,slingCooldown:0,flipperCooldown:{left:0,right:0},particles:[],stallFrames:0,lastMoveX:321,lastMoveY:450};
  $('#startPin').disabled=true;$('#ballCount').textContent='3';$('#arcadeScore').textContent='0';$('#pinMulti').textContent='×1';
  const bumpers=[{x:100,y:130,r:23,label:'JACKPOT',kind:'jackpot'},{x:255,y:150,r:22,label:'VEGAS',kind:'normal'},{x:180,y:225,r:24,label:'BONUS',kind:'bonus'},{x:85,y:285,r:19,label:'LUCKY',kind:'normal'},{x:275,y:290,r:19,label:'WIN',kind:'normal'}];
@@ -903,10 +901,10 @@ function finishPoolGame(){
  if(!poolGame||poolGame.done)return;
  poolGame.done=true;$('#poolStart').disabled=false;
  const p=poolGame.playerScore,h=poolGame.houseScore,stake=poolGame.stake;
- if(p>h){award(stake*2);message('VOCÊ VENCEU A CASA! '+p+' × '+h+' bolas. Recebeu '+(stake*2)+' fichas (aposta devolvida + prêmio de '+stake+').');}
- else if(h>p){message('A CASA VENCEU! '+h+' × '+p+' bolas. Você perdeu '+stake+' fichas da aposta.');}
- else{award(stake);message('EMPATE! '+p+' × '+h+' bolas. Suas '+stake+' fichas da aposta foram devolvidas.');}
- $('#poolBalance').textContent=Math.floor(state.balance);
+ if(p>h){message('VOCÊ VENCEU A PARTIDA! '+p+' × '+h+' bolas encaçapadas. Modo prática: nenhum prêmio financeiro foi creditado.');}
+ else if(h>p){message('O OPONENTE VENCEU! '+h+' × '+p+' bolas. Modo prática: nenhuma aposta foi debitada.');}
+ else{message('EMPATE! '+p+' × '+h+'. Modo prática: nenhum valor foi movimentado.');}
+ const status=$('#poolStatus');if(status)status.textContent='PARTIDA ENCERRADA';
 }
 function housePoolShot(){
  if(!poolGame||poolGame.done||poolGame.phase!=='house')return;
@@ -928,9 +926,7 @@ function housePoolShot(){
  message('VEZ DA CASA: a casa tenta encaçapar uma bola…');pinSound('launch');
 }
 function startPool(){
- poolUI();return;
- if(state.balance<poolStake){message('Saldo insuficiente para essa aposta em fichas.');return}
- charge(poolStake);stopArcade();let cv=$('#arcade'),ctx=cv.getContext('2d');
+ stopArcade();poolStake=Number($('#poolRealStake')?.value||2000)/100;let cv=$('#arcade'),ctx=cv.getContext('2d');
  poolGame={balls:[],score:0,playerScore:0,houseScore:0,shots:0,moving:false,done:false,aiming:false,aim:null,scratch:false,turnPocketed:false,stake:poolStake,turn:0,phase:'player'};
  const R=10,left=44,right=716,top=44,bottom=396;poolGame.bounds={left,right,top,bottom};
  poolGame.balls.push({x:220,y:220,vx:0,vy:0,color:'#fff',cue:true,num:0});
