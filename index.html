@@ -545,7 +545,7 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 </style>
 </head>
 <body><div class="topbar"></div>
-<header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance">SALDO DA CARTEIRA<br><b id="balance">R$ 0,00</b></div></div></nav></header>
+<header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance"><span id="walletModeLabel">SALDO DA CARTEIRA</span><br><b id="balance">R$ 0,00</b><br><button id="testModeToggle" type="button" onclick="toggleCassinoTestMode()" style="margin-top:5px;border:1px solid #facc15;border-radius:8px;background:#18251c;color:#facc15;padding:5px 8px;font-weight:800;font-size:10px;display:none">ATIVAR SALDO DE TESTE</button></div></div></nav></header>
 <div class="quick-actions"><button onclick="openPayments('deposit')">💰<span>Depositar</span></button><button onclick="openPayments('withdraw')">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
 <div class="id-strip"><span>🎰 LAS VEGAS · SALÃO DE JOGOS</span></div>
 <nav class="categorybar"><button class="active" data-filter="all">🔥<span>Popular</span></button><button data-filter="slots">🎰<span>Slots</span></button><button data-filter="arcade">⚡<span>Minijogos</span></button><button data-filter="table">🎲<span>Mesas</span></button></nav>
@@ -590,7 +590,7 @@ async function spinMegaSlots(){
  try{
   const session=(await cassinoSupabase.auth.getSession()).data?.session;
   if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
-  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game:'mega_slots_real',stake_cents:megaBet}});
+  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game:'mega_slots_real',stake_cents:megaBet,test_mode:cassinoTestMode,test_mode:cassinoTestMode}});
   if(res.error){let b=null;try{b=await res.error.context?.json()}catch{}throw new Error(b?.error||res.error.message||'Não foi possível jogar.')}
   if(!res.data?.ok)throw new Error(res.data?.error||'O servidor não confirmou a rodada.');
   const grid=res.data.result?.grid;if(!Array.isArray(grid)||grid.length!==3)throw new Error('Resultado inválido do servidor.');
@@ -621,7 +621,7 @@ function spinSlots(){
    const sessionResult=await cassinoSupabase.auth.getSession();
    const session=sessionResult.data&&sessionResult.data.session;
    if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
-   const result=await cassinoSupabase.functions.invoke('jogar-royal-slots-real',{body:{stake_cents:slotBetAmount}});
+   const result=await cassinoSupabase.functions.invoke('jogar-royal-slots-real',{body:{stake_cents:slotBetAmount,test_mode:cassinoTestMode}});
    if(result.error){
     const ctx=result.error.context;
     let body=null;try{body=ctx&&typeof ctx.json==='function'?await ctx.json():null}catch{}
@@ -684,7 +684,7 @@ async function spinWheel(){
  wheelBusy=true;const btn=$('#rouletteSpin');if(btn)btn.disabled=true;
  try{
   const session=(await cassinoSupabase.auth.getSession()).data?.session;if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
-  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game:'roulette_real',stake_cents:rouletteStake*100,bet_type:rouletteBet.type,bet_value:String(rouletteBet.value)}});
+  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game:'roulette_real',stake_cents:rouletteStake*100,bet_type:rouletteBet.type,bet_value:String(rouletteBet.value),test_mode:cassinoTestMode}});
   if(res.error){let b=null;try{b=await res.error.context?.json()}catch{}throw new Error(b?.error||res.error.message||'Não foi possível girar.')}
   if(!res.data?.ok)throw new Error(res.data?.error||'O servidor não confirmou a aposta.');
   const n=Number(res.data.result.number),start=wheelAngle,seg=2*Math.PI/37,target=(-n*2*Math.PI/37)-Math.PI/37,extra=Math.PI*2*(5+Math.random()*3);
@@ -976,7 +976,7 @@ function wheelUI(){show('FORTUNE WHEEL DELUXE · VEGAS SHOW','<div class="fortun
  prizeBusy=true;const btn=$('#fortuneSpin');if(btn){btn.disabled=true;btn.textContent='CONECTANDO…'}
  try{
   const session=(await cassinoSupabase.auth.getSession()).data?.session;if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
-  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game:'fortune_wheel_real',stake_cents:1000}});
+  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game:'fortune_wheel_real',stake_cents:1000,test_mode:cassinoTestMode}});
   if(res.error){let b=null;try{b=await res.error.context?.json()}catch{}throw new Error(b?.error||res.error.message||'Não foi possível girar.')}
   if(!res.data?.ok)throw new Error(res.data?.error||'O servidor não confirmou a rodada.');
   const items=[0,5,10,20,30,50],chosen=Number(res.data.result.prize_index),step=2*Math.PI/items.length,start=prizeWheelAngle;
@@ -1225,6 +1225,9 @@ async function authCassino(mode){
   if(currentSubmit){currentSubmit.disabled=false;currentSubmit.textContent=(document.getElementById('cassinoToggleMode')?.textContent||'').includes('Já tenho conta')?'Criar conta':'Entrar'}
  }
 }
+let cassinoTestMode=false;
+const CASSINO_TEST_USERS=["66b95d54-d754-46ba-afbc-fa713c61e8df","68be2506-c1e9-484c-853d-015afadbd21a"];
+async function toggleCassinoTestMode(){if(!cassinoUser||!CASSINO_TEST_USERS.includes(cassinoUser.id)){alert("Modo de teste não autorizado.");return}cassinoTestMode=!cassinoTestMode;await atualizarCarteiraCassino();const b=document.getElementById("testModeToggle");if(b)b.textContent=cassinoTestMode?"VOLTAR AO SALDO REAL":"ATIVAR SALDO DE TESTE";const l=document.getElementById("walletModeLabel");if(l)l.textContent=cassinoTestMode?"SALDO DE TESTE · NÃO SACÁVEL":"SALDO DA CARTEIRA";if(cassinoTestMode)setPayStatus("Modo de teste ativado. Este saldo não é dinheiro real e não permite saque.");}
 async function atualizarCarteiraCassino(){
  try{
   const result=await cassinoSupabase.auth.getUser();
@@ -1232,15 +1235,19 @@ async function atualizarCarteiraCassino(){
   const user=result.data.user;
   cassinoUser=user;
   if(!user){cassinoWallet=0;const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent='Entre na conta';if(typeof syncRouletteSpinButton==='function')syncRouletteSpinButton();if(payModal.classList.contains('open'))renderPayments();return}
-  const walletResult=await cassinoSupabase.from('wallets').select('balance').eq('user_id',user.id).single();
+  const testBtn=document.getElementById("testModeToggle");if(testBtn)testBtn.style.display=CASSINO_TEST_USERS.includes(user.id)?"inline-block":"none";
+  if(!CASSINO_TEST_USERS.includes(user.id))cassinoTestMode=false;
+  const walletResult=await cassinoSupabase.from(cassinoTestMode?"test_wallets":"wallets").select("balance").eq("user_id",user.id).single();
   if(walletResult.error)throw walletResult.error;
   cassinoWallet=Number(walletResult.data.balance||0);
+  const modeLabel=document.getElementById("walletModeLabel");if(modeLabel)modeLabel.textContent=cassinoTestMode?"SALDO DE TESTE · NÃO SACÁVEL":"SALDO DA CARTEIRA";
   const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent=moneyBRL(cassinoWallet);
   if(typeof syncRouletteSpinButton==='function')syncRouletteSpinButton();
   if(payModal.classList.contains('open'))renderPayments();
  }catch(e){setPayStatus('Não consegui carregar a carteira: '+(e.message||'tente novamente.'))}
 }
 async function criarDepositoCassino(amount, submitPayment=false){
+ if(cassinoTestMode){setPayStatus('Depósitos ficam indisponíveis no modo de teste. Desative o modo de teste para acessar a carteira real.');return}
  if(!REAL_MONEY_GAMES_ENABLED){setPayStatus('Depósitos bloqueados até os jogos reais estarem integrados com segurança.');return}
  if(!cassinoUser){setPayStatus('Entre na sua conta primeiro.');return}
  if(!submitPayment){
