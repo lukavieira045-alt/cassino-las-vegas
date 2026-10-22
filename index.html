@@ -676,13 +676,13 @@ async function spinWheel(){
   const user=authResult.data?.user;
   if(authResult.error||!user){cassinoUser=null;message('Sua sessão expirou. Entre novamente.');return}
   cassinoUser=user;
-  const walletCheck=await cassinoSupabase.from('wallets').select('balance').eq('user_id',user.id).single();
+  const walletCheck=await cassinoSupabase.from(cassinoTestMode&&CASSINO_TEST_USERS.includes(user.id)?'test_wallets':'wallets').select('balance').eq('user_id',user.id).single();
   if(walletCheck.error||!walletCheck.data){message('Não foi possível confirmar seu saldo real. Tente novamente.');return}
   cassinoWallet=Number(walletCheck.data.balance);
   const balanceEl=$('#balance');if(balanceEl)balanceEl.textContent=moneyBRL(cassinoWallet);
  }catch(e){message('Não foi possível confirmar seu saldo real. Tente novamente.');return}
  syncRouletteSpinButton();
- if(!Number.isFinite(cassinoWallet)||cassinoWallet < rouletteStake){message('Saldo insuficiente! Seu saldo é '+moneyBRL(Number.isFinite(cassinoWallet)?cassinoWallet:0)+' e a aposta é '+moneyBRL(rouletteStake)+'. Deposite ou escolha uma aposta menor.');return}
+ if(!Number.isFinite(cassinoWallet)||cassinoWallet < rouletteStake){message('Saldo insuficiente! Seu saldo '+(cassinoTestMode?'de teste':'real')+' é '+moneyBRL(Number.isFinite(cassinoWallet)?cassinoWallet:0)+' e a aposta é '+moneyBRL(rouletteStake)+'. '+(cassinoTestMode?'Escolha uma aposta menor.':'Deposite ou escolha uma aposta menor.'));return}
  wheelBusy=true;const btn=$('#rouletteSpin');if(btn)btn.disabled=true;
  try{
   const session=(await cassinoSupabase.auth.getSession()).data?.session;if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
@@ -693,7 +693,7 @@ async function spinWheel(){
   const endAngle=start+extra+(((target-(start+extra))%(Math.PI*2)+(Math.PI*2))%(Math.PI*2)),t0=performance.now(),duration=3900;
   function frame(now){const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,4);wheelAngle=start+(endAngle-start)*ease;drawWheel($('#wheel'),wheelAngle);if(t<1){requestAnimationFrame(frame);return}
    wheelBusy=false; cassinoWallet=Number(res.data.balance||0);const be=$('#balance');if(be)be.textContent=moneyBRL(cassinoWallet);syncRouletteSpinButton();
-   const color=res.data.result.color.toUpperCase();message('A bola caiu no '+n+' · '+color+'. '+(Number(res.data.payout)>0?'Retorno: '+moneyBRL(res.data.payout)+'. ':'Aposta perdida. ')+'Saldo real: '+moneyBRL(cassinoWallet));
+   const color=res.data.result.color.toUpperCase();message('A bola caiu no '+n+' · '+color+'. '+(Number(res.data.payout)>0?'Retorno: '+moneyBRL(res.data.payout)+'. ':'Aposta perdida. ')+(cassinoTestMode?'Saldo de teste: ':'Saldo real: ')+moneyBRL(cassinoWallet));
   }requestAnimationFrame(frame);
  }catch(e){wheelBusy=false;message(e.message||'Não foi possível concluir a rodada.');await atualizarCarteiraCassino();syncRouletteSpinButton()}
 }
