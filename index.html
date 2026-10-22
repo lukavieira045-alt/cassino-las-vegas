@@ -778,7 +778,7 @@ function releasePinLaunch(e){if(e&&e.preventDefault)e.preventDefault();if(!pinCh
 function cancelPinLaunch(){pinChargeStart=0;clearInterval(pinChargeTimer);pinChargeTimer=0}
 
 function launchPinball(power){if(!pinGame||!pinGame.live||!pinGame.waiting)return;power=typeof power==='number'?power:0.7;power=Math.max(.2,Math.min(1,power));pinGame.waiting=false;pinGame.x=321;pinGame.y=450;pinGame.vx=0;pinGame.vy=-(15+power*5);pinGame.launchLane=true;pinGame.stallFrames=0;pinGame.lastMoveX=pinGame.x;pinGame.lastMoveY=pinGame.y;pinSound('launch');message('LANÇAMENTO '+Math.round(power*100)+'% · SEGURE OS FLIPPERS!')}
-async async function startPinball(){
+async function startPinball(){
  const stakeCents=Number($('#pinRealStake')?.value||100);const ok=await playRealArcade('neon_pinball_real',stakeCents,'startPin','pinRealResult');if(!ok)return;
  stopArcade();let cv=$('#arcade'),ctx=cv.getContext('2d');
  pinGame={x:321,y:450,vx:0,vy:0,score:0,balls:1,live:true,waiting:true,mult:1,flash:0,bumperCooldown:Array(5).fill(0),lastFlipper:0,lights:0,tilt:0,bonusHits:0,spiralTimer:0,spiralCooldown:0,spiralPhase:0,animalCooldown:[0,0,0],animalCombo:0,slingCooldown:0,flipperCooldown:{left:0,right:0},particles:[],stallFrames:0,lastMoveX:321,lastMoveY:450};
@@ -953,7 +953,7 @@ function housePoolShot(){
  poolGame.turnPocketed=false;poolGame.shots++;poolGame.turn=1;$('#poolShots').textContent=poolGame.shots;
  message('VEZ DA CASA: a casa tenta encaçapar uma bola…');pinSound('launch');
 }
-async async function startPool(){
+async function startPool(){
  const stakeCents=Number($('#poolRealStake')?.value||1000);const ok=await playRealArcade('eight_ball_real',stakeCents,'poolStart','poolRealResult');if(!ok)return;
  stopArcade();poolStake=stakeCents/100;let cv=$('#arcade'),ctx=cv.getContext('2d');
  poolGame={balls:[],score:0,playerScore:0,houseScore:0,shots:0,moving:false,done:false,aiming:false,aim:null,scratch:false,turnPocketed:false,stake:poolStake,turn:0,phase:'player'};
