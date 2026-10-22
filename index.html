@@ -1215,7 +1215,7 @@ async function authCassino(mode){
   if(currentSubmit){currentSubmit.disabled=false;currentSubmit.textContent=(document.getElementById('cassinoToggleMode')?.textContent||'').includes('Já tenho conta')?'Criar conta':'Entrar'}
  }
 }
-let cassinoTestMode=true;
+let cassinoTestMode=false;
 const CASSINO_TEST_USERS=["66b95d54-d754-46ba-afbc-fa713c61e8df","68be2506-c1e9-484c-853d-015afadbd21a"];
 async function toggleCassinoTestMode(){if(!cassinoUser||!CASSINO_TEST_USERS.includes(cassinoUser.id)){alert("Modo de teste não autorizado.");return}cassinoTestMode=!cassinoTestMode;await atualizarCarteiraCassino();const b=document.getElementById("testModeToggle");if(b)b.textContent=cassinoTestMode?"VOLTAR AO SALDO REAL":"ATIVAR SALDO DE TESTE";const l=document.getElementById("walletModeLabel");if(l)l.textContent=cassinoTestMode?"SALDO DE TESTE · NÃO SACÁVEL":"SALDO DA CARTEIRA";if(cassinoTestMode)setPayStatus("Modo de teste ativado. Este saldo não é dinheiro real e não permite saque.");}
 async function atualizarCarteiraCassino(){
