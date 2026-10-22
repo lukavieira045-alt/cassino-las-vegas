@@ -721,7 +721,7 @@ async function playRealArcade(game, stakeCents, buttonId, resultId, extraArgs={}
  try{
   const session=(await cassinoSupabase.auth.getSession()).data?.session;
   if(!session)throw new Error('Sua sessão expirou. Entre novamente.');
-  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game,stake_cents:stakeCents,test_mode:cassinoTestMode,...extraArgs}});
+  const res=await cassinoSupabase.functions.invoke('jogar-cassino-arcade-real',{body:{game,stake_cents:stakeCents,test_mode:game==='bingo_real'?false:cassinoTestMode,...extraArgs}});
   if(res.error){let b=null;try{b=await res.error.context?.json()}catch{}throw new Error(b?.error||res.error.message||'Não foi possível finalizar a rodada.')}
   if(!res.data?.ok)throw new Error(res.data?.error||'O servidor não confirmou a rodada.');
   cassinoWallet=Number(res.data.balance||0);
