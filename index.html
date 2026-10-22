@@ -732,7 +732,7 @@ async function playRealArcade(game, stakeCents, buttonId, resultId){
  }catch(e){if(out)out.textContent=e.message||'Erro ao processar a rodada.';await atualizarCarteiraCassino();return false}
  finally{if(btn){btn.disabled=false;btn.textContent='JOGAR RODADA REAL'}}
 }
-function realArcadeStakeSelect(id){return '<label for="'+id+'">APOSTA REAL</label><select id="'+id+'" class="betinput"><option value="50">R$ 0,50</option><option value="100">R$ 1,00</option><option value="200">R$ 2,00</option><option value="500">R$ 5,00</option><option value="1000" selected>R$ 10,00</option><option value="2000">R$ 20,00</option><option value="5000">R$ 50,00</option><option value="10000">R$ 100,00</option></select>'}
+function realArcadeStakeSelect(id, values, selected){return '<label for="'+id+'">APOSTA REAL · RESULTADO NO SERVIDOR</label><select id="'+id+'" class="betinput">'+values.map(v=>'<option value="'+Math.round(v*100)+'" '+(v===selected?'selected':'')+'>R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'</option>').join('')+'</select>'}
 
 function pinballUI(){
  stopArcade();
