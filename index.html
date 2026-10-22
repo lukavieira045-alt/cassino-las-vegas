@@ -728,8 +728,9 @@ async function playRealArcade(game, stakeCents, buttonId, resultId){
   const result=res.data.result||{},outcome=result.outcome||('Multiplicador ×'+(result.multiplier??result.prize_multiplier??0)),payout=Number(res.data.payout||0);
   if(out)out.textContent=outcome+' · '+(payout>0?'Retorno '+moneyBRL(payout):'Sem prêmio')+' · Saldo '+moneyBRL(cassinoWallet);
   await atualizarCarteiraCassino();
- }catch(e){if(out)out.textContent=e.message||'Erro ao processar a rodada.';await atualizarCarteiraCassino()}
- finally{if(btn){btn.disabled=false;btn.textContent='JOGAR NOVAMENTE'}}
+  return true;
+ }catch(e){if(out)out.textContent=e.message||'Erro ao processar a rodada.';await atualizarCarteiraCassino();return false}
+ finally{if(btn){btn.disabled=false;btn.textContent='JOGAR RODADA REAL'}}
 }
 function realArcadeStakeSelect(id){return '<label for="'+id+'">APOSTA REAL</label><select id="'+id+'" class="betinput"><option value="50">R$ 0,50</option><option value="100">R$ 1,00</option><option value="200">R$ 2,00</option><option value="500">R$ 5,00</option><option value="1000" selected>R$ 10,00</option><option value="2000">R$ 20,00</option><option value="5000">R$ 50,00</option><option value="10000">R$ 100,00</option></select>'}
 
@@ -738,8 +739,8 @@ function pinballUI(){
  show('NEON PINBALL · LAS VEGAS', `<div class="pinball-shell"><div class="pinball-marquee">✦ VEGAS <span>PINBALL</span> ✦<small>LUZES NEON · BUMPERS · FLIPPERS · 3 BOLAS</small></div>
  <div class="pinball-scorebar"><span>BOLAS <b id="ballCount">3</b></span><span>PONTOS <b id="arcadeScore">0</b></span><span>MULTIPLICADOR <b id="pinMulti">×1</b></span></div>
  <div style="max-width:440px;margin:auto;padding:8px;border:2px solid #c7a15a;border-radius:16px;background:#080b18;box-shadow:0 0 28px #00eaff55,0 0 18px #ff2d9d33"><canvas id="arcade" width="360" height="490" aria-label="Mesa de pinball interativa" style="display:block;width:100%;height:auto;touch-action:none;border-radius:10px"></canvas></div>
- <div class="casinoBet">${gameStakeSelect('pinRealStake',[0.5,1,2,5,10,20,30],1)}</div>
- <div class="choiceRow"><button class="goldbtn" id="startPin" onclick="startPinball()">INICIAR PARTIDA</button><button class="darkbtn" id="pinLaunch" onpointerdown="beginPinLaunch(event)" onpointerup="releasePinLaunch(event)" onpointercancel="cancelPinLaunch()" ontouchstart="beginPinLaunch(event)" ontouchend="releasePinLaunch(event)">SEGURE PARA LANÇAR</button></div>
+ <div class="casinoBet">${gameStakeSelect('pinRealStake',[0.5,1,2,5,10,20,30],1)}</div><div class="message" id="pinRealResult">A aposta é liquidada pelo servidor. O placar e a física desta mesa são visuais e não alteram o prêmio.</div>
+ <div class="choiceRow"><button class="goldbtn" id="startPin" onclick="startPinball()">JOGAR RODADA REAL</button><button class="darkbtn" id="pinLaunch" onpointerdown="beginPinLaunch(event)" onpointerup="releasePinLaunch(event)" onpointercancel="cancelPinLaunch()" ontouchstart="beginPinLaunch(event)" ontouchend="releasePinLaunch(event)">SEGURE PARA LANÇAR</button></div>
  <div class="choiceRow"><button class="darkbtn" id="pinLeftBtn" onpointerdown="holdPinFlipper(event,'left')" onpointerup="releasePinFlipper('left')" onpointercancel="releasePinFlipper('left')" ontouchstart="holdPinFlipper(event,'left')" ontouchend="releasePinFlipper('left')">◀ FLIPPER ESQUERDO</button><button class="darkbtn" id="pinRightBtn" onpointerdown="holdPinFlipper(event,'right')" onpointerup="releasePinFlipper('right')" onpointercancel="releasePinFlipper('right')" ontouchstart="holdPinFlipper(event,'right')" ontouchend="releasePinFlipper('right')">FLIPPER DIREITO ▶</button></div><div id="pinPower" class="message">Segure LANÇAR para carregar a mola. Use os dois flippers para manter a bola em jogo.</div>
  <div class="message" id="message">REGRA DA RODADA: cada lançamento usa o valor selecionado como referência. A meta de vitória é fazer MAIS de 1.000 pontos. MODO PRÁTICA: não debita nem credita a carteira real.</div></div>`);
 }
@@ -752,7 +753,8 @@ function releasePinLaunch(e){if(e&&e.preventDefault)e.preventDefault();if(!pinCh
 function cancelPinLaunch(){pinChargeStart=0;clearInterval(pinChargeTimer);pinChargeTimer=0}
 
 function launchPinball(power){if(!pinGame||!pinGame.live||!pinGame.waiting)return;power=typeof power==='number'?power:0.7;power=Math.max(.2,Math.min(1,power));pinGame.waiting=false;pinGame.x=321;pinGame.y=450;pinGame.vx=0;pinGame.vy=-(15+power*5);pinGame.launchLane=true;pinGame.stallFrames=0;pinGame.lastMoveX=pinGame.x;pinGame.lastMoveY=pinGame.y;pinSound('launch');message('LANÇAMENTO '+Math.round(power*100)+'% · SEGURE OS FLIPPERS!')}
-function startPinball(){
+async function startPinball(){
+ const stakeCents=Number($('#pinRealStake')?.value||100);const ok=await playRealArcade('neon_pinball_real',stakeCents,'startPin','pinRealResult');if(!ok)return;
  stopArcade();let cv=$('#arcade'),ctx=cv.getContext('2d');
  pinGame={x:321,y:450,vx:0,vy:0,score:0,balls:3,live:true,waiting:true,mult:1,flash:0,bumperCooldown:Array(5).fill(0),lastFlipper:0,lights:0,tilt:0,bonusHits:0,spiralTimer:0,spiralCooldown:0,spiralPhase:0,animalCooldown:[0,0,0],animalCombo:0,slingCooldown:0,flipperCooldown:{left:0,right:0},particles:[],stallFrames:0,lastMoveX:321,lastMoveY:450};
  $('#startPin').disabled=true;$('#ballCount').textContent='3';$('#arcadeScore').textContent='0';$('#pinMulti').textContent='×1';
@@ -887,11 +889,11 @@ function startPinball(){
  show('VEGAS BILLIARDS · 8 BALL', `<div class="pool-room"><div class="pool-marquee">🎱 VEGAS BILLIARDS · 8 BALL</div>
  <div class="pool-hud"><div>JOGADOR<b>VOCÊ</b></div><div>MESA<b>8 BALL · VEGAS</b></div><div>PARTIDA<b id="poolStatus">MESA PRONTA · 15 BOLAS</b></div></div>
  <div class="pool-table-wrap" style="max-width:760px;margin:auto;padding:8px;background:linear-gradient(135deg,#e5c57a,#54321c);border:3px solid #f5d989;border-radius:16px;box-shadow:0 0 26px #00ff9d44"><canvas id="arcade" width="760" height="440" aria-label="Mesa de sinuca interativa" style="display:block;width:100%;height:auto;touch-action:none;border-radius:8px"></canvas></div>
- <div class="pool-hud"><div>VOCÊ<b id="poolPlayerScore">0</b></div><div>TACADAS<b id="poolShots">0</b></div><div>OPONENTE<b id="poolHouseScore">0</b></div><div>SALDO PRÁTICA<b id="poolBalance">0</b></div></div>
+ <div class="pool-hud"><div>VOCÊ<b id="poolPlayerScore">0</b></div><div>TACADAS<b id="poolShots">0</b></div><div>OPONENTE<b id="poolHouseScore">0</b></div><div>CARTEIRA<b id="poolBalance">REAL</b></div></div>
  <label for="poolPower">FORÇA DA TACADA</label><input id="poolPower" type="range" min="10" max="100" value="55" style="width:100%;accent-color:#f5d989">
  <div class="casinoBet">${gameStakeSelect('poolRealStake',[10,20,30,40,50],10)}</div>
- <div class="choiceRow"><button class="goldbtn" id="poolStart" onclick="startPool()">INICIAR PARTIDA</button><button class="darkbtn" id="poolResetCue" onclick="resetPoolCue()" disabled>REPOSICIONAR BRANCA</button></div>
- <div class="message" id="message">Arraste para trás da bola branca e solte para tacar. A física de colisões e caçapas é interativa.</div><div class="message">REGRA DA PARTIDA: vitória paga 2× a aposta; derrota perde a aposta. MODO PRÁTICA: estas regras são apenas demonstrativas e não movimentam a carteira real.</div></div>`);
+ <div class="message" id="poolRealResult">A aposta é liquidada pelo servidor. A partida de sinuca abaixo é visual e não determina o prêmio.</div><div class="choiceRow"><button class="goldbtn" id="poolStart" onclick="startPool()">JOGAR RODADA REAL</button><button class="darkbtn" id="poolResetCue" onclick="resetPoolCue()" disabled>REPOSICIONAR BRANCA</button></div>
+ <div class="message" id="message">A rodada financeira é decidida e liquidada no servidor; a mesa interativa é uma animação independente.</div><div class="message">SINuca REAL: o servidor define vitória (retorno de 2× a aposta) ou derrota (perda da aposta). O placar visual não altera o resultado financeiro.</div></div>`);
 }
 
 let poolGame=null,poolStake=25;
@@ -925,8 +927,9 @@ function housePoolShot(){
  poolGame.turnPocketed=false;poolGame.shots++;poolGame.turn=1;$('#poolShots').textContent=poolGame.shots;
  message('VEZ DA CASA: a casa tenta encaçapar uma bola…');pinSound('launch');
 }
-function startPool(){
- stopArcade();poolStake=Number($('#poolRealStake')?.value||2000)/100;let cv=$('#arcade'),ctx=cv.getContext('2d');
+async function startPool(){
+ const stakeCents=Number($('#poolRealStake')?.value||1000);const ok=await playRealArcade('eight_ball_real',stakeCents,'poolStart','poolRealResult');if(!ok)return;
+ stopArcade();poolStake=stakeCents/100;let cv=$('#arcade'),ctx=cv.getContext('2d');
  poolGame={balls:[],score:0,playerScore:0,houseScore:0,shots:0,moving:false,done:false,aiming:false,aim:null,scratch:false,turnPocketed:false,stake:poolStake,turn:0,phase:'player'};
  const R=10,left=44,right=716,top=44,bottom=396;poolGame.bounds={left,right,top,bottom};
  poolGame.balls.push({x:220,y:220,vx:0,vy:0,color:'#fff',cue:true,num:0});
