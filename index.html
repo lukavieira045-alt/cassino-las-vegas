@@ -1096,40 +1096,7 @@ drawWheel=function(canvas,angle=0,ballAngle=rouletteBallAngle,ballRadius=.86,lan
  }
  ctx.restore();
 };
-spinWheel=function(){
- if(wheelBusy)return;
- if(rouletteStake>state.balance){message('Saldo insuficiente para esta ficha.');return}
- charge(rouletteStake);wheelBusy=true;$('#rouletteSpin').disabled=true;
- const requested=Math.floor(Math.random()*37);
- const idx=europeanOrder.indexOf(requested),seg=2*Math.PI/37,tau=Math.PI*2;
- const start=wheelAngle,ballStart=rouletteBallAngle;
- // A roda para em uma orientação aleatória; a casa sorteada não é puxada para um ponteiro.
- const end=start+tau*(5+Math.random()*1.5)+Math.random()*tau;
- const ballTarget=end+(idx+.5)*seg;
- // A roda avança e a bola gira no sentido oposto, com voltas consistentes a cada rodada.
- // O ângulo final continua alinhado ao bolso sorteado, mas fica pelo menos 7 voltas atrás do início.
- const minimumBallEnd=ballStart-tau*(7+Math.random()*2);
- const ballEnd=ballTarget-tau*Math.ceil((ballTarget-minimumBallEnd)/tau);
- const ballDelta=ballEnd-ballStart;
- const t0=performance.now(),duration=6500;
- function frame(now){
-  const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,3);
-  wheelAngle=start+(end-start)*ease;
-  rouletteBallAngle=ballStart+ballDelta*ease;
-  const outward=Math.min(1,t/.14),drop=Math.max(0,Math.min(1,(t-.72)/.28));
- const easedDrop=drop*drop*(3-2*drop),radius=.82+.10*outward*(1-easedDrop);
-  drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,radius,-1);
-  if(t<1){requestAnimationFrame(frame);return}
-  wheelAngle=end;
-  rouletteBallAngle=ballEnd;
-  drawWheel($('#wheel'),wheelAngle,rouletteBallAngle,.82,requested);
-  wheelBusy=false;$('#rouletteSpin').disabled=false;
-  const mult=rouletteWins(requested);if(mult)award(rouletteStake*mult);
-  const color=requested===0?'VERDE':reds.has(requested)?'VERMELHO':'PRETO';
-  message('A bola caiu no '+requested+' · '+color+'. '+(mult?'ACERTOU! Retorno total: '+(rouletteStake*mult).toLocaleString('pt-BR')+' fichas.':'Aposta perdida.'));
- }
- requestAnimationFrame(frame);
-};
+/* Removido override legado que usava state.balance local; mantém spinWheel() assíncrono validado pelo servidor. */
 
 document.querySelectorAll('.categorybar [data-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.categorybar [data-filter]').forEach(b=>b.classList.toggle('active',b===btn));const f=btn.dataset.filter;document.querySelectorAll('.gamecard[data-category]').forEach(c=>c.style.display=(f==='all'||c.dataset.category===f)?'':'none')}));
 </script>
