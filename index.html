@@ -747,19 +747,53 @@ function selectBingoNumber(n){
  for(let i=1;i<=100;i++){const b=$('#bingoN'+i);if(b){b.style.background=i===n?'#f4c542':'#15172b';b.style.color=i===n?'#171225':'#fff';b.style.boxShadow=i===n?'0 0 12px #facc42':'none'}}
  const selected=$('#bingoSelected');if(selected)selected.textContent='Número: '+n;
 }
+let bingoMotionFrame=0;
+function startBingoMotion(){
+ stopBingoMotion();
+ const cage=$('#bingoCage'),field=$('#bingoCageBalls');
+ if(!cage||!field)return;
+ const nodes=[...field.querySelectorAll('.bingo-cage-ball')],w=field.clientWidth,h=field.clientHeight;
+ const radius=Math.min(w,h)/2-15;
+ const balls=nodes.map(el=>{
+  const angle=Math.random()*Math.PI*2,dist=Math.sqrt(Math.random())*radius;
+  const x=w/2+Math.cos(angle)*dist,y=h/2+Math.sin(angle)*dist;
+  el.style.left=(x-el.offsetWidth/2)+'px';el.style.top=(y-el.offsetHeight/2)+'px';
+  return {el,x,y,vx:(Math.random()-.5)*7,vy:(Math.random()-.5)*7,r:el.offsetWidth/2};
+ });
+ function frame(){
+  if(!document.body.contains(cage)||!cage.classList.contains('spinning')){bingoMotionFrame=0;return}
+  for(let i=0;i<balls.length;i++){
+   const b=balls[i];b.vx+=(Math.random()-.5)*.9;b.vy+=(Math.random()-.5)*.9;
+   b.vx=Math.max(-6,Math.min(6,b.vx));b.vy=Math.max(-6,Math.min(6,b.vy));
+   b.x+=b.vx;b.y+=b.vy;
+   const dx=b.x-w/2,dy=b.y-h/2,d=Math.hypot(dx,dy),limit=radius-b.r;
+   if(d>limit){const nx=dx/(d||1),ny=dy/(d||1);b.x=w/2+nx*limit;b.y=h/2+ny*limit;const dot=b.vx*nx+b.vy*ny;b.vx-=2*dot*nx;b.vy-=2*dot*ny}
+   for(let j=0;j<i;j++){
+    const o=balls[j],ox=b.x-o.x,oy=b.y-o.y,dist=Math.hypot(ox,oy),min=b.r+o.r;
+    if(dist>0&&dist<min){const nx=ox/dist,ny=oy/dist,overlap=min-dist;b.x+=nx*overlap*.55;b.y+=ny*overlap*.55;o.x-=nx*overlap*.45;o.y-=ny*overlap*.45;const rel=(b.vx-o.vx)*nx+(b.vy-o.vy)*ny;if(rel<0){b.vx-=rel*nx;b.vy-=rel*ny;o.vx+=rel*nx;o.vy+=rel*ny}}
+   }
+   b.el.style.left=(b.x-b.r)+'px';b.el.style.top=(b.y-b.r)+'px';b.el.style.transform='rotate('+(b.x*3+b.y)+'deg)';
+  }
+  bingoMotionFrame=requestAnimationFrame(frame);
+ }
+ bingoMotionFrame=requestAnimationFrame(frame);
+}
+function stopBingoMotion(){if(bingoMotionFrame)cancelAnimationFrame(bingoMotionFrame);bingoMotionFrame=0}
 async function playBingoRound(){
  const stake=Number($('#bingoStake')?.value||500),selected=Number(window.bingoSelectedNumber||7),btn=$('#bingoPlay'),out=$('#bingoResult');
  if(btn){btn.disabled=true;btn.textContent='GLOBO GIRANDO…'}
  const cage=$('#bingoCage'),draw=$('#bingoDrawn');
  if(cage)cage.classList.add('spinning');
+ startBingoMotion();
  if(draw){draw.textContent='…';draw.classList.remove('revealed')}
  if(out)out.textContent='As bolinhas estão girando. Aguardando o resultado confirmado pelo servidor…';
  const round=await playRealArcade('bingo_real',stake,'bingoPlay','bingoResult',{selected_number:selected});
- if(!round||!round.ok){if(cage)cage.classList.remove('spinning');if(btn){btn.disabled=false;btn.textContent='TENTAR NOVAMENTE ✦'}return}
+ if(!round||!round.ok){stopBingoMotion();if(cage)cage.classList.remove('spinning');if(btn){btn.disabled=false;btn.textContent='TENTAR NOVAMENTE ✦'}return}
  const r=round.result||{};
+ stopBingoMotion();
  if(cage)cage.classList.remove('spinning');
- await new Promise(resolve=>setTimeout(resolve,700));
- if(draw){draw.textContent=String(r.drawn_number??'?');draw.classList.remove('revealed');void draw.offsetWidth;draw.classList.add('revealed');draw.style.boxShadow=r.won?'0 0 30px #4ade80':'0 0 22px #facc42'}
+ await new Promise(resolve=>setTimeout(resolve,250));
+ if(draw){draw.textContent=String(r.drawn_number??'?');draw.classList.remove('revealed','dropping');void draw.offsetWidth;draw.classList.add('dropping');draw.classList.add('revealed');draw.style.boxShadow=r.won?'0 0 30px #4ade80':'0 0 22px #facc42'}
  for(let i=1;i<=100;i++){const b=$('#bingoN'+i);if(b){if(i===Number(r.drawn_number)){b.style.background=r.won?'#22c55e':'#f97316';b.style.color='#fff';b.style.boxShadow='0 0 14px '+(r.won?'#4ade80':'#fb923c')}else if(i===selected){b.style.outline='2px solid #f4c542'}}}
  if(out){out.textContent='Sorteado: '+r.drawn_number+' · Seu número: '+selected+' · '+(r.won?'BINGO! Retorno de '+moneyBRL(Number(round.payout||0)):'Não foi desta vez. Sem prêmio nesta rodada.')+' · Saldo: '+moneyBRL(Number(round.balance||0));out.style.color=r.won?'#86efac':'#fcd34d'}
  if(btn){btn.disabled=false;btn.textContent='JOGAR OUTRA RODADA ✦'}
