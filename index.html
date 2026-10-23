@@ -758,6 +758,7 @@ function selectBingoNumber(n){
 }
 function startBingoBetting(){
  if(bingoBettingActive)return;
+ const stakeSelect=$('#bingoStake');if(stakeSelect)stakeSelect.onchange=updateBingoSelectionUI;
  bingoSelectedNumbers=[];updateBingoSelectionUI();bingoBettingActive=true;bingoSecondsLeft=10;
  const btn=$('#bingoPlay'),timer=$('#bingoTimer'),out=$('#bingoResult'),cage=$('#bingoCage'),draw=$('#bingoDrawn');
  if(btn){btn.disabled=true;btn.textContent='ESCOLHA OS NÚMEROS…'}if(out)out.textContent='Contagem iniciada! Toque nos números que deseja apostar.';
