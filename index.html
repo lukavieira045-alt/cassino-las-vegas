@@ -715,7 +715,7 @@ function pinSound(kind='hit'){
 async function playRealArcade(game, stakeCents, buttonId, resultId, extraArgs={}){
  const btn=$('#'+buttonId),out=$('#'+resultId);
  if(!cassinoUser){openPayments('account');setPayStatus('Entre na sua conta para jogar.');return}
- const allowedStakes=game==='bingo_real'?[100,200,300,400,500,1000,2000,3000,4000,5000,10000,20000]:game==='neon_pinball_real'?[50,100,200,500,1000,2000,3000]:game==='eight_ball_real'?[1000,2000,3000,4000,5000]:[50,100,200,500,1000,2000,5000,10000];if(!Number.isInteger(stakeCents)||!allowedStakes.includes(stakeCents)){if(out)out.textContent='Valor de aposta inválido para este jogo.';return}
+ const allowedStakes=game==='bingo_real'?null:game==='neon_pinball_real'?[50,100,200,500,1000,2000,3000]:game==='eight_ball_real'?[1000,2000,3000,4000,5000]:[50,100,200,500,1000,2000,5000,10000];const invalidStake=game==='bingo_real'?(!Number.isInteger(stakeCents)||stakeCents<100||stakeCents>2000000||stakeCents%100!==0):(!Number.isInteger(stakeCents)||!allowedStakes.includes(stakeCents));if(invalidStake){if(out)out.textContent='Valor de aposta inválido para este jogo.';return}
  if(btn){btn.disabled=true;btn.textContent='PROCESSANDO NO SERVIDOR…'}
  if(out)out.textContent='O servidor está processando a rodada…';
  try{
