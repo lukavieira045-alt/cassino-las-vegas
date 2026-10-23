@@ -1197,9 +1197,11 @@ async function playInstantGame(game){
    const display=document.getElementById('crashMult'),rocket=document.getElementById('crashRocket');
    const final=Number(result.crash_multiplier||mult||0);
    if(display)display.textContent='1.00×';
-   const t0=performance.now(),duration=1900;
-   await new Promise(resolve=>{function frame(now){let t=Math.min(1,(now-t0)/duration);let shown=1+(Math.max(1,final)-1)*t;if(display)display.textContent=shown.toFixed(2)+'×';if(rocket){rocket.style.left=(15+70*t)+'%';rocket.style.bottom=(22+55*t)+'%'}if(t<1)requestAnimationFrame(frame);else resolve()}requestAnimationFrame(frame)});
-   if(display){display.textContent=final.toFixed(2)+'×';display.style.color=payout>0?'#78ffc1':'#ff628c'}
+   const t0=performance.now(),duration=2600,sky=document.getElementById('crashSky');
+   if(sky){sky.style.background='linear-gradient(#10234a,#08101e)';sky.style.boxShadow='inset 0 0 35px #11cfff22'}
+   await new Promise(resolve=>{function frame(now){const t=Math.min(1,(now-t0)/duration),ease=1-Math.pow(1-t,2.25),shown=1+(Math.max(1,final)-1)*ease;if(display)display.textContent=shown.toFixed(2)+'×';if(rocket){rocket.style.left=(12+76*ease)+'%';rocket.style.bottom=(17+65*ease)+'%';rocket.style.transform='rotate(-12deg) scale('+(1+.22*ease)+')'}if(sky)sky.style.background='linear-gradient('+(200-95*ease)+'deg,#10234a,#080d1a 72%)';if(t<1)requestAnimationFrame(frame);else resolve()}requestAnimationFrame(frame)});
+   if(display){display.textContent=final.toFixed(2)+'×';display.style.color=payout>0?'#78ffc1':'#ff628c';display.style.textShadow=payout>0?'0 0 28px #36ffb3':'0 0 28px #ff285f'}
+   if(payout<=0&&rocket){rocket.textContent='💥';rocket.style.transform='scale(1.4)'}
    if(messageEl)messageEl.textContent=(payout>0?'RODADA PREMIADA · ':'RODADA ENCERRADA · ')+'Multiplicador '+final.toFixed(2)+'×. '+(payout>0?'Retorno: '+moneyBRL(payout)+'. ':'Aposta perdida. ')+'Saldo: '+moneyBRL(res.data.balance||0);
   }else{
    const ball=document.getElementById('plinkoBall');
