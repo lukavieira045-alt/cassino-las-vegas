@@ -77,6 +77,54 @@ header{position:sticky;top:0;z-index:10;background:#0b090df2;backdrop-filter:blu
 .neon5x3 .slotcontrol strong{color:#e9fcff;text-shadow:0 0 10px #00d9ff}
 .neon5x3 .slotresult{border-color:#65eaff66}
 
+
+/* Neon Fortune cabinet: bespoke 5x3 layout, separate from the gold 3x3 slot */
+.neon5x3{max-width:650px;padding:clamp(12px,3vw,22px);border:3px solid #3e387c;border-radius:18px;background:radial-gradient(ellipse at 50% 0%,#1b4771 0,#11152d 38%,#090914 78%);box-shadow:inset 0 0 0 2px #00e5ff45,inset 0 0 38px #03050d,0 0 0 1px #9e67ff,0 0 30px #00d9ff25,0 20px 50px #000c}
+.neon5x3:before{content:"";position:absolute;inset:7px;border:1px solid #7cecff44;border-radius:12px;pointer-events:none;opacity:.7;background:repeating-linear-gradient(115deg,transparent 0 42px,#7cecff09 43px,#fff0 45px 88px)}
+.nf-topbar{position:relative;display:flex;align-items:center;justify-content:center;gap:12px;padding:4px 0 15px;border-bottom:1px solid #66eaff44}
+.nf-orb{display:grid;place-items:center;width:31px;height:31px;border:1px solid #8deeff;border-radius:50%;color:#d8fbff;text-shadow:0 0 10px #00e5ff;box-shadow:0 0 13px #00d9ff55,inset 0 0 10px #00d9ff24}
+.nf-brand{color:#fff;text-align:center;font:900 clamp(19px,4vw,29px) Arial,sans-serif;letter-spacing:3px;text-shadow:0 0 10px #00d9ff,0 0 24px #8a4cff}
+.nf-brand b{color:#83edff}
+.nf-brand small{display:block;margin-top:5px;color:#b5b8ff;font:700 8px Arial,sans-serif;letter-spacing:2px}
+.nf-jackpot{display:flex;justify-content:center;align-items:center;gap:22px;margin:15px auto;padding:10px 18px;max-width:340px;border:1px solid #6deaff88;border-radius:8px;background:linear-gradient(115deg,#07101f,#16113b 60%,#07101f);box-shadow:inset 0 0 20px #00d9ff13,0 0 18px #00d9ff14}
+.nf-jackpot>div:first-child{display:flex;flex-direction:column;align-items:center}
+.nf-jackpot small{font:700 8px Arial,sans-serif;letter-spacing:1.5px;color:#a5edff}
+.nf-jackpot strong{font:900 clamp(33px,7vw,44px) Arial,sans-serif;line-height:1.1;color:#f3feff;text-shadow:0 0 8px #00d9ff,0 0 24px #8955ff}
+.nf-jackpot strong span{font-size:.55em;color:#83edff}
+.nf-jackpot em{font:700 7px Arial,sans-serif;letter-spacing:3px;color:#a5edff;font-style:normal}
+.nf-jackpot-side{display:flex;flex-direction:column;align-items:center;gap:3px;color:#c2a2ff;font-size:13px}
+.nf-jackpot-side b{font:700 8px/1.4 Arial,sans-serif;letter-spacing:1px;text-align:center;color:#e2d6ff}
+.nf-frame{padding:9px;border:1px solid #8b7aff;border-radius:11px;background:linear-gradient(135deg,#0d1026,#272052 48%,#0b1b2b);box-shadow:inset 0 0 18px #000b,0 0 16px #8b54ff22}
+.nf-frame-cap{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:0 0 6px;color:#a9f4ff;font:700 8px Arial,sans-serif;letter-spacing:2px}
+.nf-frame-cap span{text-align:center;border:1px solid #5a72a7;background:#10172c;padding:5px;border-radius:3px}
+.nf-reelwindow{position:relative;overflow:hidden;border:3px solid #4a6eaa;border-radius:4px;background:#080a15;box-shadow:inset 0 0 20px #000}
+.nf-payline{position:absolute;left:0;right:0;top:16.66%;height:33.33%;border-top:1px solid #00e5ff30;border-bottom:1px solid #00e5ff30;pointer-events:none;z-index:1;box-shadow:0 0 12px #00d9ff13}
+.neon5x3 .slotreels{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:5px;border:0;background:linear-gradient(90deg,#273a7a,#63eaff,#8d62e8);box-shadow:none}
+.neon5x3 .slotcell{min-width:0;aspect-ratio:.74;display:grid;place-items:center;border:1px solid #858bd0;border-radius:3px;background:linear-gradient(100deg,#bfc7e3,#fff 48%,#c7c8ec);box-shadow:inset 0 0 12px #3b478933,0 1px 3px #0009}
+.neon5x3 .slotcell span{font-size:clamp(23px,6vw,45px);filter:drop-shadow(0 3px 2px #647)}
+.neon5x3 .slotcell.rolling span{filter:blur(2px);transform:scaleY(1.2)}
+.neon5x3 .slotcell.winner{background:linear-gradient(#eaffff,#69eaff);border-color:#fff;box-shadow:inset 0 0 0 2px #fff,0 0 15px #00d9ff,0 0 25px #8b55ff}
+.nf-reel-foot{display:flex;align-items:center;justify-content:space-between;padding:7px 3px 0;color:#86eaff;font:700 8px Arial,sans-serif;letter-spacing:2px}
+.nf-rule-strip{display:flex;flex-direction:column;gap:5px;text-align:center;padding:13px 5px 10px;color:#a5edff;font:700 8px Arial,sans-serif;letter-spacing:2px}
+.nf-rule-strip b{color:#e7faff;font-size:10px;letter-spacing:1px;text-shadow:0 0 10px #00d9ff55}
+.nf-console{display:flex;justify-content:center;align-items:stretch;gap:12px;flex-wrap:wrap;padding:12px;border:1px solid #5265a3;border-radius:9px;background:linear-gradient(120deg,#0a101d,#17152e);box-shadow:inset 0 0 18px #0008}
+.nf-betbox{min-width:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px}
+.nf-betbox>small{font:700 8px Arial,sans-serif;letter-spacing:2px;color:#a5edff}
+.nf-betstep{display:flex;align-items:center;gap:10px}
+.nf-betstep button{min-width:34px;padding:8px;border-color:#6577b7;color:#dffbff;background:#151a35}
+.nf-betstep strong{min-width:90px;text-align:center;color:#fff;font:900 20px Arial,sans-serif;text-shadow:0 0 10px #00d9ff}
+.nf-betbox>span{color:#777fb6;font:700 7px Arial,sans-serif;letter-spacing:1px}
+.nf-spin{display:flex;align-items:center;justify-content:center;gap:10px;min-width:165px;border:1px solid #fff2b4;border-radius:7px;background:linear-gradient(145deg,#f9edff,#8c72ff 40%,#2b69b4);color:#fff;box-shadow:0 0 15px #7b6cff66,inset 0 1px #fff;padding:12px 17px}
+.nf-spin-icon{font:900 34px Arial,sans-serif;text-shadow:0 0 10px #00e5ff;transition:transform .4s}
+.nf-spin span:last-child{font:900 12px Arial,sans-serif;letter-spacing:1px}
+.nf-spin small{display:block;margin-top:4px;font:700 7px Arial,sans-serif;letter-spacing:3px;color:#dffbff}
+.nf-spin:disabled{opacity:.55;filter:grayscale(.5)}
+.nf-spin:not(:disabled):hover .nf-spin-icon{transform:rotate(90deg)}
+.neon5x3 .slotresult{margin-top:10px;border-color:#64eaff66;background:#050914;color:#e2faff;border-radius:5px}
+.neon5x3 .slotfree{color:#8deeff;letter-spacing:1px;font-size:9px}
+.nf-footnote{padding-top:8px;color:#6d8eb7;font:700 7px Arial,sans-serif;letter-spacing:1px}
+@media(max-width:480px){.neon5x3{padding:10px;border-width:2px}.nf-jackpot{gap:12px;padding:9px}.nf-frame{padding:5px}.nf-frame-cap{gap:3px}.nf-frame-cap span{padding:4px 1px}.neon5x3 .slotreels{gap:2px;padding:3px}.neon5x3 .slotcell span{font-size:clamp(19px,6vw,31px)}.nf-console{gap:8px;padding:9px}.nf-betbox{min-width:150px}.nf-spin{width:100%}.nf-rule-strip b{font-size:9px}}
+
 /* REAL EUROPEAN WHEEL • CASINO FLOOR UPGRADE */
 body{background:#050509}
 .hero{min-height:590px;background-image:linear-gradient(90deg,#050509f5 0%,#08060bd9 37%,#08060b66 72%,#050509a8 100%),url('https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?auto=format&fit=crop&w=2200&q=90');background-position:center 54%;background-size:cover}
@@ -664,7 +712,7 @@ async function spinMegaSlots(){
  function moneyBRL(value){return Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
 function slotsUI(){
  slotGrid=Array.from({length:3},()=>Array.from({length:5},()=>symbols[Math.floor(Math.random()*symbols.length)]));
- show('Mega Slots 3D Vegas · 5 × 3','<div class="slotcab neon5x3"><div class="slotbrand">⚡ <span>NEON FORTUNE</span> ⚡<small style="display:block;font:700 8px Arial,sans-serif;letter-spacing:3px;margin-top:5px;color:#8deeff">5 ROLOS · 3 FILEIRAS · VEGAS AFTER DARK</small></div><div class="slotjackpot"><span>PRÊMIO DA COMBINAÇÃO</span><b>2× A APOSTA</b><small>5 SÍMBOLOS IGUAIS NA FILEIRA SUPERIOR</small></div><div class="slotreels" id="slotReels">'+slotGrid.flat().map((v,i)=>'<div class="slotcell" data-cell="'+i+'"><span>'+v+'</span></div>').join('')+'</div><div class="slotpaylines"><span>⚡ 5 ROLOS</span><span>━ LINHA SUPERIOR ━</span><span>5 SÍMBOLOS IGUAIS = RETORNO TOTAL 2×</span></div><div class="slotcontrol"><button class="darkbtn" onclick="changeSlotBet(-1)">−</button><div><small>APOSTA REAL</small><strong id="slotBetValue">'+moneyBRL(slotBetAmount/100)+'</strong></div><button class="darkbtn" onclick="changeSlotBet(1)">+</button><button class="goldbtn slotspin" id="spin" onclick="spinSlots()">GIRAR ↻</button></div><div class="slotresult" id="message">Aposte a partir de R$ 0,50. Complete os cinco símbolos iguais na fileira superior para receber 2× a aposta no total.</div><div class="slotfree" id="slotFree">Saldo: '+moneyBRL(cassinoWallet)+'</div></div><details class="slotrules"><summary>Regra do prêmio</summary><div class="slotpaytable"><p><b>Prêmio:</b> cinco símbolos iguais na fileira superior pagam 2× a aposta total.</p><p><b>Outros resultados:</b> a aposta é debitada e não há prêmio.</p><p>O giro e o cálculo do prêmio são feitos no servidor; o saldo vem da carteira individual do Supabase.</p></div></details>');
+ show('Mega Slots 3D Vegas · 5 × 3','<div class="slotcab neon5x3"><div class="nf-topbar"><span class="nf-orb">✦</span><div class="nf-brand">NEON <b>FORTUNE</b><small>VEGAS AFTER DARK · PREMIUM REEL ROOM</small></div><span class="nf-orb">✦</span></div><div class="nf-jackpot"><div><small>PRÊMIO DA LINHA SUPERIOR</small><strong>2.00<span>×</span></strong><em>RETORNO TOTAL</em></div><div class="nf-jackpot-side"><span>◈</span><b>HIGH<br>VOLTAGE</b><span>◈</span></div></div><div class="nf-frame"><div class="nf-frame-cap"><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span></div><div class="nf-reelwindow"><div class="nf-payline"></div><div class="slotreels" id="slotReels">'+slotGrid.flat().map((v,i)=>'<div class="slotcell" data-cell="'+i+'"><span>'+v+'</span></div>').join('')+'</div></div><div class="nf-reel-foot"><span>✦</span><span>5 REELS / 3 ROWS</span><span>✦</span></div></div><div class="nf-rule-strip"><span>⚡ LINHA PREMIADA</span><b>5 SÍMBOLOS IGUAIS NA FILEIRA DE CIMA</b></div><div class="nf-console"><div class="nf-betbox"><small>APOSTA POR GIRO</small><div class="nf-betstep"><button class="darkbtn" aria-label="Diminuir aposta" onclick="changeSlotBet(-1)">−</button><strong id="slotBetValue">'+moneyBRL(slotBetAmount/100)+'</strong><button class="darkbtn" aria-label="Aumentar aposta" onclick="changeSlotBet(1)">+</button></div><span>VALOR EM '+(cassinoTestMode?'SALDO DE TESTE':'SALDO REAL')+'</span></div><button class="goldbtn slotspin nf-spin" id="spin" onclick="spinSlots()"><span class="nf-spin-icon">⟳</span><span>GIRAR ROLOS<small>SPIN NOW</small></span></button></div><div class="slotresult" id="message">Prepare sua aposta. Os cinco símbolos da fileira superior precisam ser iguais para receber 2× a aposta total.</div><div class="slotfree" id="slotFree">SALDO DA CARTEIRA · '+moneyBRL(cassinoWallet)+'</div><div class="nf-footnote">◆ RODADA VALIDADA NO SERVIDOR · SALDO DE TESTE NÃO SACÁVEL ◆</div></div><details class="slotrules"><summary>Como funciona o prêmio</summary><div class="slotpaytable"><p><b>Vitória:</b> cinco símbolos iguais na fileira superior pagam 2× a aposta total, já incluindo a aposta.</p><p><b>Outros resultados:</b> a aposta é debitada e não há prêmio.</p><p>O giro e o cálculo do prêmio são feitos no servidor; o saldo vem da carteira individual do Supabase.</p></div></details>');
 }
 let slotBetAmount=50;
 const slotBetOptions=[50,100,200,500,1000,2000,5000,10000];
