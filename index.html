@@ -1425,18 +1425,18 @@ async function authCassino(mode){
   if(currentSubmit){currentSubmit.disabled=false;currentSubmit.textContent=(document.getElementById('cassinoToggleMode')?.textContent||'').includes('Já tenho conta')?'Criar conta':'Entrar'}
  }
 }
-let cassinoTestMode=false;
+let cassinoTestMode=false,cassinoTestModeChosen=false;
 const CASSINO_TEST_USERS=["66b95d54-d754-46ba-afbc-fa713c61e8df","68be2506-c1e9-484c-853d-015afadbd21a"];
-async async function toggleCassinoTestMode(){if(!cassinoUser||!CASSINO_TEST_USERS.includes(cassinoUser.id)){alert("Modo de teste não autorizado.");return}cassinoTestMode=!cassinoTestMode;await atualizarCarteiraCassino();const b=document.getElementById("testModeToggle");if(b)b.textContent=cassinoTestMode?"VOLTAR AO SALDO REAL":"ATIVAR SALDO DE TESTE";const l=document.getElementById("walletModeLabel");if(l)l.textContent=cassinoTestMode?"SALDO DE TESTE · NÃO SACÁVEL":"SALDO DA CARTEIRA";if(cassinoTestMode)setPayStatus("Modo de teste ativado. Este saldo não é dinheiro real e não permite saque.");}
+async async function toggleCassinoTestMode(){if(!cassinoUser||!CASSINO_TEST_USERS.includes(cassinoUser.id)){alert("Modo de teste não autorizado.");return}cassinoTestModeChosen=true;cassinoTestMode=!cassinoTestMode;await atualizarCarteiraCassino();const b=document.getElementById("testModeToggle");if(b)b.textContent=cassinoTestMode?"VOLTAR AO SALDO REAL":"ATIVAR SALDO DE TESTE";const l=document.getElementById("walletModeLabel");if(l)l.textContent=cassinoTestMode?"SALDO DE TESTE · NÃO SACÁVEL":"SALDO DA CARTEIRA";if(cassinoTestMode)setPayStatus("Modo de teste ativado. Este saldo não é dinheiro real e não permite saque.");}
 async function atualizarCarteiraCassino(){
  try{
   const result=await cassinoSupabase.auth.getUser();
   if(result.error)throw result.error;
   const user=result.data.user;
   cassinoUser=user;
-  if(!user){cassinoWallet=0;const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent='Entre na conta';if(typeof syncRouletteSpinButton==='function')syncRouletteSpinButton();if(payModal.classList.contains('open'))renderPayments();return}
+  if(!user){cassinoTestMode=false;cassinoTestModeChosen=false;cassinoWallet=0;const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent='Entre na conta';if(typeof syncRouletteSpinButton==='function')syncRouletteSpinButton();if(payModal.classList.contains('open'))renderPayments();return}
   const testBtn=document.getElementById("testModeToggle");if(testBtn)testBtn.style.display=CASSINO_TEST_USERS.includes(user.id)?"inline-block":"none";if(testBtn)testBtn.textContent=cassinoTestMode?"VOLTAR AO SALDO REAL":"ATIVAR SALDO DE TESTE";
-  if(!CASSINO_TEST_USERS.includes(user.id))cassinoTestMode=false;
+  if(!CASSINO_TEST_USERS.includes(user.id)){cassinoTestMode=false;cassinoTestModeChosen=false}else if(!cassinoTestModeChosen&&user.id==="66b95d54-d754-46ba-afbc-fa713c61e8df"){cassinoTestMode=true}
   const walletResult=await cassinoSupabase.from(cassinoTestMode?"test_wallets":"wallets").select("balance").eq("user_id",user.id).single();
   if(walletResult.error)throw walletResult.error;
   cassinoWallet=Number(walletResult.data.balance||0);
