@@ -61,6 +61,22 @@ header{position:sticky;top:0;z-index:10;background:#0b090df2;backdrop-filter:blu
 @media(prefers-reduced-motion:reduce){.hero:before,.slotcab:before,.slotcell.winner{animation:none}.gameicon{transition:none}}
 
 
+
+/* Mega Slots 3D Vegas: separate neon-blue identity from the gold 3x3 machine */
+.neon5x3{background:radial-gradient(ellipse at 50% 0%,#183e63 0,#15132b 42%,#080a14 82%);border-color:#65eaff;box-shadow:inset 0 0 35px #050712,0 0 0 2px #9b4dff66,0 0 26px #00d9ff30,0 15px 40px #000b}
+.neon5x3:before{background:repeating-linear-gradient(115deg,transparent 0 30px,#65eaff12 31px,#fff0 34px 66px);opacity:.3}
+.neon5x3 .slotbrand{color:#eafcff;text-shadow:0 0 8px #00d9ff,0 0 22px #7b43ff;letter-spacing:3px}
+.neon5x3 .slotbrand span{color:#7beaff}
+.neon5x3 .slotjackpot{border-color:#68eaff;background:linear-gradient(120deg,#080d1c,#17113a);box-shadow:inset 0 0 18px #00d9ff14,0 0 15px #00d9ff18}
+.neon5x3 .slotjackpot b{color:#e9fcff;text-shadow:0 0 12px #00d9ff,0 0 22px #7b43ff}
+.neon5x3 .slotreels{background:linear-gradient(90deg,#3c247b,#70eaff,#9c6bff);border-color:#18152e}
+.neon5x3 .slotcell{background:linear-gradient(100deg,#c3c8dc,#fff,#c7c5ef);border-color:#4c4e82}
+.neon5x3 .slotcell.winner{background:linear-gradient(#e8fcff,#6eeaff);box-shadow:inset 0 0 0 3px #fff,0 0 16px #00d9ff,0 0 28px #9c52ff}
+.neon5x3 .slotpaylines{color:#8deeff}
+.neon5x3 .slotcontrol small{color:#8deeff}
+.neon5x3 .slotcontrol strong{color:#e9fcff;text-shadow:0 0 10px #00d9ff}
+.neon5x3 .slotresult{border-color:#65eaff66}
+
 /* REAL EUROPEAN WHEEL • CASINO FLOOR UPGRADE */
 body{background:#050509}
 .hero{min-height:590px;background-image:linear-gradient(90deg,#050509f5 0%,#08060bd9 37%,#08060b66 72%,#050509a8 100%),url('https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?auto=format&fit=crop&w=2200&q=90');background-position:center 54%;background-size:cover}
@@ -648,7 +664,7 @@ async function spinMegaSlots(){
  function moneyBRL(value){return Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
 function slotsUI(){
  slotGrid=Array.from({length:3},()=>Array.from({length:5},()=>symbols[Math.floor(Math.random()*symbols.length)]));
- show('Mega Slots 3D Vegas · 5 × 3','<div class="slotcab"><div class="slotbrand">♛ ROYAL <span>FORTUNE</span> ♛</div><div class="slotjackpot"><span>PRÊMIO DA COMBINAÇÃO</span><b>2× A APOSTA</b><small>DINHEIRO DA CARTEIRA</small></div><div class="slotreels" id="slotReels">'+slotGrid.flat().map((v,i)=>'<div class="slotcell" data-cell="'+i+'"><span>'+v+'</span></div>').join('')+'</div><div class="slotpaylines"><span>5 ROLOS</span><span>1 LINHA PREMIADA</span><span>5 SÍMBOLOS IGUAIS NA FILEIRA DE CIMA</span></div><div class="slotcontrol"><button class="darkbtn" onclick="changeSlotBet(-1)">−</button><div><small>APOSTA REAL</small><strong id="slotBetValue">'+moneyBRL(slotBetAmount/100)+'</strong></div><button class="darkbtn" onclick="changeSlotBet(1)">+</button><button class="goldbtn slotspin" id="spin" onclick="spinSlots()">GIRAR ↻</button></div><div class="slotresult" id="message">Aposta de R$ 0,50 ou mais. Se os cinco símbolos da primeira fileira forem iguais, recebe 2× a aposta no total.</div><div class="slotfree" id="slotFree">Saldo: '+moneyBRL(cassinoWallet)+'</div></div><details class="slotrules"><summary>Regra do prêmio</summary><div class="slotpaytable"><p><b>Primeira fileira com 5 símbolos iguais:</b> recebe 2 vezes o valor apostado no total.</p><p><b>Qualquer outro resultado:</b> a aposta é perdida.</p><p>O giro e o cálculo do prêmio são feitos no servidor; o saldo vem da carteira individual do Supabase.</p></div></details>');
+ show('Mega Slots 3D Vegas · 5 × 3','<div class="slotcab neon5x3"><div class="slotbrand">⚡ <span>NEON FORTUNE</span> ⚡<small style="display:block;font:700 8px Arial,sans-serif;letter-spacing:3px;margin-top:5px;color:#8deeff">5 ROLOS · 3 FILEIRAS · VEGAS AFTER DARK</small></div><div class="slotjackpot"><span>PRÊMIO DA COMBINAÇÃO</span><b>2× A APOSTA</b><small>5 SÍMBOLOS IGUAIS NA FILEIRA SUPERIOR</small></div><div class="slotreels" id="slotReels">'+slotGrid.flat().map((v,i)=>'<div class="slotcell" data-cell="'+i+'"><span>'+v+'</span></div>').join('')+'</div><div class="slotpaylines"><span>⚡ 5 ROLOS</span><span>━ LINHA SUPERIOR ━</span><span>5 SÍMBOLOS IGUAIS = RETORNO TOTAL 2×</span></div><div class="slotcontrol"><button class="darkbtn" onclick="changeSlotBet(-1)">−</button><div><small>APOSTA REAL</small><strong id="slotBetValue">'+moneyBRL(slotBetAmount/100)+'</strong></div><button class="darkbtn" onclick="changeSlotBet(1)">+</button><button class="goldbtn slotspin" id="spin" onclick="spinSlots()">GIRAR ↻</button></div><div class="slotresult" id="message">Aposte a partir de R$ 0,50. Complete os cinco símbolos iguais na fileira superior para receber 2× a aposta no total.</div><div class="slotfree" id="slotFree">Saldo: '+moneyBRL(cassinoWallet)+'</div></div><details class="slotrules"><summary>Regra do prêmio</summary><div class="slotpaytable"><p><b>Prêmio:</b> cinco símbolos iguais na fileira superior pagam 2× a aposta total.</p><p><b>Outros resultados:</b> a aposta é debitada e não há prêmio.</p><p>O giro e o cálculo do prêmio são feitos no servidor; o saldo vem da carteira individual do Supabase.</p></div></details>');
 }
 let slotBetAmount=50;
 const slotBetOptions=[50,100,200,500,1000,2000,5000,10000];
