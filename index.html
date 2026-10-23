@@ -751,7 +751,7 @@ function updateBingoSelectionUI(){
  for(let i=1;i<=100;i++){const b=$('#bingoN'+i);if(!b)continue;const on=bingoSelectedNumbers.includes(i);b.style.background=on?'#f4c542':'#15172b';b.style.color=on?'#171225':'#fff';b.style.boxShadow=on?'0 0 12px #facc42':'none'}
 }
 function selectBingoNumber(n){
- if(!Number.isInteger(n)||n<1||n>100||bingoBettingActive)return;
+ if(!Number.isInteger(n)||n<1||n>100||!bingoBettingActive)return;
  const stake=Number($('#bingoStake')?.value||500),available=Math.max(0,Math.floor((Number(cassinoWallet)||0)*100/stake)),index=bingoSelectedNumbers.indexOf(n);
  if(index>=0)bingoSelectedNumbers.splice(index,1);else{if(bingoSelectedNumbers.length>=available){const out=$('#bingoResult');if(out)out.textContent='Saldo insuficiente para selecionar mais números com essa aposta.';return;}bingoSelectedNumbers.push(n);bingoSelectedNumbers.sort((a,b)=>a-b)}
  updateBingoSelectionUI();const out=$('#bingoResult');if(out)out.textContent=bingoSelectedNumbers.length?'Números escolhidos: '+bingoSelectedNumbers.join(', ')+'.':'Selecione pelo menos um número.';
