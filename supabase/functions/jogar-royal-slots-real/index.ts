@@ -86,6 +86,7 @@ Deno.serve(async (req: Request) => {
       p_round_id: roundId,
       p_stake_cents: stakeCents,
       p_grid: grid,
+      p_theme_id: themeId,
     });
     if (error) {
       const msg = error.message || "";
