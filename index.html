@@ -747,6 +747,65 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 #modal.pool-fullscreen .choiceRow button{min-height:48px}
 #modal.pool-fullscreen .pool-sound-toggle{width:100%;min-height:44px;margin:8px 0;border:1px solid #8deac0;border-radius:9px;background:linear-gradient(100deg,#0c3b2b,#092219);color:#c7ffe6;font-weight:900;letter-spacing:1px}
 @media(min-width:700px){#modal.pool-fullscreen .pool-hud{grid-template-columns:repeat(4,minmax(0,1fr))}#modal.pool-fullscreen .choiceRow{grid-template-columns:1fr 1fr}}
+
+/* FIX V2: fullscreen modal must override the site's centered grid and padding */
+#modal.modal.pool-fullscreen,
+.modal.open#modal.pool-fullscreen{
+ position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;
+ min-height:100vh!important;min-height:100dvh!important;padding:0!important;margin:0!important;
+ display:block!important;overflow:hidden!important;place-items:unset!important;border-radius:0!important;
+ background:#030906!important;z-index:9999!important;overscroll-behavior:contain!important;
+}
+#modal.pool-fullscreen .dialog{
+ position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;
+ height:100vh!important;height:100dvh!important;min-height:100vh!important;min-height:100dvh!important;
+ max-height:none!important;margin:0!important;padding:0 0 calc(18px + env(safe-area-inset-bottom))!important;
+ border:0!important;border-radius:0!important;box-shadow:none!important;overflow-x:hidden!important;overflow-y:auto!important;
+ background:radial-gradient(ellipse at 50% 15%,#184d37 0%,#09291d 42%,#030806 100%)!important;
+ scrollbar-width:thin;scrollbar-color:#c6a15b #07150f;
+}
+#modal.pool-fullscreen .dialoghead{
+ position:sticky!important;top:0!important;margin:0!important;padding:10px 14px!important;
+ min-height:52px!important;background:#040b08f5!important;border-bottom:1px solid #c6a15b!important;
+ z-index:20!important;backdrop-filter:blur(12px)!important;
+}
+#modal.pool-fullscreen .dialoghead h2{font-size:clamp(15px,4vw,22px)!important}
+#modal.pool-fullscreen #gameBody{width:100%!important;max-width:100%!important;margin:0!important;padding:0 10px!important}
+#modal.pool-fullscreen .pool-room{width:100%!important;max-width:1000px!important;margin:0 auto!important;padding:8px 0 20px!important}
+#modal.pool-fullscreen .pool-marquee{text-align:center;font-size:clamp(18px,4.5vw,28px)!important;padding:6px 0 10px!important;color:#ffe6a1!important;letter-spacing:1px!important}
+#modal.pool-fullscreen .pool-table-wrap{
+ width:100%!important;max-width:100%!important;margin:0 auto!important;padding:clamp(4px,1.2vw,10px)!important;
+ background:linear-gradient(135deg,#f1d48c,#8c5b2e 18%,#3d2415 50%,#d3aa60 82%,#5d351c)!important;
+ border:3px solid #e6c77d!important;border-radius:13px!important;
+ box-shadow:0 0 0 2px #392414,0 0 25px #00e69b35,inset 0 0 0 2px #fff2c2!important;
+}
+#modal.pool-fullscreen #arcade{display:block!important;width:100%!important;height:auto!important;aspect-ratio:19/11!important;max-height:none!important;touch-action:none!important;background:#075538;border-radius:5px!important}
+#modal.pool-fullscreen .pool-hud{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;margin:9px 0!important;padding:0!important;background:transparent!important;border:0!important}
+#modal.pool-fullscreen .pool-hud>div{padding:9px 6px!important;border:1px solid #d5b76d66!important;border-radius:8px!important;background:linear-gradient(145deg,#102b20,#07130d)!important;text-align:center!important;color:#d7e6d9!important;font-size:10px!important}
+#modal.pool-fullscreen .pool-hud b{font-size:clamp(13px,3.5vw,17px)!important;color:#ffe39b!important}
+#modal.pool-fullscreen label{display:block;margin:12px 0 6px!important;color:#f7dda0!important;font:700 11px Arial,sans-serif!important;letter-spacing:1px!important}
+#modal.pool-fullscreen #poolPower{display:block;width:100%!important;min-height:30px!important;accent-color:#e9c46a!important}
+#modal.pool-fullscreen .casinoBet{margin:10px 0!important}
+#modal.pool-fullscreen .casinoBet select{width:100%!important;min-height:44px!important}
+#modal.pool-fullscreen .choiceRow{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin:10px 0!important}
+#modal.pool-fullscreen .choiceRow button{min-height:48px!important}
+#modal.pool-fullscreen .pool-sound-toggle{position:relative!important;width:100%!important;min-height:42px!important;margin:3px 0 10px!important}
+#modal.pool-fullscreen .message{line-height:1.45!important;margin:8px 0!important}
+@media(min-width:760px){
+ #modal.pool-fullscreen #gameBody{padding:0 22px!important}
+ #modal.pool-fullscreen .pool-room{display:grid!important;grid-template-columns:minmax(0,1.7fr) minmax(260px,.8fr)!important;column-gap:18px!important;align-items:start!important}
+ #modal.pool-fullscreen .pool-marquee,#modal.pool-fullscreen .pool-sound-toggle,#modal.pool-fullscreen .pool-room>.pool-hud:first-of-type{grid-column:1/-1!important}
+ #modal.pool-fullscreen .pool-table-wrap{grid-column:1!important;grid-row:auto!important}
+ #modal.pool-fullscreen .pool-room>.pool-hud:nth-of-type(2),#modal.pool-fullscreen .pool-room>label,#modal.pool-fullscreen .pool-room>#poolPower,#modal.pool-fullscreen .pool-room>.casinoBet,#modal.pool-fullscreen .pool-room>.message,#modal.pool-fullscreen .pool-room>.choiceRow{grid-column:2!important}
+ #modal.pool-fullscreen .pool-hud{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #modal.pool-fullscreen .choiceRow{grid-template-columns:1fr!important}
+}
+@media(max-width:420px){
+ #modal.pool-fullscreen .dialoghead{padding:8px 10px!important}
+ #modal.pool-fullscreen #gameBody{padding:0 7px!important}
+ #modal.pool-fullscreen .pool-room{padding-top:4px!important}
+ #modal.pool-fullscreen .pool-hud>div{padding:7px 4px!important}
+}
 </style>
 </head>
 <body><div class="topbar"></div>
