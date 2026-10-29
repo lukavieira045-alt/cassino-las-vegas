@@ -729,7 +729,26 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 @media(max-width:600px){.sectionTitle{gap:8px!important}.sectionTitle .label{font-size:8px!important;letter-spacing:.5px!important;padding:6px 7px!important}.sectionTitle:after{max-width:130px}}
 @media(prefers-reduced-motion:reduce){.sectionTitle:after,.vegas-live-ribbon,.vegas-lightline:after{animation:none!important}}
 </style>
-<style id="vegas-wheel-finish">.fortune-spin{min-height:54px;font-weight:1000;letter-spacing:1.4px;border:1px solid #ffe8a3!important;border-radius:12px!important;background:linear-gradient(110deg,#7f1d1d,#d4a017 48%,#7f1d1d)!important;box-shadow:0 0 18px #eab30844,inset 0 1px #fff7d6;transition:transform .18s,filter .18s}.fortune-spin:hover:not(:disabled){filter:brightness(1.18);transform:translateY(-2px)}.fortune-spin:disabled{opacity:.65;filter:saturate(.65)}#wheel{filter:drop-shadow(0 0 14px #f4c54244);max-width:100%;height:auto}</style></head>
+<style id="vegas-wheel-finish">.fortune-spin{min-height:54px;font-weight:1000;letter-spacing:1.4px;border:1px solid #ffe8a3!important;border-radius:12px!important;background:linear-gradient(110deg,#7f1d1d,#d4a017 48%,#7f1d1d)!important;box-shadow:0 0 18px #eab30844,inset 0 1px #fff7d6;transition:transform .18s,filter .18s}.fortune-spin:hover:not(:disabled){filter:brightness(1.18);transform:translateY(-2px)}.fortune-spin:disabled{opacity:.65;filter:saturate(.65)}#wheel{filter:drop-shadow(0 0 14px #f4c54244);max-width:100%;height:auto}</style>
+<style id="pool-fullscreen-realism">
+#modal.pool-fullscreen{padding:0;align-items:stretch;justify-content:stretch}
+#modal.pool-fullscreen .dialog{width:100%;max-width:none;height:100vh;height:100dvh;max-height:none;margin:0;border-radius:0;border:0;overflow-y:auto;padding:12px 12px calc(22px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at top,#153b2d 0%,#07140f 55%,#050807 100%)}
+#modal.pool-fullscreen .dialoghead{position:sticky;top:-12px;z-index:5;margin:-12px -12px 12px;padding:12px;background:#080d0bf2;border-bottom:1px solid #c5a15b;backdrop-filter:blur(12px)}
+#modal.pool-fullscreen .dialoghead h2{font-size:clamp(16px,4vw,22px);letter-spacing:1px}
+#modal.pool-fullscreen .pool-room{width:100%;max-width:900px;margin:0 auto}
+#modal.pool-fullscreen .pool-marquee{font-size:clamp(20px,5vw,30px);text-shadow:0 0 12px #f6d16e55}
+#modal.pool-fullscreen .pool-table-wrap{width:100%;padding:clamp(3px,1vw,9px)!important;border-width:3px!important;border-radius:12px!important;box-shadow:0 0 24px #00d99528,inset 0 0 0 2px #f8e4a1}
+#modal.pool-fullscreen #arcade{width:100%;height:auto;aspect-ratio:19/11;touch-action:none}
+#modal.pool-fullscreen .pool-hud{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+#modal.pool-fullscreen .pool-hud>div{padding:10px;border:1px solid #d8b56b55;border-radius:9px;background:#07140fe8;text-align:center}
+#modal.pool-fullscreen .pool-hud b{display:block;margin-top:4px;color:#f9d98a}
+#modal.pool-fullscreen #poolPower{min-height:28px}
+#modal.pool-fullscreen .choiceRow{display:grid;grid-template-columns:1fr;gap:9px}
+#modal.pool-fullscreen .choiceRow button{min-height:48px}
+#modal.pool-fullscreen .pool-sound-toggle{width:100%;min-height:44px;margin:8px 0;border:1px solid #8deac0;border-radius:9px;background:linear-gradient(100deg,#0c3b2b,#092219);color:#c7ffe6;font-weight:900;letter-spacing:1px}
+@media(min-width:700px){#modal.pool-fullscreen .pool-hud{grid-template-columns:repeat(4,minmax(0,1fr))}#modal.pool-fullscreen .choiceRow{grid-template-columns:1fr 1fr}}
+</style>
+</head>
 <body><div class="topbar"></div>
 <header><nav class="nav"><a class="brand" href="#"><div class="brandtext"><strong>Las Vegas</strong><small>CASSINO</small></div></a><div class="navright"><div class="balance"><span id="walletModeLabel">SALDO DA CARTEIRA</span><br><b id="balance">R$ 0,00</b><br><button id="testModeToggle" type="button" onclick="toggleCassinoTestMode()" style="margin-top:5px;border:1px solid #facc15;border-radius:8px;background:#18251c;color:#facc15;padding:5px 8px;font-weight:800;font-size:10px;display:none">ATIVAR SALDO DE TESTE</button></div></div></nav></header>
 <div class="quick-actions"><button onclick="openPayments('deposit')">💰<span>Depositar</span></button><button onclick="openPayments('withdraw')">💸<span>Sacar</span></button><button onclick="openAccount()">🎧<span>Suporte</span></button><button onclick="openAccount()">🤝<span>Indicar</span></button></div>
@@ -747,7 +766,7 @@ header{background:linear-gradient(90deg,#100716f5,#240b2af5,#100716f5)!important
 <footer>♛　LAS VEGAS GRAND CASINO　 ·　 CARTEIRA E JOGOS　 ·　 JOGUE COM RESPONSABILIDADE</footer>
 <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="dialog"><div class="dialoghead"><h2 id="gameTitle">Mesa de jogo</h2><button class="xbtn" onclick="closeModal()" aria-label="Fechar">✕</button></div><div id="gameBody"></div></div></div>
 <script>
-let state={balance:0,user:''};const $=s=>document.querySelector(s);function save(){state.balance=0;state.user=''}const modal=$('#modal'),body=$('#gameBody');function show(title,html){$('#gameTitle').textContent=title;body.innerHTML=html;modal.classList.add('open')}function closeModal(){modal.classList.remove('open')}modal.addEventListener('click',e=>{if(e.target===modal){stopArcade();closeModal()}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){stopArcade();closeModal()}});function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+let state={balance:0,user:''};const $=s=>document.querySelector(s);function save(){state.balance=0;state.user=''}const modal=$('#modal'),body=$('#gameBody');function show(title,html){$('#gameTitle').textContent=title;body.innerHTML=html;modal.classList.add('open')}function closeModal(){modal.classList.remove('open','pool-fullscreen')}modal.addEventListener('click',e=>{if(e.target===modal){stopArcade();closeModal()}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){stopArcade();closeModal()}});function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function openAccount(){openPayments("account")} function betHTML(){return '<div class="betcontrols"><label for="bet">FICHAS POR JOGADA</label><input id="bet" class="betinput" type="number" min="5" max="200" step="5" value="10"></div>'}function bet(){let b=Number($('#bet')?.value||10);if(!Number.isInteger(b)||b<5||b>200||b>state.balance){message('Escolha de 5 a 200 fichas, sem ultrapassar seu saldo.');return 0}return b}function message(t){let m=$('#message');if(m)m.textContent=t}function charge(n){state.balance-=n;save()}function award(n){state.balance+=n;save()}
 const symbols=['🍒','🍋','🔔','💎','7️⃣','🍀','⭐','🃏','🎁'];
 const symbolInfo={'🍒':['CHERRY','cereja'],'🍋':['LEMON','limão'],'🔔':['BELL','sino'],'💎':['DIAMOND','diamante'],'7️⃣':['LUCKY 7','sete da sorte'],'🍀':['CLOVER','trevo'],'⭐':['STAR','estrela'],'🃏':['WILD','coringa'],'🎁':['SCATTER','bônus']};
@@ -1193,14 +1212,23 @@ async function startPinball(){
  frame()
 }function poolUI(){
  stopArcade();
- show('VEGAS BILLIARDS · 8 BALL', `<div class="pool-room"><div class="pool-marquee">🎱 VEGAS BILLIARDS · 8 BALL</div>
+ show('VEGAS BILLIARDS · 8 BALL', `<div class="pool-room"><div class="pool-marquee">🎱 VEGAS BILLIARDS · 8 BALL</div><button type="button" class="pool-sound-toggle" id="poolSoundToggle" onclick="togglePoolSound()">🔊 SOM ATIVADO · TOQUE PARA SILENCIAR</button>
  <div class="pool-hud"><div>JOGADOR<b>VOCÊ</b></div><div>MESA<b>8 BALL · VEGAS</b></div><div>PARTIDA<b id="poolStatus">MESA PRONTA · 15 BOLAS</b></div></div>
  <div class="pool-table-wrap" style="max-width:760px;margin:auto;padding:8px;background:linear-gradient(135deg,#e5c57a,#54321c);border:3px solid #f5d989;border-radius:16px;box-shadow:0 0 26px #00ff9d44"><canvas id="arcade" width="760" height="440" aria-label="Mesa de sinuca interativa" style="display:block;width:100%;height:auto;touch-action:none;border-radius:8px"></canvas></div>
  <div class="pool-hud"><div>VOCÊ<b id="poolPlayerScore">0</b></div><div>TACADAS<b id="poolShots">0</b></div><div>OPONENTE<b id="poolHouseScore">0</b></div><div>CARTEIRA<b id="poolBalance">REAL</b></div></div>
  <label for="poolPower">FORÇA DA TACADA</label><input id="poolPower" type="range" min="10" max="100" value="55" style="width:100%;accent-color:#f5d989">
  <div class="casinoBet">${realArcadeStakeSelect('poolRealStake',[10,20,30,40,50],10)}</div>
- <div class="message" id="poolRealResult">A aposta é liquidada pelo servidor. A partida de sinuca abaixo é visual e não determina o prêmio.</div><div class="choiceRow"><button class="goldbtn" id="poolStart" onclick="startPool()">JOGAR RODADA REAL</button><button class="darkbtn" id="poolResetCue" onclick="resetPoolCue()" disabled>REPOSICIONAR BRANCA</button></div>
- <div class="message" id="message">A rodada financeira é decidida e liquidada no servidor; a mesa interativa é uma animação independente.</div><div class="message">SINuca REAL: o servidor define vitória (retorno de 2× a aposta) ou derrota (perda da aposta). O placar visual não altera o resultado financeiro.</div></div>`);
+ <div class="message" id="poolRealResult">Toque e arraste na mesa para mirar; solte para tacar. Ajuste a força e acompanhe o movimento das bolas.</div><div class="choiceRow"><button class="goldbtn" id="poolStart" onclick="startPool()">JOGAR RODADA REAL</button><button class="darkbtn" id="poolResetCue" onclick="resetPoolCue()" disabled>REPOSICIONAR BRANCA</button></div>
+ <div class="message" id="message">Mire arrastando a partir da bola branca e solte para executar a tacada. O som pode ser ligado ou desligado.</div><div class="message">SINuca REAL: o servidor define vitória (retorno de 2× a aposta) ou derrota (perda da aposta). O placar visual não altera o resultado financeiro.</div></div>`);
+ modal.classList.add("pool-fullscreen");
+}
+
+
+let poolSoundEnabled=true,poolAudioContext=null,poolLastSound=0;
+function togglePoolSound(){poolSoundEnabled=!poolSoundEnabled;const b=document.getElementById('poolSoundToggle');if(b)b.textContent=poolSoundEnabled?'🔊 SOM ATIVADO · TOQUE PARA SILENCIAR':'🔇 SOM DESATIVADO · TOQUE PARA ATIVAR';if(poolSoundEnabled)poolSfx('tap')}
+function poolSfx(kind='hit'){
+ if(!poolSoundEnabled)return;
+ try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!poolAudioContext)poolAudioContext=new AC();if(poolAudioContext.state==='suspended')poolAudioContext.resume();const now=poolAudioContext.currentTime;if(kind==='hit'&&now-poolLastSound<.065)return;poolLastSound=now;const osc=poolAudioContext.createOscillator(),gain=poolAudioContext.createGain();const cfg=kind==='pocket'?[180,75,.16]:kind==='shot'?[420,120,.09]:kind==='rail'?[260,150,.055]:kind==='tap'?[600,300,.04]:[330,170,.045];osc.type=kind==='pocket'?'sine':'triangle';osc.frequency.setValueAtTime(cfg[0],now);osc.frequency.exponentialRampToValueAtTime(Math.max(45,cfg[1]),now+cfg[2]);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(kind==='pocket'?.13:.075,now+.008);gain.gain.exponentialRampToValueAtTime(.0001,now+cfg[2]);osc.connect(gain);gain.connect(poolAudioContext.destination);osc.start(now);osc.stop(now+cfg[2]+.015)}catch(e){console.warn('Áudio da sinuca indisponível',e)}
 }
 
 let poolGame=null,poolStake=25;
@@ -1287,7 +1315,7 @@ async function startPool(){
  }
  function aimStart(e){if(!poolGame||poolGame.done||poolGame.moving||poolGame.scratch||poolGame.phase!=='player')return;e.preventDefault();const rect=cv.getBoundingClientRect();const x=(e.clientX-rect.left)*cv.width/rect.width,y=(e.clientY-rect.top)*cv.height/rect.height;pointer={x,y};poolGame.aiming=true;poolGame.aim=pointer;try{cv.setPointerCapture(e.pointerId)}catch(_){}drawTable()}
  function aimMove(e){if(!pointer||!poolGame||!poolGame.aiming)return;const rect=cv.getBoundingClientRect();pointer={x:(e.clientX-rect.left)*cv.width/rect.width,y:(e.clientY-rect.top)*cv.height/rect.height};poolGame.aim=pointer;drawTable()}
- function aimEnd(e){if(!pointer||!poolGame||!poolGame.aiming)return;const cue=poolGame.balls[0];let dx=cue.x-pointer.x,dy=cue.y-pointer.y,len=Math.hypot(dx,dy);poolGame.aiming=false;poolGame.aim=null;pointer=null;if(len<8){drawTable();return}const power=Number($('#poolPower')?.value||55)/100;const speed=Math.min(15,len*.035)*(0.25+power*.95);cue.vx=dx/(len||1)*speed;cue.vy=dy/(len||1)*speed;poolGame.turnPocketed=false;poolGame.shots++;poolGame.turn=1;$('#poolShots').textContent=poolGame.shots;pinSound('launch');message('SUA TACADA '+poolGame.shots+' · força '+Math.round(power*100)+'%.');drawTable()}
+ function aimEnd(e){if(!pointer||!poolGame||!poolGame.aiming)return;const cue=poolGame.balls[0];let dx=cue.x-pointer.x,dy=cue.y-pointer.y,len=Math.hypot(dx,dy);poolGame.aiming=false;poolGame.aim=null;pointer=null;if(len<8){drawTable();return}const power=Number($('#poolPower')?.value||55)/100;const speed=Math.min(15,len*.035)*(0.25+power*.95);cue.vx=dx/(len||1)*speed;cue.vy=dy/(len||1)*speed;poolGame.turnPocketed=false;poolGame.shots++;poolGame.turn=1;$('#poolShots').textContent=poolGame.shots;pinSound('launch');poolSfx('shot');message('SUA TACADA '+poolGame.shots+' · força '+Math.round(power*100)+'%.');drawTable()}
  cv.addEventListener('pointerdown',aimStart);cv.addEventListener('pointermove',aimMove);cv.addEventListener('pointerup',aimEnd);cv.addEventListener('pointercancel',aimEnd);
  arcadeCleanup=()=>{cv.removeEventListener('pointerdown',aimStart);cv.removeEventListener('pointermove',aimMove);cv.removeEventListener('pointerup',aimEnd);cv.removeEventListener('pointercancel',aimEnd);if(houseTimer)clearTimeout(houseTimer)};
  drawTable();step();
