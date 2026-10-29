@@ -1348,11 +1348,11 @@ async function startPool(){
    // Caçapas verificadas antes das bordas: a bola consegue realmente cair nos seis bolsos.
    if(pockets.some(([px,py])=>Math.hypot(b.x-px,b.y-py)<pocketR+8)){
     if(b.cue){b.pocket=true;poolGame.scratch=true;poolGame.foul=true;if(poolGame.phase==='player'){poolGame.houseScore++;$('#poolHouseScore').textContent=poolGame.houseScore;message('FALTA DO JOGADOR! A branca caiu: ponto para a casa.')}else{poolGame.playerScore++;$('#poolPlayerScore').textContent=poolGame.playerScore;message('FALTA DA CASA! A branca caiu: ponto para você.')} }
-    else{b.pocket=true;poolGame.turnPocketed=true;poolGame.score++;if(poolGame.phase==='player'){poolGame.playerScore++;$('#poolPlayerScore').textContent=poolGame.playerScore}else{poolGame.houseScore++;$('#poolHouseScore').textContent=poolGame.houseScore}pinSound('bonus')}
+    else{b.pocket=true;poolGame.turnPocketed=true;poolGame.score++;poolSfx('pocket');if(poolGame.phase==='player'){poolGame.playerScore++;$('#poolPlayerScore').textContent=poolGame.playerScore}else{poolGame.houseScore++;$('#poolHouseScore').textContent=poolGame.houseScore}pinSound('bonus')}
     continue;
    }
-   if(b.x<50){b.x=50;b.vx=Math.abs(b.vx)*.86}else if(b.x>710){b.x=710;b.vx=-Math.abs(b.vx)*.86}if(b.y<50){b.y=50;b.vy=Math.abs(b.vy)*.86}else if(b.y>390){b.y=390;b.vy=-Math.abs(b.vy)*.86}
-   for(let j=i+1;j<bs.length;j++){const o=bs[j];if(o.pocket)continue;let dx=o.x-b.x,dy=o.y-b.y,d=Math.hypot(dx,dy);if(d>0&&d<R*2){let nx=dx/d,ny=dy/d,over=(R*2-d)/2;b.x-=nx*over;b.y-=ny*over;o.x+=nx*over;o.y+=ny*over;let rel=(b.vx-o.vx)*nx+(b.vy-o.vy)*ny;if(rel>0){b.vx-=rel*nx;b.vy-=rel*ny;o.vx+=rel*nx;o.vy+=rel*ny;pinSound('wall')}}}
+   if(b.x<50){b.x=50;b.vx=Math.abs(b.vx)*.86;poolSfx('rail')}else if(b.x>710){b.x=710;b.vx=-Math.abs(b.vx)*.86;poolSfx('rail')}if(b.y<50){b.y=50;b.vy=Math.abs(b.vy)*.86;poolSfx('rail')}else if(b.y>390){b.y=390;b.vy=-Math.abs(b.vy)*.86;poolSfx('rail')}
+   for(let j=i+1;j<bs.length;j++){const o=bs[j];if(o.pocket)continue;let dx=o.x-b.x,dy=o.y-b.y,d=Math.hypot(dx,dy);if(d>0&&d<R*2){let nx=dx/d,ny=dy/d,over=(R*2-d)/2;b.x-=nx*over;b.y-=ny*over;o.x+=nx*over;o.y+=ny*over;let rel=(b.vx-o.vx)*nx+(b.vy-o.vy)*ny;if(rel>0){b.vx-=rel*nx;b.vy-=rel*ny;o.vx+=rel*nx;o.vy+=rel*ny;poolSfx('hit');pinSound('wall')}}}
   }
   poolGame.moving=moving;drawTable();
   if(!moving&&poolGame.turn>0){
