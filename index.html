@@ -1562,7 +1562,7 @@ async function beginFreeGame(kind){
  const games={pool:{key:'pool_free',title:'Sinuca 3D',url:'https://billiards.tailuge.workers.dev/'},pinball:{key:'pinball_free',title:'Pinball Schminball',url:'https://www.igorski.nl/application/pinball-schminball'}};
  const game=games[kind];if(!game)return;
  if(!cassinoUser){openPayments('account');setPayStatus('Entre ou crie sua conta para iniciar uma partida.');return}
- if(cassinoUser.id!=='68be2506-c1e9-484c-853d-015afadbd21a'){show(game.title,'<div style="padding:16px;background:#0b090d;color:#f8f0dc"><p>Este recurso está em teste privado e ainda não está liberado para esta conta.</p><button class="goldbtn" onclick="closePayments()">FECHAR</button></div>');return}
+ if(cassinoUser.id!=='68be2506-c1e9-484c-853d-015afadbd21a'){show(game.title,'<div style="padding:16px;background:#0b090d;color:#f8f0dc"><p>Esta sessão está conectada com uma conta diferente da autorizada para os testes.</p><p style="overflow-wrap:anywhere;font-size:12px">ID desta sessão: '+safe(cassinoUser.id)+'</p><p style="font-size:12px">Saia e entre na conta que tem o ID autorizado, ou envie o ID acima para corrigirmos a autorização.</p><button class="goldbtn" onclick="closePayments()">FECHAR</button></div>');return}
  const button=body.querySelector('button');if(button){button.disabled=true;button.textContent='CONFIRMANDO ACESSO…'}
  try{
   const session=(await cassinoSupabase.auth.getSession()).data?.session;
