@@ -444,6 +444,12 @@ body{background:#050509}
 @keyframes tigerBreath{0%,100%{transform:scale(1);filter:drop-shadow(0 0 10px #ffb54a)}50%{transform:scale(1.06);filter:drop-shadow(0 0 20px #ffdf74)}}
 @keyframes tigerWin{from{transform:scale(1)}to{transform:scale(1.035)}}
 
+
+/* Fortune Tiger custom 3x3 cabinet */
+.theme-slot-machine.tiger-authentic-layout .tiger-reel-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;max-width:390px;margin:18px auto;padding:12px;background:linear-gradient(145deg,#4b0711,#13060b 55%,#6e1018);border:3px solid #e8bd61;border-radius:18px;box-shadow:0 0 22px #ffb52e55,inset 0 0 18px #000}
+.theme-slot-machine.tiger-authentic-layout .tiger-reel-board .theme-slot-cell{aspect-ratio:1/1;min-height:74px;display:flex;align-items:center;justify-content:center;font-size:clamp(2rem,9vw,3.4rem);background:radial-gradient(circle at 35% 25%,#fff2c2,#f4c86a 38%,#8c3217 100%);border:2px solid #ffe6a0;border-radius:10px;box-shadow:inset 0 0 12px #6d170b,0 3px 0 #6b300c}
+.theme-slot-machine.tiger-authentic-layout .tiger-reel-board .theme-slot-cell.winning{animation:tigerWinPulse .55s ease-in-out infinite alternate;box-shadow:0 0 20px #ffe45c,inset 0 0 12px #fff}
+@keyframes tigerWinPulse{from{transform:scale(1);filter:brightness(1)}to{transform:scale(1.045);filter:brightness(1.35)}}
 </style>
 <style>
 .target-pro{max-width:760px;margin:0 auto;padding:14px;border:1px solid #d4b263;border-radius:8px;background:radial-gradient(ellipse at top,#20233c 0,#080b14 58%,#030509 100%);box-shadow:0 0 18px #00d9ff22,0 0 34px #ff2d9d18,inset 0 0 25px #000}
@@ -832,7 +838,7 @@ function themedSlotUI(themeId){
  themedSlotBet=100;
  // A função de servidor atualmente sorteia e liquida uma grade 5x3 para todos os temas.
  // A interface precisa respeitar esse contrato para não rejeitar toda rodada do Fortune Tiger.
- const isTiger=themeId==="tiger",cols=5;
+ const isTiger=themeId==="tiger",cols=isTiger?3:5;
  const grid=Array.from({length:3},()=>Array.from({length:cols},()=>cfg.emoji[Math.floor(Math.random()*cfg.emoji.length)]));
  const bets=[50,100,200,500,1000,2000,5000,10000];
  const featureStage=isTiger
@@ -854,7 +860,7 @@ async function spinThemedSlot(themeId){
   const res=await cassinoSupabase.functions.invoke('jogar-royal-slots-real',{body:{stake_cents:stakeCents,test_mode:cassinoTestMode,theme_id:themeId}});
   if(res.error){let b=null;try{b=await res.error.context?.json()}catch{}throw new Error(b?.error||res.error.message||'Não foi possível concluir o giro.')}
   if(!res.data?.ok)throw new Error(res.data?.error||'O servidor não confirmou o giro.');
-  const grid=res.data.grid,cols=5;
+  const grid=res.data.grid,cols=themeId==="tiger"?3:5;
   if(!Array.isArray(grid)||grid.length!==3||grid.some(row=>!Array.isArray(row)||row.length!==cols))throw new Error('O servidor retornou um resultado inválido.');
   const cells=[...document.querySelectorAll('[data-theme-cell]')];const start=performance.now(),duration=themeId==='tiger'?2300:1900;
   function frame(now){cells.forEach((el,i)=>{if(now-start<duration){el.textContent=cfg.emoji[Math.floor(Math.random()*cfg.emoji.length)]}else el.textContent=grid[Math.floor(i/cols)][i%cols]});if(now-start<duration){requestAnimationFrame(frame);return}
