@@ -1451,7 +1451,7 @@ async function atualizarCarteiraCassino(){
   const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent=moneyBRL(cassinoWallet);
   if(typeof syncRouletteSpinButton==='function')syncRouletteSpinButton();
   if(payModal.classList.contains('open'))renderPayments();
- }catch(e){setPayStatus('Não consegui carregar a carteira: '+(e.message||'tente novamente.'))}
+ }catch(e){cassinoWallet=0;const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent='Saldo indisponível';setPayStatus('Não consegui carregar a carteira: '+(e.message||'tente novamente.'))}
 }
 async function criarDepositoCassino(amount, submitPayment=false){
  if(cassinoTestMode){setPayStatus('Depósitos ficam indisponíveis no modo de teste. Desative o modo de teste para acessar a carteira real.');return}
