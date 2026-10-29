@@ -424,6 +424,26 @@ body{background:#050509}
 .theme-slot-controls button{width:100%;min-height:46px}
 .theme-slot-message{font:13px/1.6 Arial,sans-serif;margin-top:12px;padding:12px;border-radius:8px;background:#17121b;color:#f8e7b8;min-height:44px}
 @media(max-width:520px){.theme-slot-machine{padding:10px}.theme-slot-board{gap:4px;padding:6px}.theme-slot-cell{border-radius:5px}.theme-slot-controls{grid-template-columns:1fr}}
+
+/* Fortune Tiger: dedicated 3x3 cabinet */
+.tiger-authentic-layout{background:radial-gradient(ellipse at 50% 8%,#672016 0%,#210b10 42%,#09070b 100%);border:2px solid #f1bc58;box-shadow:0 0 24px #ff8b2450,inset 0 0 30px #e34b2020;padding:clamp(12px,3vw,24px)}
+.tiger-authentic-layout .theme-slot-header h2{color:#ffe5a1;text-shadow:0 0 14px #ff8c22}
+.tiger-arena{position:relative;overflow:hidden;text-align:center;border:1px solid #c7803a;border-radius:18px;padding:10px 12px 15px;margin:14px 0;background:radial-gradient(ellipse at 50% 30%,#9a3b1e 0%,#40131a 48%,#180a10 100%)}
+.tiger-lanterns{color:#ffd78a;letter-spacing:8px;font-size:clamp(14px,4vw,24px);text-shadow:0 0 10px #ff9b37}
+.tiger-hero{font-size:clamp(48px,13vw,82px);line-height:1.15;filter:drop-shadow(0 0 15px #ffb54a);animation:tigerBreath 2.2s ease-in-out infinite}
+.tiger-luck{font-weight:1000;letter-spacing:2px;color:#ffe8ad;font-size:clamp(18px,5vw,30px);text-shadow:0 2px #7c2015,0 0 14px #ffad40}
+.tiger-luck span{color:#ffcf5a}.tiger-sub{font-size:10px;letter-spacing:2px;color:#ffc8a0;margin-top:4px}
+.tiger-multiplier{display:inline-block;margin-top:9px;border:1px solid #ffca67;border-radius:99px;padding:4px 16px;background:#190a0b;color:#ffdf8b;font-weight:900;font-size:19px;box-shadow:0 0 12px #ffad3540}
+.tiger-reel-board{gap:6px!important;padding:10px!important;border:2px solid #e5a64b!important;border-radius:14px!important;background:linear-gradient(135deg,#3a1018,#10090c)!important;box-shadow:inset 0 0 18px #000,0 0 18px #f0a13b28}
+.tiger-reel-board .theme-slot-cell{min-height:clamp(74px,21vw,112px);display:flex;align-items:center;justify-content:center;font-size:clamp(32px,10vw,55px);border:1px solid #d8a15c!important;border-radius:9px!important;background:linear-gradient(180deg,#fff0c8,#d9a65e 48%,#8b4b2c)!important;color:#24100d;box-shadow:inset 0 2px 5px #fff8,0 3px 0 #54251d}
+.tiger-reel-board .theme-slot-cell.winning{animation:tigerWin .65s ease-in-out infinite alternate;background:linear-gradient(180deg,#fff9d8,#ffcf52 52%,#d8791d)!important;box-shadow:0 0 22px #ffd15d,inset 0 0 12px #fff}
+.tiger-paylines{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:9px 0;color:#f8d99a;font-size:10px;font-weight:800;text-align:center}
+.tiger-paylines span{padding:5px;border:1px solid #854e39;border-radius:6px;background:#1b0c10}
+.tiger-authentic-layout .theme-slot-rules{border-color:#81502d;background:#160b0d}
+.tiger-authentic-layout .theme-slot-controls{border-color:#8c522f}
+@keyframes tigerBreath{0%,100%{transform:scale(1);filter:drop-shadow(0 0 10px #ffb54a)}50%{transform:scale(1.06);filter:drop-shadow(0 0 20px #ffdf74)}}
+@keyframes tigerWin{from{transform:scale(1)}to{transform:scale(1.035)}}
+
 </style>
 <style>
 .target-pro{max-width:760px;margin:0 auto;padding:14px;border:1px solid #d4b263;border-radius:8px;background:radial-gradient(ellipse at top,#20233c 0,#080b14 58%,#030509 100%);box-shadow:0 0 18px #00d9ff22,0 0 34px #ff2d9d18,inset 0 0 25px #000}
@@ -810,9 +830,14 @@ let themedSlotBusy=false,themedSlotBet=100;
 function themedSlotUI(themeId){
  const cfg=themedSlotConfig[themeId];if(!cfg)throw new Error("Tema não encontrado.");
  themedSlotBet=100;
- const grid=Array.from({length:3},()=>Array.from({length:5},()=>cfg.emoji[Math.floor(Math.random()*cfg.emoji.length)]));
+ const isTiger=themeId==="tiger",cols=isTiger?3:5;
+ const grid=Array.from({length:3},()=>Array.from({length:cols},()=>cfg.emoji[Math.floor(Math.random()*cfg.emoji.length)]));
  const bets=[50,100,200,500,1000,2000,5000,10000];
- show(cfg.name+' · Máquina temática','<div class="theme-slot-machine theme-'+cfg.accent+'"><div class="theme-slot-header"><div class="eyebrow">✦ CASSINO LAS VEGAS · '+cfg.feature+' ✦</div><h2>'+cfg.emoji[0]+' '+cfg.name+' '+cfg.emoji[0]+'</h2><p>'+cfg.feature+' · Máquina de 5 rolos com resultados sorteados e liquidados no servidor.</p></div><div class="theme-feature-stage"><div class="theme-feature-art">'+cfg.emoji[0]+'</div><div class="theme-feature-copy"><small>RECURSO ESPECIAL</small><strong>'+cfg.feature+'</strong><span>'+cfg.rule+'</span></div><div class="theme-feature-badge">5 × 3<br>ROLOS</div></div><div class="theme-slot-board" id="themeSlotBoard">'+grid.flat().map((v,i)=>'<div class="theme-slot-cell" data-theme-cell="'+i+'">'+v+'</div>').join('')+'</div><div class="theme-slot-rules"><strong>REGRAS DE PREMIAÇÃO</strong><br>'+cfg.rule+'<br><small>O prêmio é calculado no servidor; o visual da animação não altera o resultado.</small></div><div class="theme-slot-controls"><div><label for="themeSlotBet">APOSTA POR GIRO</label><select id="themeSlotBet">'+bets.map(v=>'<option value="'+v+'" '+(v===100?'selected':'')+'>R$ '+(v/100).toLocaleString('pt-BR',{minimumFractionDigits:2})+'</option>').join('')+'</select></div><button class="goldbtn" id="themeSlotSpin" onclick="spinThemedSlot(\''+themeId+'\')">GIRAR OS ROLOS</button></div><div class="theme-slot-message" id="themeSlotMessage">Escolha a aposta e gire para começar.</div></div>');
+ const paylines=isTiger?'<div class="tiger-paylines"><span>① ━━━━━━━━━</span><span>② ╲━━━━╱</span><span>③ ━━━━━━━━━</span><span>④ ╱━━━━╲</span><span>⑤ ━━╲╱━━</span></div>':'';
+ const boardStyle=isTiger?'grid-template-columns:repeat(3,minmax(0,1fr));':'';
+ const featureStage=isTiger?'<div class="tiger-arena"><div class="tiger-lanterns">🏮 ✦ 🏮 ✦ 🏮</div><div class="tiger-hero">🐯</div><div class="tiger-luck">FORTUNE TIGER <span>虎</span></div><div class="tiger-sub">RESPIN · MULTIPLICADOR DE SORTE</div><div class="tiger-multiplier" id="tigerMultiplier">×1</div></div>':'<div class="theme-feature-stage"><div class="theme-feature-art">'+cfg.emoji[0]+'</div><div class="theme-feature-copy"><small>RECURSO ESPECIAL</small><strong>'+cfg.feature+'</strong><span>'+cfg.rule+'</span></div><div class="theme-feature-badge">5 × 3<br>ROLOS</div></div>';
+ const ruleText=isTiger?'3 rolos × 3 fileiras e cinco linhas de pagamento. Três símbolos iguais numa linha pagam 2× a aposta total.':' '+cfg.rule;
+ show(cfg.name+' · Máquina temática','<div class="theme-slot-machine theme-'+cfg.accent+(isTiger?' tiger-authentic-layout':'')+'"><div class="theme-slot-header"><div class="eyebrow">✦ CASSINO LAS VEGAS · '+(isTiger?'FORTUNE TIGER — MÁQUINA 3×3':cfg.feature)+' ✦</div><h2>'+cfg.emoji[0]+' '+cfg.name+' '+cfg.emoji[0]+'</h2><p>'+(isTiger?'Três rolos, três fileiras e cinco linhas de pagamento.':'Máquina temática com resultado sorteado e liquidado no servidor.')+'</p></div>'+featureStage+'<div class="theme-slot-board '+(isTiger?'tiger-reel-board':'')+'" id="themeSlotBoard" style="'+boardStyle+'">'+grid.flat().map((v,i)=>'<div class="theme-slot-cell" data-theme-cell="'+i+'">'+v+'</div>').join('')+'</div>'+paylines+'<div class="theme-slot-rules"><strong>REGRAS DE PREMIAÇÃO</strong><br>'+ruleText+'<br><small>Resultado e liquidação devem ser confirmados pelo servidor.</small></div><div class="theme-slot-controls"><div><label for="themeSlotBet">APOSTA POR GIRO</label><select id="themeSlotBet">'+bets.map(v=>'<option value="'+v+'" '+(v===100?'selected':'')+'>R$ '+(v/100).toLocaleString('pt-BR',{minimumFractionDigits:2})+'</option>').join('')+'</select></div><button class="goldbtn" id="themeSlotSpin" onclick="spinThemedSlot(\''+themeId+'\')">GIRAR OS ROLOS</button></div><div class="theme-slot-message" id="themeSlotMessage">Escolha a aposta e gire para começar.</div></div>');
 }
 async function spinThemedSlot(themeId){
  if(themedSlotBusy)return;
@@ -827,15 +852,15 @@ async function spinThemedSlot(themeId){
   const res=await cassinoSupabase.functions.invoke('jogar-royal-slots-real',{body:{stake_cents:stakeCents,test_mode:cassinoTestMode,theme_id:themeId}});
   if(res.error){let b=null;try{b=await res.error.context?.json()}catch{}throw new Error(b?.error||res.error.message||'Não foi possível concluir o giro.')}
   if(!res.data?.ok)throw new Error(res.data?.error||'O servidor não confirmou o giro.');
-  const grid=res.data.grid;if(!Array.isArray(grid)||grid.length!==3||grid.some(row=>!Array.isArray(row)||row.length!==5))throw new Error('O servidor retornou um resultado inválido.');
-  const cells=[...document.querySelectorAll('[data-theme-cell]')];const start=performance.now(),duration=1900;
-  function frame(now){cells.forEach((el,i)=>{if(now-start<duration){el.textContent=cfg.emoji[Math.floor(Math.random()*cfg.emoji.length)]}else el.textContent=grid[Math.floor(i/5)][i%5]});if(now-start<duration){requestAnimationFrame(frame);return}
-   const payout=Number(res.data.payout||0);
-   if(payout>0){cells.forEach((el,i)=>{const sym=grid[Math.floor(i/5)][i%5];if(sym===cfg.special||grid[0].every(v=>v===grid[0][0]))el.classList.add('winning')});const stage=document.querySelector('.theme-feature-stage');if(stage)stage.classList.add('feature-hit')}
+  const grid=res.data.grid,cols=themeId==='tiger'?3:5;
+  if(!Array.isArray(grid)||grid.length!==3||grid.some(row=>!Array.isArray(row)||row.length!==cols))throw new Error('O servidor retornou um resultado inválido.');
+  const cells=[...document.querySelectorAll('[data-theme-cell]')];const start=performance.now(),duration=themeId==='tiger'?2300:1900;
+  function frame(now){cells.forEach((el,i)=>{if(now-start<duration){el.textContent=cfg.emoji[Math.floor(Math.random()*cfg.emoji.length)]}else el.textContent=grid[Math.floor(i/cols)][i%cols]});if(now-start<duration){requestAnimationFrame(frame);return}
+   const payout=Number(res.data.payout||0);cells.forEach(el=>el.classList.remove('winning'));
+   if(payout>0){const stage=document.querySelector('.theme-feature-stage');if(stage)stage.classList.add('feature-hit');cells.forEach((el,i)=>{const sym=grid[Math.floor(i/cols)][i%cols];if(sym===cfg.special)el.classList.add('winning')});if(themeId==='tiger'){const mult=document.getElementById('tigerMultiplier');if(mult)mult.textContent='×'+Math.max(1,Math.round(payout/stakeCents*100))}}
    cassinoWallet=Number(res.data.balance||0);const balanceEl=document.getElementById('balance');if(balanceEl)balanceEl.textContent=moneyBRL(cassinoWallet);
-   msg.textContent=(payout>0?'★ '+cfg.feature+' ATIVADO · Prêmio creditado: '+moneyBRL(payout)+'. ':'Nenhuma combinação premiada desta vez. ')+(cassinoTestMode?'Saldo de teste: ':'Saldo: ')+moneyBRL(cassinoWallet)+'.';
-   atualizarCarteiraCassino();
-   btn.disabled=false;btn.textContent='GIRAR OS ROLOS';themedSlotBusy=false;
+   msg.textContent=(payout>0?'★ COMBINAÇÃO PREMIADA · Prêmio creditado: '+moneyBRL(payout)+'. ':'Nenhuma combinação premiada desta vez. ')+(cassinoTestMode?'Saldo de teste: ':'Saldo: ')+moneyBRL(cassinoWallet)+'.';
+   atualizarCarteiraCassino();btn.disabled=false;btn.textContent='GIRAR OS ROLOS';themedSlotBusy=false;
   }
   requestAnimationFrame(frame);
  }catch(e){msg.textContent=e.message||'Falha ao processar o giro.';btn.disabled=false;btn.textContent='GIRAR OS ROLOS';themedSlotBusy=false;await atualizarCarteiraCassino()}
